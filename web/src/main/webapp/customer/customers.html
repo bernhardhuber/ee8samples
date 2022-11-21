@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Customers</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+              integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
+              crossorigin="anonymous"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+        <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
+        <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js'></script>
+
+        <script type="text/javascript">
+            // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
+            function AppViewModel() {
+
+                var self = this;
+                
+                // @data
+                var data = [
+                    {customerID: 'data_customerID_1', companyName: 'data_companyName_1'},
+                    {customerID: 'data_customerID_2', companyName: 'data_companyName_2'},
+                    {customerID: 'data_customerID_3', companyName: 'data_companyName_3'}
+                ];
+
+                // @properties
+                self.customers = ko.observableArray(data);
+
+                this.loadData = function() {
+                    $.getJSON("/ko_pure_web/resources/customers", function (items) {                
+                        console.log( "json items " + items );
+                        // TODO 
+                        self.customers.removeAll();
+                        for (const item of items ) {
+                            self.customers.push( item );
+                        }
+                    });
+                }
+            }
+            $(document).ready(function () {
+                // Run code
+                var appViewModel = new AppViewModel();
+                appViewModel.loadData();
+                ko.applyBindings(appViewModel);
+            });
+        </script>
+    </head>
+    <body>
+        <h1>Customers</h1>
+        <ul data-bind="foreach: customers">
+            <li>
+                <span data-bind="text: customerID"></span>
+                <span data-bind="text: companyName"></span>
+            </li>
+        </ul>
+
+    </body>
+</html>

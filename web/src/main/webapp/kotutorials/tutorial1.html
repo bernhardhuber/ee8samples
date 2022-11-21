@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>Knockout Tutorial 1</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+              integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
+              crossorigin="anonymous"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+        <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
+
+        <script type="text/javascript">
+            // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
+            function AppViewModel() {
+
+                var self = this;
+                // @data
+                var data = {firstName: "Bert", lastName: "Bertingo"}
+                
+                // @properties
+                self.firstName = ko.observable(data.firstName, data.lastName);
+                self.lastName = ko.observable("Bertington");
+
+                // @computed properties
+                self.fullName = ko.computed(function () {
+                    return self.firstName() + " " + self.lastName();
+                }, this);
+
+                // @functions
+                self.capitalizeLastName = function () {
+                    var currentVal = self.lastName();        // Read the current value
+                    self.lastName(currentVal.toUpperCase()); // Write back a modified value
+                };
+                self.capitalizeFirstName = function () {
+                    var currentVal = self.firstName();        // Read the current value
+                    self.firstName(currentVal.toUpperCase()); // Write back a modified value
+                };
+            }
+        </script>
+    </head>
+    <body>
+        <!-- This is a *view* - HTML markup that defines the appearance of your UI -->
+        <div class="pure-g" style="padding: 1em">
+            <div class="pure-u-1-1 ">
+
+                <p>First name: <strong data-bind="text: firstName"></strong></p>
+                <p>Last name: <strong data-bind="text: lastName"></strong></p>
+
+                <p>Full name: <strong data-bind="text: fullName"></strong></p>
+            </div>
+            <div class="pure-u-1-1 ">
+                <form class="pure-form pure-form-aligned">
+                    <fieldset>
+                        <legend>A Stacked Form</legend>
+                        <div class="pure-control-group">
+                            <label for="firstName">First name</label>
+                            <input id="firstName" type="text" data-bind="value: firstName" placeHolder="Firstname" title="Firstname"/>
+                        </div>
+                        <div class="pure-control-group">
+                            <label for="lastName">Last name</label>
+                            <input id="lastName" type="text" data-bind="value: lastName" placeHolder="Lastname" title="Lastname"/>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="pure-u-1-1 ">
+                <div class="pure-button-group" role="group" aria-label="...">
+                    <button class="pure-button pure-button-primary" data-bind="click: capitalizeFirstName">Go caps first name</button>
+                    <button class="pure-button pure-button-primary" data-bind="click: capitalizeLastName">Go caps last name</button>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+        // Activates knockout.js
+        ko.applyBindings(new AppViewModel());
+    </script>
+</html>

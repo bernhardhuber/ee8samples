@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+              integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
+              crossorigin="anonymous"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+        <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
+
+        <script type="text/javascript">
+            // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
+            function AppViewModel() {
+
+                var self = this;
+                // @data
+                var data = [
+                    {href: 'kotutorials/example_click_counter.html', value: 'example_click_counter'},
+                    {href: 'kotutorials/example_hello_world.html', value: 'example_hello_world'},
+                    {href: 'kotutorials/tutorial1.html', value: 'tutorial1'},
+                    {href: 'kotutorials/tutorial2.html', value: 'tutorial2'},
+                    {href: 'customer/customers.html', value: 'customers'}
+                ];
+
+                // @properties
+                self.links = data;
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Hello World!!!</h1>
+
+        <ul data-bind="foreach: links">
+            <li>
+                <a data-bind="attr: {'href': href}"><span data-bind="text: value"/></a> / 
+                <a data-bind="attr: {'href': href}"> <!--ko text: value--><!--/ko--> </a>
+            </li>
+        </ul>
+
+    </body>
+    <script type="text/javascript">
+        // Activates knockout.js
+        ko.applyBindings(new AppViewModel());
+    </script>    
+</html>

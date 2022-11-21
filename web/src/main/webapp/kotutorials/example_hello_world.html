@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>Knockout Knockout Example Hello World</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+              integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
+              crossorigin="anonymous"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+
+        <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
+
+        <script type="text/javascript">
+            // Here's my data model
+            var ViewModel = function (first, last) {
+                var self = this;
+                self.firstName = ko.observable(first);
+                self.lastName = ko.observable(last);
+
+                self.fullName = ko.pureComputed(function () {
+                    // Knockout tracks dependencies automatically. 
+                    // It knows that fullName depends on firstName and lastName, 
+                    // because these get called when evaluating fullName.
+                    return self.firstName() + " " + self.lastName();
+                }, self);
+            };
+        </script>
+    </head>
+    <body>
+        <div class="pure-g" style="padding: 1em">
+            <div class="pure-u-1-1">
+                <h2>Hello, <span data-bind="text: fullName"> </span>!</h2>
+                <h2>Hello, <span data-bind="text: $root.fullName"> </span>!</h2>
+            </div>
+            <div class="pure-u-1-1">
+                <h2>Using data-bind plain</h2>
+                <p>First name: <input data-bind="value: firstName" /></p>
+                <p>Last name: <input data-bind="value: lastName" /></p>
+            </div>
+        </div>
+        <div class="pure-g" style="padding: 1em">
+            <div class="pure-u-1-1">
+                <h2>Using data-bind $root</h2>
+                <p>First name: <input data-bind="value: $root.firstName" /></p>
+                <p>Last name: <input data-bind="value: $root.lastName" /></p>
+            </div>
+        </div>
+        <div class="pure-g" style="padding: 1em">
+            <div class="pure-u-1-1">
+                <h2>Using fieldset</h2>
+                <form class="pure-form pure-form-aligned">
+                    <fieldset>
+                        <legend>Input name form</legend>
+                        <div class="pure-control-group">
+                            <label for="firstName">First name</label>
+                            <input id="firstName" data-bind="value: $root.firstName" />
+                        </div>
+
+                        <div class="pure-control-group">
+                            <label for="lastName">Last name</label>
+                            <input id="lastName" data-bind="value: $root.lastName" />
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+        // Activates knockout.js
+        ko.applyBindings(new ViewModel("Planet", "Earth")); // This makes Knockout get to work
+    </script>
+</html>

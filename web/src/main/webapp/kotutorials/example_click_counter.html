@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>Knockout Example Click Counter</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+              integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
+              crossorigin="anonymous"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+        <style>
+            .button-success,
+            .button-error,
+            .button-warning,
+            .button-secondary {
+                color: white;
+                border-radius: 4px;
+                text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+            }
+
+            .button-success {
+                background: rgb(28, 184, 65);
+                /* this is a green */
+            }
+
+            .button-error {
+                background: rgb(202, 60, 60);
+                /* this is a maroon */
+            }
+
+            .button-warning {
+                background: rgb(223, 117, 20);
+                /* this is an orange */
+            }
+
+            .button-secondary {
+                background: rgb(66, 184, 221);
+                /* this is a light blue */
+            }
+        </style>
+
+        <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
+
+        <script type="text/javascript">
+            // Here's my data model
+            var ClickCounterViewModel = function () {
+                // @data 0
+                // @properties
+                this.numberOfClicks = ko.observable(0);
+
+                // @computed properties
+                this.hasClickedTooManyTimes = ko.pureComputed(function () {
+                    return this.numberOfClicks() >= 3;
+                }, this);
+
+                // @functions
+                this.registerClick = function () {
+                    var newValue = this.numberOfClicks() + 1;
+                    this.numberOfClicks(newValue);
+                };
+
+                // @functions
+                this.resetClicks = function () {
+                    this.numberOfClicks(0);
+                };
+
+            };
+        </script>
+    </head>
+    <body>
+        <div class="pure-g" style="padding: 1em">
+            <div class="pure-u-1-1">
+                <p>You've clicked
+                    <strong>
+                        <span data-bind='text: numberOfClicks'>&nbsp;</span>
+                    </strong>
+                    times
+                </p>
+
+                <div class="pure-button-group" role="group" aria-label="...">
+                    <button class="pure-button pure-button-primary"
+                            data-bind='click: registerClick, disable: hasClickedTooManyTimes'
+                            title="Disabled if not applicable">
+                        Click me
+                    </button>
+                    <button class="pure-button button-secondary"
+                            data-bind='click: registerClick, visible: !hasClickedTooManyTimes()'
+                            title="Invisible if not applicable"
+                            >
+                        Click me 2
+                    </button>
+                </div>
+
+                <p data-bind='visible: hasClickedTooManyTimes'>
+                    That's too many clicks!
+                    Please stop before you wear out your fingers.
+                    <br/>
+                    <button class="pure-button button-warning" data-bind='click: resetClicks'>Reset clicks</button>
+                </p>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+        // Activates knockout.js
+        ko.applyBindings(new ClickCounterViewModel());
+    </script>
+</html>

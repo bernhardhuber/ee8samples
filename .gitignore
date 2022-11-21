@@ -22,3 +22,32 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# more ignoreable files and dirs
+.DS_Store
+.bzr
+.hg
+.svn
+.cache
+.gradle
+.metadata
+.settings
+
+*.bak
+*.db
+*.hprof
+*.log
+*.tmp
+/*.tar.gz
+/*.zip
+/*.log
+/*DB.*
+/*.ser
+**/_old/
+**/ant-bin/
+**/bin/
+**/out/
+**/target/
+**/target-eclipse/
+**/temp/
+

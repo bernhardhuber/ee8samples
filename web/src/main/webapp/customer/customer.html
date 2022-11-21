@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Customers</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+              integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
+              crossorigin="anonymous"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+        <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
+        <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js'></script>
+
+        <script type="text/javascript">
+            // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
+
+            function AppViewModel() {
+                var self = this;
+
+                // @data                
+                // @data
+                var data = {
+                    customerID: "customerID-" + -1,
+                    companyName: "companyName-" + 0,
+                    contactName: "contactName-" + 0,
+                    contactTitle: "contactTitle-" + 0,
+                    fax: "fax-" + 0,
+                    phone: "phone-" + 0,
+                    fullAddress: ''
+                };
+
+                // @properties
+                self.customerID = ko.observable(data.customerID);
+                self.companyName = ko.observable(data.companyName);
+                self.contactName = ko.observable(data.contactName);
+                self.contactTitle = ko.observable(data.contactTitle);
+                self.fax = ko.observable(data.fax);
+                self.phone = ko.observable(data.phone);
+                self.fullAddress = '';
+
+                // @function computing
+                self.fullAddressInline = ko.pureComputed(function () {
+                    return self.contactTitle + " " + self.contanctName;
+                }, self);
+
+                /** 
+                 * Load data via json.
+                 * 
+                 * @returns {undefined}
+                 */
+                this.loadData = function () {
+                    const resturl = "/ko_pure_web/resources/customer";
+                    $.getJSON(resturl, function (item) {
+                        console.log("json item " + item);
+
+                        // setup property self.customers from json-data
+                        // TODO fix me implement ist correctly
+                        self.companyName = ko.observable(item.companyName);
+                        // TODO add more
+                    });
+                }
+            }
+
+            // setup AppViewModel
+            $(document).ready(function () {
+                // Run code
+                var appViewModel = new AppViewModel();
+                appViewModel.loadData();
+                ko.applyBindings(appViewModel);
+            });
+        </script>
+    </head>
+
+    <body>
+        <div class="pure-g" style="padding: 1em">
+            <div class="pure-u-1-1">
+                <h2>Customer</h2>
+                <ul>
+                    <li><span data-bind="text: customerID"></span></li>
+                    <li><span data-bind="text: companyName"></span></li>
+
+                    <li><span data-bind="text: contactName"></span></li>
+                    <li><span data-bind="text: contactTitle"></span></li>
+
+                    <li><span data-bind="text: phone"></span></li>
+                    <li><span data-bind="text: fax"></span></li>
+
+                    <li><span data-bind="text: fullAddress"></span></li>
+                </ul>
+            </div>
+            <div class="pure-u-1-1 ">
+                <h2>Input Form 1</h2>
+                <form class="pure-form pure-form-aligned">
+                    <fieldset>
+                        <legend>Company Information</legend>
+
+                        <div class="pure-control-group">
+                            <label for="customerID_1">Customer ID</label>
+                            <input id="customerID_1" type="text" 
+                                   readonly="true"
+                                   data-bind="value: customerID" title="Customer ID"/>
+                        </div>                
+                        <div class="pure-control-group">
+                            <label for="companyName_1">Company Name</label>
+                            <input id="companyName_1" 
+                                   autofocus="true"
+                                   type="text" data-bind="value: companyName" title="Company Name"/>
+                        </div>          
+                    </fieldset>
+                    <fieldset>
+                        <legend>Contact Information</legend>
+
+                        <div class="pure-control-group">
+                            <label for="contactName_1">Contact Name</label>
+                            <input id="contactName_1" type="text" data-bind="value: contactName" title="Contact Name"/>
+                        </div>                
+                        <div class="pure-control-group">
+                            <label for="contactTitle_1">Contact Title</label>
+                            <input id="contactTitle_1" type="text" data-bind="value: contactTitle" title="Contact Title"/>
+                        </div>          
+                        <div class="pure-control-group">
+                            <label for="phone_1">Phone</label>
+                            <input id="phone_1" type="text" data-bind="value: phone" title="Phone"/>
+                        </div>          
+                        <div class="pure-control-group">
+                            <label for="fax_1">Fax</label>
+                            <input id="fax_1" type="text" data-bind="value: fax" title="Fax"/>
+                        </div>          
+                    </fieldset>
+                    <div class="pure-button-group" role="group" aria-label="...">
+                        <button class="pure-button pure-button-primary" onclick="alert('TODO implement me!');">Submit</button>
+                        <button class="pure-button pure-button-primary" 
+                                onclick="alert('TODO implement me!');">Reset</button>
+                    </div>
+                </form>
+            </div>
+    </body>
+</html>

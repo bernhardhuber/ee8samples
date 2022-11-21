@@ -20,7 +20,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                 var self = this;
                 // @data
-                var data = {firstName: "Bert", lastName: "Bertingo"}
+                var data = {firstName: "Bert", lastName: "Bertingo"};
 
                 // @properties
                 self.firstName = ko.observable(data.firstName);
@@ -29,7 +29,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 // @computed properties
                 self.fullName = ko.computed(function () {
                     return self.firstName() + " " + self.lastName();
-                }, this);
+                }, self);
 
                 // @functions
                 self.capitalizeLastName = function () {
@@ -75,7 +75,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         </div>
                     </fieldset>
                 </form>
-                
+
                 <h2>Input Form 2</h2>
                 <form class="pure-form pure-form-aligned">
                     <fieldset>

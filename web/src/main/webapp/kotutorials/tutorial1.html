@@ -21,9 +21,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 var self = this;
                 // @data
                 var data = {firstName: "Bert", lastName: "Bertingo"}
-                
+
                 // @properties
-                self.firstName = ko.observable(data.firstName, data.lastName);
+                self.firstName = ko.observable(data.firstName);
                 self.lastName = ko.observable("Bertington");
 
                 // @computed properties
@@ -47,23 +47,54 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <!-- This is a *view* - HTML markup that defines the appearance of your UI -->
         <div class="pure-g" style="padding: 1em">
             <div class="pure-u-1-1 ">
-
+                <h2>Summary</h2>
                 <p>First name: <strong data-bind="text: firstName"></strong></p>
                 <p>Last name: <strong data-bind="text: lastName"></strong></p>
 
                 <p>Full name: <strong data-bind="text: fullName"></strong></p>
             </div>
             <div class="pure-u-1-1 ">
+                <h2>Input Form 1</h2>
                 <form class="pure-form pure-form-aligned">
                     <fieldset>
-                        <legend>A Stacked Form</legend>
+                        <legend>A Stacked Form - value binding</legend>
+                        <p>
+                            <strong>Note</strong>:
+                            When the user edits the value in the associated form control, 
+                            it updates the value on your view model. 
+                            Likewise, when you update the value in your view model, 
+                            this updates the value of the form control on screen.
+                        </p>
                         <div class="pure-control-group">
-                            <label for="firstName">First name</label>
-                            <input id="firstName" type="text" data-bind="value: firstName" placeHolder="Firstname" title="Firstname"/>
+                            <label for="firstName_1">First name</label>
+                            <input id="firstName_1" type="text" data-bind="value: firstName" placeHolder="Firstname" title="Firstname"/>
                         </div>
                         <div class="pure-control-group">
-                            <label for="lastName">Last name</label>
-                            <input id="lastName" type="text" data-bind="value: lastName" placeHolder="Lastname" title="Lastname"/>
+                            <label for="lastName_1">Last name</label>
+                            <input id="lastName_1" type="text" data-bind="value: lastName" placeHolder="Lastname" title="Lastname"/>
+                        </div>
+                    </fieldset>
+                </form>
+                
+                <h2>Input Form 2</h2>
+                <form class="pure-form pure-form-aligned">
+                    <fieldset>
+                        <legend>A Stacked Form - textinput binding</legend>
+                        <p>
+                            <strong>Note</strong>:
+                            The textInput binding links a text box (&lt;input&gt;) 
+                            or text area (&lt;textarea&gt;) with a viewmodel property, 
+                            providing two-way updates between the viewmodel property and the element’s value. 
+                            Unlike the value binding, textInput provides instant updates from the DOM for all types of user input, 
+                            including autocomplete, drag-and-drop, and clipboard events.
+                        </p>
+                        <div class="pure-control-group">
+                            <label for="firstName_2">First name</label>
+                            <input id="firstName_2" type="text" data-bind="textInput: firstName" placeHolder="Firstname" title="Firstname"/>
+                        </div>
+                        <div class="pure-control-group">
+                            <label for="lastName_2">Last name</label>
+                            <input id="lastName_2" type="text" data-bind="textInput: lastName" placeHolder="Lastname" title="Lastname"/>
                         </div>
                     </fieldset>
                 </form>

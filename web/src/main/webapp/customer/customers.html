@@ -14,31 +14,46 @@
 
         <script type="text/javascript">
             // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
-            function AppViewModel() {
 
+            function AppViewModel() {
                 var self = this;
-                
+
                 // @data
-                var data = [
+                var emptydata = [];
+                var sampledata = [
                     {customerID: 'data_customerID_1', companyName: 'data_companyName_1'},
                     {customerID: 'data_customerID_2', companyName: 'data_companyName_2'},
                     {customerID: 'data_customerID_3', companyName: 'data_companyName_3'}
                 ];
 
                 // @properties
-                self.customers = ko.observableArray(data);
+                self.customers = ko.observableArray(emptydata);
 
-                this.loadData = function() {
-                    $.getJSON("/ko_pure_web/resources/customers", function (items) {                
-                        console.log( "json items " + items );
-                        // TODO 
+                // @function computing
+                self.fullAddressInline = function (fullAddress) {
+                    return fullAddress.address + " " + fullAddress.postalcode + " " + fullAddress.city;
+                };
+
+                /** 
+                 * Load data via json.
+                 * 
+                 * @returns {undefined}
+                 */
+                this.loadData = function () {
+                    const resturl = "/ko_pure_web/resources/customers";
+                    $.getJSON(resturl, function (items) {
+                        console.log("json items " + items);
+
+                        // setup property self.customers from json-data
                         self.customers.removeAll();
-                        for (const item of items ) {
-                            self.customers.push( item );
+                        for (const item of items) {
+                            self.customers.push(item);
                         }
                     });
                 }
             }
+            
+            // setup AppViewModel
             $(document).ready(function () {
                 // Run code
                 var appViewModel = new AppViewModel();
@@ -47,14 +62,35 @@
             });
         </script>
     </head>
-    <body>
-        <h1>Customers</h1>
-        <ul data-bind="foreach: customers">
-            <li>
-                <span data-bind="text: customerID"></span>
-                <span data-bind="text: companyName"></span>
-            </li>
-        </ul>
 
+    <body>
+        <div class="pure-g" style="padding: 1em">
+            <div class="pure-u-1-1">
+                <h2>Customers</h2>
+                <table class="pure-table pure-table-horizontal pure-table-striped">
+                    <thead><tr>
+                            <th>Customer ID</th><th>Company Name</th>
+                            <th>Contact Name</th><th>Contact Title</th>
+                            <th>Phone</th><th>Fax</th>
+                            <th>Full Address</th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: customers">
+                        <tr>
+                            <td><span data-bind="text: customerID"></span></td>
+                            <td><span data-bind="text: companyName"></span></td>
+
+                            <td><span data-bind="text: contactName"></span></td>
+                            <td><span data-bind="text: contactTitle"></span></td>
+
+                            <td><span data-bind="text: phone"></span></td>
+                            <td><span data-bind="text: fax"></span></td>
+
+                            <td><span data-bind="text: $parent.fullAddressInline($data.fullAddress)"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </body>
 </html>

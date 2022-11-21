@@ -17,6 +17,8 @@ package org.huberb.pureko.resources;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -24,12 +26,14 @@ import javax.ws.rs.core.Response;
 import org.huberb.pureko.model.Customer;
 import org.huberb.pureko.model.Customer.FullAddress;
 import org.huberb.pureko.model.CustomerModel;
+import org.huberb.pureko.model.CustomerRepository;
 
 /**
  *
  * @author berni3
  */
 @Path("customers")
+@ApplicationScoped
 public class CustomersResource {
 
     /*
@@ -47,10 +51,14 @@ For JSONP (runnable JavaScript) with callback:
 
 application/javascript
      */
+    @Inject
+    private CustomerRepository customerRepository;
+
     @GET
     @Produces("application/json")
     public Response customers() {
-        final List<Customer> customerList = createFakeCustomerList(10);
+        final List<Customer> customerList = customerRepository.loadCustomers(10);
+
         final String s = new CustomerModel().createJsonArrayFrom(customerList);
 
         return Response

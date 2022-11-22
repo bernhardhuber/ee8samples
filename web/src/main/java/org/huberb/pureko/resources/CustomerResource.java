@@ -23,8 +23,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import org.huberb.pureko.model.Customer;
 import org.huberb.pureko.model.CustomerModel;
-import org.huberb.pureko.model.CustomerRepository;
-import org.huberb.pureko.model.CustomerRepository.NaiveFakerFactory;
+import org.huberb.pureko.model.CustomerRepository.DataFakerFactory;
 
 /**
  *
@@ -35,10 +34,7 @@ import org.huberb.pureko.model.CustomerRepository.NaiveFakerFactory;
 public class CustomerResource {
 
     @Inject
-    private CustomerRepository customerRepository;
-
-    @Inject
-    private NaiveFakerFactory naiveFakerFactory;
+    private DataFakerFactory dataFakerFactory;
 
     @GET
     @Produces("application/json")
@@ -52,7 +48,7 @@ public class CustomerResource {
     }
 
     private Customer createDefaultCustomer() {
-        final Customer customer = naiveFakerFactory.createCustomerNaive(1);
+        final Customer customer = dataFakerFactory.createCustomerUsingFaker(1);
         return customer;
     }
 }

@@ -16,7 +16,7 @@ limitations under the License.
 -->
 <html>
     <head>
-        <title>Customers</title>
+        <title>Customer</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,15 +33,17 @@ limitations under the License.
             function AppViewModel() {
                 var self = this;
 
+                const resturl = "/ko_pure_web/resources/customer";
+
                 // @data                
                 // @data
-                var data = {
-                    customerID: "customerID-" + -1,
-                    companyName: "companyName-" + 0,
-                    contactName: "contactName-" + 0,
-                    contactTitle: "contactTitle-" + 0,
-                    fax: "fax-" + 0,
-                    phone: "phone-" + 0,
+                const data = {
+                    customerID: "customerID " + -1,
+                    companyName: "companyName " + 0,
+                    contactName: "contactName " + 0,
+                    contactTitle: "contactTitle " + 0,
+                    fax: "1234 567 " + 0,
+                    phone: "987 543 " + 0,
                     fullAddress: ''
                 };
 
@@ -52,7 +54,7 @@ limitations under the License.
                 self.contactTitle = ko.observable(data.contactTitle);
                 self.fax = ko.observable(data.fax);
                 self.phone = ko.observable(data.phone);
-                self.fullAddress = '';
+                self.fullAddress = '-';
 
                 // @function computing
                 self.fullAddressInline = ko.pureComputed(function () {
@@ -65,13 +67,18 @@ limitations under the License.
                  * @returns {undefined}
                  */
                 this.loadData = function () {
-                    const resturl = "/ko_pure_web/resources/customer";
+
                     $.getJSON(resturl, function (item) {
                         console.log("json item " + item);
 
                         // setup property self.customers from json-data
                         // TODO fix me implement ist correctly
-                        self.companyName = ko.observable(item.companyName);
+                        self.customerID(item.customerID);
+                        self.companyName(item.companyName);
+                        self.contactName(item.contactName);
+                        self.contactTitle(item.contactTitle);
+                        self.fax(item.fax);
+                        self.phone(item.phone);
                         // TODO add more
                     });
                 }
@@ -112,15 +119,15 @@ limitations under the License.
 
                         <div class="pure-control-group">
                             <label for="customerID_1">Customer ID</label>
-                            <input id="customerID_1" type="text" 
+                            <input id="customerID_1" type="text" class="pure-input-1-2"
                                    readonly="true"
                                    data-bind="value: customerID" title="Customer ID"/>
                         </div>                
                         <div class="pure-control-group">
                             <label for="companyName_1">Company Name</label>
-                            <input id="companyName_1" 
+                            <input id="companyName_1" type="text" class="pure-input-1-2"
                                    autofocus="true"
-                                   type="text" data-bind="value: companyName" title="Company Name"/>
+                                   data-bind="value: companyName" title="Company Name"/>
                         </div>          
                     </fieldset>
                     <fieldset>
@@ -128,19 +135,23 @@ limitations under the License.
 
                         <div class="pure-control-group">
                             <label for="contactName_1">Contact Name</label>
-                            <input id="contactName_1" type="text" data-bind="value: contactName" title="Contact Name"/>
+                            <input id="contactName_1" type="text" class="pure-input-1-2"
+                                   data-bind="value: contactName" title="Contact Name"/>
                         </div>                
                         <div class="pure-control-group">
                             <label for="contactTitle_1">Contact Title</label>
-                            <input id="contactTitle_1" type="text" data-bind="value: contactTitle" title="Contact Title"/>
+                            <input id="contactTitle_1" type="text" class="pure-input-1-2"
+                                   data-bind="value: contactTitle" title="Contact Title"/>
                         </div>          
                         <div class="pure-control-group">
                             <label for="phone_1">Phone</label>
-                            <input id="phone_1" type="text" data-bind="value: phone" title="Phone"/>
+                            <input id="phone_1" type="text" class="pure-input-1-3"
+                                   data-bind="value: phone" title="Phone"/>
                         </div>          
                         <div class="pure-control-group">
                             <label for="fax_1">Fax</label>
-                            <input id="fax_1" type="text" data-bind="value: fax" title="Fax"/>
+                            <input id="fax_1" type="text" class="pure-input-1-3"
+                                   data-bind="value: fax" title="Fax"/>
                         </div>          
                     </fieldset>
                     <div class="pure-button-group" role="group" aria-label="...">

@@ -17,23 +17,18 @@ package org.huberb.pureko.model;
 
 import java.io.StringReader;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.bind.JsonbBuilder;
+import javax.json.stream.JsonParser;
 
 /**
  *
  * @author berni3
  */
-public class CustomerModel {
-
-    public Customer createDefaultCustomer() {
-        final Customer customer = Customer.builder()
-                .customerID("customerID1")
-                .companyName("companyName1")
-                .build();
-        return customer;
-    }
+@ApplicationScoped
+public class CustomerJsonConverter {
 
     public String createJsonArrayFrom(List<Customer> customerList) {
         final String s = JsonbBuilder.create().toJson(customerList);
@@ -52,8 +47,11 @@ public class CustomerModel {
 
     public JsonObject createJsonObjectFromJson(String s) {
         StringReader sr = new StringReader(s);
-        JsonObject jsonObject = Json.createParser(sr).getObject();
-        return jsonObject;
+        try ( JsonParser jsonParser = Json.createParser(sr)) {
+            jsonParser.next();
+            JsonObject jsonObject = jsonParser.getObject();
+            return jsonObject;
+        }
     }
 
 }

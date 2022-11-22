@@ -23,7 +23,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import org.huberb.pureko.model.Customer;
-import org.huberb.pureko.model.CustomerModel;
+import org.huberb.pureko.model.CustomerJsonConverter;
 import org.huberb.pureko.model.CustomerRepository;
 
 /**
@@ -51,12 +51,14 @@ application/javascript
      */
     @Inject
     private CustomerRepository customerRepository;
+    @Inject
+    private CustomerJsonConverter customerJsonConverter;
 
     @GET
     @Produces("application/json")
     public Response customers() {
         final List<Customer> customerList = customerRepository.loadCustomers(10);
-        final String s = new CustomerModel().createJsonArrayFrom(customerList);
+        final String s = customerJsonConverter.createJsonArrayFrom(customerList);
 
         return Response
                 .ok(s)

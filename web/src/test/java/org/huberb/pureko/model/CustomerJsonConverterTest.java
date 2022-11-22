@@ -17,9 +17,10 @@ package org.huberb.pureko.model;
 
 import java.util.Arrays;
 import java.util.List;
+import javax.json.JsonObject;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,41 +28,33 @@ import org.junit.jupiter.api.Test;
  *
  * @author berni3
  */
-public class CustomerModelTest {
+public class CustomerJsonConverterTest {
 
-    CustomerModel instance;
+    CustomerJsonConverter instance;
 
     @BeforeEach
     public void setUp() {
-        instance = new CustomerModel();
+        instance = new CustomerJsonConverter();
     }
 
     /**
-     * Test of createDefaultCustomer method, of class CustomerModel.
-     */
-    @Test
-    public void then_createDefaultCustomer_returns_a_customer() {
-        final Customer customer = instance.createDefaultCustomer();
-        assertAll(() -> assertEquals("customerID1", customer.getCustomerID()),
-                () -> assertEquals("companyName1", customer.getCompanyName())
-        );
-    }
-
-    /**
-     * Test of createDefaultCustomerJson method, of class CustomerModel.
+     * Test of createDefaultCustomerJson method, of class CustomerJsonConverter.
      */
     @Test
     public void given_a_customer_json_is_created() {
-        final Customer customer = instance.createDefaultCustomer();
+        final Customer customer = Customer.builder()
+                .customerID("customerID_1")
+                .companyName("companyName_1")
+                .build();
         final String s = instance.createJsonObjectFrom(customer);
         assertEquals("{"
-                + "\"companyName\":\"companyName1\","
-                + "\"customerID\":\"customerID1\""
+                + "\"companyName\":\"companyName_1\","
+                + "\"customerID\":\"customerID_1\""
                 + "}", s);
     }
 
     /**
-     * Test of createDefaultCustomerJson method, of class CustomerModel.
+     * Test of createDefaultCustomerJson method, of class CustomerJsonConverter.
      */
     @Test
     public void given_mulitple_customers_json_is_created() {
@@ -77,26 +70,36 @@ public class CustomerModelTest {
     }
 
     /**
-     * Test of createCustomerFromJson method, of class CustomerModel.
+     * Test of createCustomerFromJson method, of class CustomerJsonConverter.
      */
     @Test
     public void given_a_json_then_customer_is_created() {
-        final Customer customer0 = instance.createDefaultCustomer();
-        final String s = instance.createJsonObjectFrom(customer0);
-        Customer customer = instance.createCustomerFromJson(s);
+        final Customer customer = Customer.builder()
+                .customerID("customerID_1")
+                .companyName("companyName_1")
+                .build();
+        final String s = instance.createJsonObjectFrom(customer);
+        assertEquals("{\"companyName\":\"companyName_1\",\"customerID\":\"customerID_1\"}", s);
+        Customer customerFromJson = instance.createCustomerFromJson(s);
 
         assertAll(
-                () -> assertEquals("customerID1", customer.getCustomerID()),
-                () -> assertEquals("companyName1", customer.getCompanyName())
+                () -> customer.equals(customerFromJson),
+                () -> assertEquals("customerID_1", customerFromJson.getCustomerID()),
+                () -> assertEquals("companyName_1", customerFromJson.getCompanyName())
         );
     }
 
     /**
-     * Test of createJsonObjectFromJson method, of class CustomerModel.
+     * Test of createJsonObjectFromJson method, of class OrderJsonConverter.
      */
     @Test
-    public void testXxx4() {
-        assertNotNull(instance);
-    }
+    public void testCreateJsonObjectFromJson() {
+        final String s = "{\"companyName\":\"companyName_1\",\"customerID\":\"customerID_1\"}";
+        final JsonObject jsonObject = instance.createJsonObjectFromJson(s);
+        assertTrue(jsonObject.containsKey("companyName"), s);
+        assertTrue(jsonObject.containsKey("customerID"), s);
 
+        assertEquals("companyName_1", jsonObject.getString("companyName"));
+        assertEquals("customerID_1", jsonObject.getString("customerID"));
+    }
 }

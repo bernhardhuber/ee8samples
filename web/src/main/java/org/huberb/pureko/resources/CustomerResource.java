@@ -22,7 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import org.huberb.pureko.model.Customer;
-import org.huberb.pureko.model.CustomerModel;
+import org.huberb.pureko.model.CustomerJsonConverter;
 import org.huberb.pureko.model.CustomerRepository.DataFakerFactory;
 
 /**
@@ -35,12 +35,14 @@ public class CustomerResource {
 
     @Inject
     private DataFakerFactory dataFakerFactory;
+    @Inject
+    private CustomerJsonConverter customerJsonConverter;
 
     @GET
     @Produces("application/json")
     public Response customer() {
         final Customer customer = createDefaultCustomer();
-        final String s = new CustomerModel().createJsonObjectFrom(customer);
+        final String s = customerJsonConverter.createJsonObjectFrom(customer);
 
         return Response
                 .ok(s)

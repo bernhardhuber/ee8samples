@@ -48,24 +48,28 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <script type="text/javascript">
             // Here's my data model
             var ClickCounterViewModel = function () {
-                // @data 0
+
+                var self = this;
+                // @data 0,3
+                const data = {initValue: 0, maxValue: 5};
+
                 // @properties
-                this.numberOfClicks = ko.observable(0);
+                self.numberOfClicks = ko.observable(data.initValue);
 
                 // @computed properties
-                this.hasClickedTooManyTimes = ko.pureComputed(function () {
-                    return this.numberOfClicks() >= 3;
-                }, this);
+                self.hasClickedTooManyTimes = ko.pureComputed(function () {
+                    return self.numberOfClicks() >= data.maxValue;
+                }, self);
 
                 // @functions
                 this.registerClick = function () {
-                    var newValue = this.numberOfClicks() + 1;
-                    this.numberOfClicks(newValue);
+                    var newValue = self.numberOfClicks() + 1;
+                    self.numberOfClicks(newValue);
                 };
 
                 // @functions
                 this.resetClicks = function () {
-                    this.numberOfClicks(0);
+                    this.numberOfClicks(data.initValue);
                 };
 
             };
@@ -91,7 +95,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             data-bind='click: registerClick, visible: !hasClickedTooManyTimes()'
                             title="Invisible if not applicable"
                             >
-                        Click me 2
+                        You can click me, too
                     </button>
                 </div>
 

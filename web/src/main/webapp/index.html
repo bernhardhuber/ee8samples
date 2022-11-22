@@ -20,11 +20,22 @@ limitations under the License.
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
               integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
               crossorigin="anonymous"/>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
         <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
+        -->
+        <script type="text/javascript">
+            var context = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
+            var url = window.location.protocol + "//" + window.location.host + context + "/bla/bla";
+            console.log("context " + context + ", " + "url " + url);
+        </script>
+        
+        <link rel="stylesheet" href="webjars/purecss/2.1.0/build/pure-min.css" />
+        <link rel="stylesheet" href="webjars/purecss/2.1.0/build/grids-responsive-min.css" />
+        <script type="text/javascript" src="webjars/knockout/3.5.1/build/output/knockout-latest.js"></script>
 
         <script type="text/javascript">
             // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI

@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.model;
+package org.huberb.pureko.application.customer;
 
+import org.huberb.pureko.application.customer.CustomerJsonConverter;
+import org.huberb.pureko.application.customer.Customer;
 import java.util.Arrays;
 import java.util.List;
 import javax.json.JsonObject;
@@ -70,7 +72,7 @@ public class CustomerJsonConverterTest {
     }
 
     /**
-     * Test of createCustomerFromJson method, of class CustomerJsonConverter.
+     * Test of createInstanceFromJson method, of class CustomerJsonConverter.
      */
     @Test
     public void given_a_json_then_customer_is_created() {

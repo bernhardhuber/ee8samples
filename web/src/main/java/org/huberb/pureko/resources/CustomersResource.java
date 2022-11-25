@@ -22,9 +22,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import org.huberb.pureko.model.Customer;
-import org.huberb.pureko.model.CustomerJsonConverter;
-import org.huberb.pureko.model.CustomerRepository;
+import org.huberb.pureko.application.customer.Customer;
+import org.huberb.pureko.application.customer.CustomerJsonConverter;
+import org.huberb.pureko.application.customer.CustomerRepository;
 
 /**
  *

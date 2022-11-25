@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.model;
+package org.huberb.pureko.application.customer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.Locale;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import net.datafaker.Faker;
-import org.huberb.pureko.model.Customer.FullAddress;
+import org.huberb.pureko.application.customer.Customer.FullAddress;
 
 /**
  *

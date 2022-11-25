@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.model;
+package org.huberb.pureko.application.support;
 
 import java.io.StringReader;
 import java.util.List;
-import javax.enterprise.context.ApplicationScoped;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.bind.JsonbBuilder;
@@ -27,27 +26,26 @@ import javax.json.stream.JsonParser;
  *
  * @author berni3
  */
-@ApplicationScoped
-public class CustomerJsonConverter {
+public abstract class JsonConverter<T> {
 
-    public String createJsonArrayFrom(List<Customer> customerList) {
+    public String createJsonArrayFrom(List<T> customerList) {
         final String s = JsonbBuilder.create().toJson(customerList);
         return s;
     }
 
-    public String createJsonObjectFrom(Customer customer) {
+    public String createJsonObjectFrom(T customer) {
         final String s = JsonbBuilder.create().toJson(customer);
         return s;
     }
 
-    public Customer createCustomerFromJson(String s) {
-        final Customer customer = JsonbBuilder.create().fromJson(s, Customer.class);
-        return customer;
+    public T createInstanceFromJson(String s, Class<T> clazz) {
+        final T t = JsonbBuilder.create().fromJson(s, clazz);
+        return t;
     }
 
     public JsonObject createJsonObjectFromJson(String s) {
-        StringReader sr = new StringReader(s);
-        try ( JsonParser jsonParser = Json.createParser(sr)) {
+
+        try (final StringReader sr = new StringReader(s); final JsonParser jsonParser = Json.createParser(sr)) {
             jsonParser.next();
             JsonObject jsonObject = jsonParser.getObject();
             return jsonObject;

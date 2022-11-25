@@ -1,5 +1,4 @@
 /*
-
  * Copyright 2022 berni3.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.model;
+package org.huberb.pureko.application.customer;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,11 +27,17 @@ import lombok.NoArgsConstructor;
  *
  * @author berni3
  */
+@Entity
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+@Builder
+public class CustomerEntity {
+
+    @Id
+    private long id;
+    @Version
+    private long version;
 
     private String customerID;
     private String companyName;
@@ -37,19 +45,5 @@ public class Customer {
     private String contactTitle;
     private String phone;
     private String fax;
-    private FullAddress fullAddress;
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class FullAddress {
-
-        private String address;
-        private String city;
-        private String region;
-        private String postalcode;
-        private String country;
-
-    }
+    //private FullAddress fullAddress;
 }

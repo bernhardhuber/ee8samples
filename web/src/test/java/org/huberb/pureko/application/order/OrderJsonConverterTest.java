@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.model;
+package org.huberb.pureko.application.order;
 
+import org.huberb.pureko.application.order.OrderJsonConverter;
+import org.huberb.pureko.application.order.Order;
 import java.util.Arrays;
 import java.util.List;
 import javax.json.JsonObject;

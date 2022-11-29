@@ -15,7 +15,13 @@
  */
 package org.huberb.pureko.application.order;
 
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -29,20 +35,43 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class OrderEntity {
+public class OrderEntity implements Serializable {
 
+    private static final long serialVersionUID = 20221127L;
     @Id
-    private long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
     @Version
-    private long version;
+    @Column(name = "version", updatable = false, nullable = false)
+    private int version;
 
     private String customerID;
     private String employeeID;
     private String orderDate;
     private String requiredDate;
-    // TODO private ShipInfo shipInfo;
+    @Embedded
+    private ShipInfoEmbeddable shipInfo;
 
+    @Embeddable
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ShipInfoEmbeddable {
+
+        private String shippedDate;
+        private String shipVia;
+        private String freight;
+        private String shipName;
+        private String shipAddress;
+        private String shipCity;
+        private String shipRegion;
+        private String shipPostalcode;
+        private String shipCountry;
+
+    }
 }

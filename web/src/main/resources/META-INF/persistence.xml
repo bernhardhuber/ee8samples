@@ -1,10 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.2" 
-             xmlns="http://xmlns.jcp.org/xml/ns/persistence" 
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+<persistence  xmlns="http://java.sun.com/xml/ns/persistence"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
+              version="2.2"
+> 
+
     <!-- Define Persistence Unit -->
-    <persistence-unit name="my_persistence_unit">
-        
+    <persistence-unit name="ee8samplesPU" transaction-type="JTA">
+        <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
+        <!--jta-data-source>java:jboss/datasources/Ee8SamplesDS</jta-data-source-->
+        <!-- using java:module/env/.. and mapping via web.xml resource-ref
+          makes problems, as pu is created before the web.xml resource-ref mapping
+          when checking ddl or processing import.sql
+        -->
+        <!--jta-data-source>java:/datasources/Ee8SamplesDS</jta-data-source-->
+        <class>org.huberb.pureko.application.order.OrderEntity</class>
+        <class>org.huberb.pureko.application.customer.CustomerEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="javax.persistence.schema-generation.database.action" value="create"/>
+            <!--
+            create
+            create-drop
+            update
+            validate
+            none
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+            -->
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.transaction.flush_before_completion" value="true"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <!--property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/-->
+        </properties>
+      
     </persistence-unit>
 </persistence>

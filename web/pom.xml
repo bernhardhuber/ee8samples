@@ -14,7 +14,7 @@
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <jakartaee>8.0</jakartaee>
         <mockito.version>3.12.4</mockito.version>
-        
+
     </properties>
 
     <dependencies>
@@ -36,6 +36,33 @@
             <version>5.6.0</version>
             <scope>test</scope>
         </dependency>
+        <!--        
+                <dependency>
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-commons</artifactId>
+                    <version>1.9.1</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    < ! - - contains the runner that adapts Jupiter-tests for a v4-run - - >
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-runner</artifactId>
+                    <version>1.9.1</version>
+                    <scope>test</scope>
+                </dependency>
+        -->        
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.3.23.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <!--dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpa-2.2</artifactId>
+            <version>5.6.14.Final</version>
+            <scope>test</scope>
+        </dependency-->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -48,7 +75,7 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>yasson</artifactId>
@@ -62,6 +89,33 @@
             <version>1.1.4</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.1.214</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>9.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.database-rider</groupId>
+            <artifactId>rider-core</artifactId>
+            <version>1.35.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.database-rider</groupId>
+            <artifactId>rider-junit5</artifactId>
+            <version>1.35.0</version>
+            <scope>test</scope>
+        </dependency>
+
+
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
@@ -104,6 +158,7 @@
             <artifactId>jquery</artifactId>
             <version>3.6.1</version>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -192,7 +247,7 @@
         </plugins>
     </build>
 
-    <profiles>
+    <!-- remove me moved to wildfly module profiles>
         <profile>
             <id>wildfly</id>
             <activation>
@@ -223,7 +278,7 @@
                                             <version>${wildflyVersion}</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
-                                            <!--outputDirectory>${project.build.directory}/wildfly</outputDirectory-->
+                                            < ! - -outputDirectory>${project.build.directory}/wildfly</outputDirectory- - >
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${wildflyOutputDirectory}</outputDirectory>
@@ -236,6 +291,5 @@
                 </plugins>
             </build>
         </profile>
-
-    </profiles>
+    </profiles-->
 </project>

@@ -15,10 +15,13 @@
  */
 package org.huberb.pureko.application.customer;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.huberb.pureko.application.customer.Customer.FullAddress;
+import org.huberb.pureko.application.customer.CustomerEntity.FullAddressEmbeddable;
 
 /**
  *
@@ -37,6 +40,13 @@ public class CustomerTransforming {
             to.setCustomerID(from.getCustomerID());
             to.setFax(from.getFax());
             to.setPhone(from.getPhone());
+            FullAddress fromFullAddress = Optional.ofNullable(from.getFullAddress()).orElse(new FullAddress());
+            FullAddressEmbeddable toFullAddressEmbeddable = Optional.ofNullable(to.getFullAddress()).orElse(new FullAddressEmbeddable());
+            toFullAddressEmbeddable.setAddress(fromFullAddress.getAddress());
+            toFullAddressEmbeddable.setPostalcode(fromFullAddress.getPostalcode());
+            toFullAddressEmbeddable.setCity(fromFullAddress.getCity());
+            toFullAddressEmbeddable.setRegion(fromFullAddress.getRegion());
+            toFullAddressEmbeddable.setCountry(fromFullAddress.getCountry());
             return to;
         }
     }
@@ -46,6 +56,8 @@ public class CustomerTransforming {
 
         @Override
         public CustomerEntity apply(Customer from) {
+            final FullAddress fullAddress = Optional.ofNullable(from.getFullAddress())
+                    .orElse(new FullAddress());
             final CustomerEntity to = CustomerEntity.builder()
                     .companyName(from.getCompanyName())
                     .contactName(from.getContactName())
@@ -53,6 +65,13 @@ public class CustomerTransforming {
                     .customerID(from.getContactTitle())
                     .fax(from.getFax())
                     .phone(from.getPhone())
+                    .fullAddress(FullAddressEmbeddable.builder()
+                            .address(fullAddress.getAddress())
+                            .postalcode(fullAddress.getPostalcode())
+                            .city(fullAddress.getCity())
+                            .region(fullAddress.getRegion())
+                            .country(fullAddress.getCountry())
+                            .build())
                     .build();
             return to;
         }
@@ -63,6 +82,10 @@ public class CustomerTransforming {
 
         @Override
         public Customer apply(CustomerEntity from) {
+
+            final FullAddressEmbeddable fullAddress = Optional.ofNullable(from.getFullAddress())
+                    .orElse(new FullAddressEmbeddable());
+
             final Customer to = Customer.builder()
                     .companyName(from.getCompanyName())
                     .contactName(from.getContactName())
@@ -70,6 +93,13 @@ public class CustomerTransforming {
                     .customerID(from.getCustomerID())
                     .fax(from.getFax())
                     .phone(from.getPhone())
+                    .fullAddress(FullAddress.builder()
+                            .address(fullAddress.getAddress())
+                            .postalcode(fullAddress.getPostalcode())
+                            .city(fullAddress.getCity())
+                            .region(fullAddress.getRegion())
+                            .country(fullAddress.getCountry())
+                            .build())
                     .build();
             return to;
         }

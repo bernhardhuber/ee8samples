@@ -53,13 +53,15 @@ public class PageOffsetLengthCalculator {
 
     int calcNextPage() {
         assertMinMaxValues();
-        int newPage_1 = page + 1;
-        int offsetOfPage = (newPage_1 - 1) * elementsPerPage;
-        if (offsetOfPage + elementsPerPage <= totalLength) {
-            return newPage_1;
+        final int nextOffset = page * elementsPerPage;
+        final int nextPage;
+        if (nextOffset < totalLength) {
+            nextPage = page + 1;
         } else {
-            return page;
+            nextPage = page;
         }
+        return nextPage;
+
     }
 
     int calcPrevPage() {
@@ -117,13 +119,17 @@ public class PageOffsetLengthCalculator {
     }
 
     void assertMinMaxValues() {
-        elementsPerPage = Math.min(1, elementsPerPage);
+        elementsPerPage = Math.max(1, elementsPerPage);
         if (page < 1) {
             page = 1;
         }
-        int offsetOf = (page - 1) * elementsPerPage;
-        if (offsetOf > totalLength) {
-            page = (totalLength / elementsPerPage) + 1;
+        int maxPageValue = (totalLength / elementsPerPage);
+        if (totalLength % elementsPerPage != 0) {
+            maxPageValue += 1;
+        }
+
+        if (page > maxPageValue) {
+            page = maxPageValue;
         }
     }
 }

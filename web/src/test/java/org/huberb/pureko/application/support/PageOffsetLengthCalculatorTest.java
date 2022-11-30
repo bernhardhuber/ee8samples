@@ -15,11 +15,11 @@
  */
 package org.huberb.pureko.application.support;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  *
@@ -27,43 +27,106 @@ import org.junit.jupiter.api.Test;
  */
 public class PageOffsetLengthCalculatorTest {
 
-    public PageOffsetLengthCalculatorTest() {
-    }
-
     /**
      * Test of calcNextPage method, of class PageOffsetLengthCalculator.
+     *
+     * @param totalLength
+     * @param page
+     * @param elementsPerPage
+     * @param expectedPage
      */
-    @Test
-    public void testCalcNextPage() {
-        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(10, 1, 5);
-        assertEquals(2, instance.calcNextPage());
+    @ParameterizedTest()
+    @CsvSource({
+        "10,1,5, 2",
+        "10,2,5, 2",
+        "11,1,5, 2",
+        "11,2,5, 3",
+        "11,3,5, 3",})
+    public void testCalcNextPage(int totalLength, int page, int elementsPerPage,
+            int expectedPage) {
+        final PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(totalLength, page, elementsPerPage);
+        assertEquals(expectedPage, instance.calcNextPage());
+        assertAll(
+                () -> assertEquals(elementsPerPage, instance.getElementsPerPage()),
+                () -> assertEquals(page, instance.getPage()),
+                () -> assertEquals(totalLength, instance.getTotalLength())
+        );
     }
 
     /**
      * Test of calcPrevPage method, of class PageOffsetLengthCalculator.
+     *
+     * @param expectedPage
      */
-    @Test
-    public void testCalcPrevPage() {
-        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(10, 1, 5);
-        assertEquals(1, instance.calcPrevPage());
+    @ParameterizedTest()
+    @CsvSource({
+        "10,2,5, 1",
+        "10,1,5, 1",
+        "11,3,5, 2",
+        "11,2,5, 1",
+        "11,1,5, 1",})
+    public void testCalcPrevPage(int totalLength, int page, int elementsPerPage,
+            int expectedPage) {
+        final PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(totalLength, page, elementsPerPage);
+        assertEquals(expectedPage, instance.calcPrevPage());
+        assertAll(
+                () -> assertEquals(elementsPerPage, instance.getElementsPerPage()),
+                () -> assertEquals(page, instance.getPage()),
+                () -> assertEquals(totalLength, instance.getTotalLength())
+        );
+
     }
 
     /**
      * Test of nextPageExists method, of class PageOffsetLengthCalculator.
+     *
+     * @param totalLength
+     * @param page
+     * @param elementsPerPage
+     * @param expectedNextPageExists
      */
-    @Test
-    public void testNextPageExists() {
-        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(10, 1, 5);
-        assertTrue(instance.nextPageExists());
+    @ParameterizedTest()
+    @CsvSource({
+        "10,1,5, true",
+        "10,2,5, false",
+        "11,1,5, true",
+        "11,2,5, true",
+        "11,3,5, false",})
+    public void testNextPageExists(int totalLength, int page, int elementsPerPage,
+            boolean expectedNextPageExists) {
+        final PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(totalLength, page, elementsPerPage);
+        assertEquals(expectedNextPageExists, instance.nextPageExists());
+        assertAll(
+                () -> assertEquals(elementsPerPage, instance.getElementsPerPage()),
+                () -> assertEquals(page, instance.getPage()),
+                () -> assertEquals(totalLength, instance.getTotalLength())
+        );
     }
 
     /**
      * Test of prevPageExists method, of class PageOffsetLengthCalculator.
+     *
+     * @param totalLength
+     * @param page
+     * @param elementsPerPage
+     * @param expectedPrevPageExists
      */
-    @Test
-    public void testPrevPageExists() {
-        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(10, 1, 5);
-        assertFalse(instance.prevPageExists());
+    @ParameterizedTest()
+    @CsvSource({
+        "10,2,5, true",
+        "10,1,5, false",
+        "11,3,5, true",
+        "11,2,5, true",
+        "11,1,5, false",})
+    public void testPrevPageExists(int totalLength, int page, int elementsPerPage,
+            boolean expectedPrevPageExists) {
+        final PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(totalLength, page, elementsPerPage);
+        assertEquals(expectedPrevPageExists, instance.prevPageExists());
+        assertAll(
+                () -> assertEquals(elementsPerPage, instance.getElementsPerPage()),
+                () -> assertEquals(page, instance.getPage()),
+                () -> assertEquals(totalLength, instance.getTotalLength())
+        );
     }
 
     /**
@@ -116,22 +179,45 @@ public class PageOffsetLengthCalculatorTest {
     }
 
     /**
-     * Test of calcOffetLength method, of class PageOffsetLengthCalculator.
-     */
-    @Test
-    public void testCalcOffetLength() {
-        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(10, 1, 5);
-        int[] result = instance.calcOffetLength();
-        assertEquals(0, result[0]);
-        assertEquals(5, result[1]);
-    }
-
-    /**
      * Test of assertMinMaxValues method, of class PageOffsetLengthCalculator.
      */
     @Test
-    @Disabled
-    public void testAssertMinMaxValues() {
+    public void testAssertMinMaxValues_singleSample() {
+        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(10, 1, 5);
+        instance.assertMinMaxValues();
+        assertAll(
+                () -> assertEquals(5, instance.getElementsPerPage()),
+                () -> assertEquals(1, instance.getPage()),
+                () -> assertEquals(10, instance.getTotalLength())
+        );
     }
 
+    @ParameterizedTest()
+    @CsvSource({
+        "10,1,5, 10,1,5",
+        // lower bound value 1
+        "10,0,5, 10,1,5",
+        "10,-1,5, 10,1,5",
+        // upper bound page value 2
+        "10,3,5, 10,2,5",
+        "10,4,5, 10,2,5",
+        // lower bound value 1
+        "11,1,5, 11,1,5",
+        "11,0,5, 11,1,5",
+        "11,-1,5, 11,1,5",
+        // upper bound page value 3
+        "11,4,5, 11,3,5",
+        "11,5,5, 11,3,5",})
+    public void testAssertMinMaxValues(
+            int totalLength, int page, int elementsPerPage,
+            int expectedTotalLength, int expectedPage, int expectedElementsPerPage) {
+
+        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(totalLength, page, elementsPerPage);
+        instance.assertMinMaxValues();
+        assertAll(
+                () -> assertEquals(expectedElementsPerPage, instance.getElementsPerPage()),
+                () -> assertEquals(expectedPage, instance.getPage()),
+                () -> assertEquals(expectedTotalLength, instance.getTotalLength())
+        );
+    }
 }

@@ -76,7 +76,6 @@ public class PersistenceModel {
                     tq.setParameter(k, v);
                 }
             };
-
         }
 
         public static <T> Consumer<TypedQuery<T>> parametersByName(Map<String, Object> kvMap) {
@@ -93,9 +92,21 @@ public class PersistenceModel {
             };
         }
 
-        public static <T> Consumer<TypedQuery<T>> defineStartPositionMaxResult(int startPosition, int maxResult) {
+        public static <T> Consumer<TypedQuery<T>> startPositionMaxResult(int startPosition, int maxResult) {
             return (TypedQuery<T> tq) -> {
                 tq.setFirstResult(startPosition);
+                tq.setMaxResults(maxResult);
+            };
+        }
+
+        public static <T> Consumer<TypedQuery<T>> startPosition(int startPosition) {
+            return (TypedQuery<T> tq) -> {
+                tq.setFirstResult(startPosition);
+            };
+        }
+
+        public static <T> Consumer<TypedQuery<T>> maxResult(int maxResult) {
+            return (TypedQuery<T> tq) -> {
                 tq.setMaxResults(maxResult);
             };
         }
@@ -117,19 +128,46 @@ public class PersistenceModel {
                 tq.setHint(hintName, value);
             };
         }
+
+        public static <T> Consumer<TypedQuery<T>> consumers(Consumer<TypedQuery<T>>[] consumers) {
+            Consumer<TypedQuery<T>> c;
+
+            if (consumers != null && consumers.length >= 0) {
+                c = consumers[0];
+                for (int i = 1; i < consumers.length; i += 1) {
+                    c = c.andThen(consumers[i]);
+                }
+            } else {
+                c = noop();
+            }
+            return c;
+        }
+
+        public static <T> Consumer<TypedQuery<T>> consumers(List<Consumer<TypedQuery<T>>> consumers) {
+            Consumer<TypedQuery<T>> c;
+            if (consumers != null && consumers.size() >= 0) {
+                c = consumers.get(0);
+                for (int i = 1; i < consumers.size(); i += 1) {
+                    c = c.andThen(consumers.get(i));
+                }
+            } else {
+                c = noop();
+            }
+            return c;
+        }
     }
 
-    static class TypedQueryResultFunctions {
+    public static class TypedQueryResultFunctions {
 
-        static <T> Function<TypedQuery<T>, T> singleResult() {
+        public static <T> Function<TypedQuery<T>, T> singleResult() {
             return (tq) -> tq.getSingleResult();
         }
 
-        static <T> Function<TypedQuery<T>, List<T>> resultList() {
+        public static <T> Function<TypedQuery<T>, List<T>> resultList() {
             return (tq) -> tq.getResultList();
         }
 
-        static <T> Function<TypedQuery<T>, Stream<T>> resultStream() {
+        public static <T> Function<TypedQuery<T>, Stream<T>> resultStream() {
             return (tq) -> tq.getResultStream();
         }
     }
@@ -139,8 +177,7 @@ public class PersistenceModel {
     @Transactional(TxType.MANDATORY)
     public <T, V> V findResult(Function<EntityManager, TypedQuery<T>> f,
             Consumer<TypedQuery<T>> c,
-            Function<TypedQuery<T>, V> f2
-    ) {
+            Function<TypedQuery<T>, V> f2) {
         final TypedQuery<T> tq = f.apply(em);
         final V v = f2.apply(tq);
         return v;

@@ -25,9 +25,10 @@
 --    Tables, sequences, constraints and indexes are created
 */
 
+create sequence hibernate_sequence start with 1 increment by 1;
+    
 create table CustomerEntity (
-    id bigint not null,
-    version integer not null,
+   id bigint not null,
     companyName varchar(255),
     contactName varchar(255),
     contactTitle varchar(255),
@@ -39,12 +40,12 @@ create table CustomerEntity (
     postalcode varchar(255),
     region varchar(255),
     phone varchar(255),
+    version integer not null,
     primary key (id)
 );
-
+    
 create table OrderEntity (
-    id bigint not null,
-    version integer not null,
+   id bigint not null,
     customerID varchar(255),
     employeeID varchar(255),
     orderDate varchar(255),
@@ -58,5 +59,6 @@ create table OrderEntity (
     shipRegion varchar(255),
     shipVia varchar(255),
     shippedDate varchar(255),
+    version integer not null,
     primary key (id)
 );

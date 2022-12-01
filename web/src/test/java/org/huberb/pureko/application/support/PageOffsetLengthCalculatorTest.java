@@ -56,6 +56,9 @@ public class PageOffsetLengthCalculatorTest {
     /**
      * Test of calcPrevPage method, of class PageOffsetLengthCalculator.
      *
+     * @param totalLength
+     * @param page
+     * @param elementsPerPage
      * @param expectedPage
      */
     @ParameterizedTest()
@@ -131,51 +134,114 @@ public class PageOffsetLengthCalculatorTest {
 
     /**
      * Test of moveToNextPage method, of class PageOffsetLengthCalculator.
+     *
+     * @param totalLength
+     * @param page
+     * @param elementsPerPage
+     * @param expectedPage
      */
-    @Test
-    public void testMoveToNextPage() {
-        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(10, 1, 5);
+    @ParameterizedTest()
+    @CsvSource({
+        "10,1,5, 2",
+        "10,2,5, 2",
+        "11,1,5, 2",
+        "11,2,5, 3",
+        "11,3,5, 3",})
+    public void testMoveToNextPageCalcNextPage(int totalLength, int page, int elementsPerPage,
+            int expectedPage) {
+        final PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(totalLength, page, elementsPerPage);
         instance.moveToNextPage();
-        assertEquals(2, instance.getPage());
+        assertAll(
+                () -> assertEquals(elementsPerPage, instance.getElementsPerPage()),
+                () -> assertEquals(expectedPage, instance.getPage()),
+                () -> assertEquals(totalLength, instance.getTotalLength())
+        );
     }
 
     /**
      * Test of moveToPrevPage method, of class PageOffsetLengthCalculator.
+     *
+     * @param totalLength
+     * @param page
+     * @param elementsPerPage
+     * @param expectedPage
      */
-    @Test
-    public void testMoveToPrevPage() {
-        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(10, 1, 5);
+    @ParameterizedTest()
+    @CsvSource({
+        "10,2,5, 1",
+        "10,1,5, 1",
+        "11,3,5, 2",
+        "11,2,5, 1",
+        "11,1,5, 1",})
+    public void testMoveToPrevPage(int totalLength, int page, int elementsPerPage,
+            int expectedPage) {
+        final PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(totalLength, page, elementsPerPage);
         instance.moveToPrevPage();
-        assertEquals(1, instance.getPage());
+        assertAll(
+                () -> assertEquals(elementsPerPage, instance.getElementsPerPage()),
+                () -> assertEquals(expectedPage, instance.getPage()),
+                () -> assertEquals(totalLength, instance.getTotalLength())
+        );
     }
 
     /**
      * Test of moveToFirstPage method, of class PageOffsetLengthCalculator.
      */
-    @Test
-    public void testMoveToFirstPage() {
-        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(10, 1, 5);
+    @ParameterizedTest()
+    @CsvSource({
+        "10,2,5, 1",
+        "10,1,5, 1",
+        "11,3,5, 1",
+        "11,2,5, 1",
+        "11,1,5, 1",})
+    public void testMoveToFirstPage(int totalLength, int page, int elementsPerPage,
+            int expectedPage) {
+        final PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(totalLength, page, elementsPerPage);
         instance.moveToFirstPage();
-        assertEquals(1, instance.getPage());
+        assertAll(
+                () -> assertEquals(elementsPerPage, instance.getElementsPerPage()),
+                () -> assertEquals(expectedPage, instance.getPage()),
+                () -> assertEquals(totalLength, instance.getTotalLength())
+        );
     }
 
     /**
      * Test of moveToLastPage method, of class PageOffsetLengthCalculator.
      */
-    @Test
-    public void testMoveToLastPage() {
-        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(10, 1, 5);
+    @ParameterizedTest()
+    @CsvSource({
+        "10,2,5, 2",
+        "10,1,5, 2",
+        "11,3,5, 3",
+        "11,2,5, 3",
+        "11,1,5, 3",})
+    public void testMoveToLastPage(int totalLength, int page, int elementsPerPage,
+            int expectedPage) {
+        final PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(totalLength, page, elementsPerPage);
+
         instance.moveToLastPage();
-        assertEquals(2, instance.getPage());
+        assertAll(
+                () -> assertEquals(elementsPerPage, instance.getElementsPerPage()),
+                () -> assertEquals(expectedPage, instance.getPage()),
+                () -> assertEquals(totalLength, instance.getTotalLength())
+        );
     }
 
     /**
      * Test of numberOfPages method, of class PageOffsetLengthCalculator.
      */
-    @Test
-    public void testNumberOfPages() {
-        PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(10, 1, 5);
-        assertEquals(2, instance.numberOfPages());
+    @ParameterizedTest()
+    @CsvSource({
+        "10,2,5, 2",
+        "10,1,5, 2",
+        "11,3,5, 3",
+        "11,2,5, 3",
+        "11,1,5, 3",})
+    public void testNumberOfPages(int totalLength, int page, int elementsPerPage,
+            int expectedPage) {
+        final PageOffsetLengthCalculator instance = new PageOffsetLengthCalculator(totalLength, page, elementsPerPage);
+
+        assertEquals(expectedPage, instance.numberOfPages());
     }
 
     /**

@@ -186,6 +186,11 @@ public class PageOffsetLengthCalculatorTest {
 
     /**
      * Test of moveToFirstPage method, of class PageOffsetLengthCalculator.
+     *
+     * @param totalLength
+     * @param page
+     * @param elementsPerPage
+     * @param expectedPage
      */
     @ParameterizedTest()
     @CsvSource({
@@ -207,6 +212,11 @@ public class PageOffsetLengthCalculatorTest {
 
     /**
      * Test of moveToLastPage method, of class PageOffsetLengthCalculator.
+     *
+     * @param totalLength
+     * @param page
+     * @param elementsPerPage
+     * @param expectedPage
      */
     @ParameterizedTest()
     @CsvSource({
@@ -229,6 +239,11 @@ public class PageOffsetLengthCalculatorTest {
 
     /**
      * Test of numberOfPages method, of class PageOffsetLengthCalculator.
+     *
+     * @param totalLength
+     * @param page
+     * @param elementsPerPage
+     * @param expectedPage
      */
     @ParameterizedTest()
     @CsvSource({
@@ -258,6 +273,16 @@ public class PageOffsetLengthCalculatorTest {
         );
     }
 
+    /**
+     * Test of assertMinMaxValues method, of class PageOffsetLengthCalculator.
+     *
+     * @param totalLength
+     * @param page
+     * @param elementsPerPage
+     * @param expectedTotalLength
+     * @param expectedPage
+     * @param expectedElementsPerPage
+     */
     @ParameterizedTest()
     @CsvSource({
         "10,1,5, 10,1,5",

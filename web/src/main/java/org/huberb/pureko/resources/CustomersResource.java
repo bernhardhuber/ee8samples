@@ -22,9 +22,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import org.huberb.pureko.application.customer.Customer;
+import org.huberb.pureko.application.customer.CustomerData;
+import org.huberb.pureko.application.customer.CustomerDataFactory;
 import org.huberb.pureko.application.customer.CustomerJsonConverter;
-import org.huberb.pureko.application.customer.CustomerRepository;
 
 /**
  *
@@ -50,14 +50,14 @@ For JSONP (runnable JavaScript) with callback:
 application/javascript
      */
     @Inject
-    private CustomerRepository customerRepository;
+    private CustomerDataFactory customerDataFactory;
     @Inject
     private CustomerJsonConverter customerJsonConverter;
 
     @GET
     @Produces("application/json")
     public Response customers() {
-        final List<Customer> customerList = customerRepository.loadCustomers(10);
+        final List<CustomerData> customerList = customerDataFactory.createDataFakerCustomerList(10);
         final String s = customerJsonConverter.createJsonArrayFrom(customerList);
 
         return Response

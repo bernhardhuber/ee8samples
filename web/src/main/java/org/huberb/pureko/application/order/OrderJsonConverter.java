@@ -21,10 +21,10 @@ import org.huberb.pureko.application.support.JsonConverter;
  *
  * @author berni3
  */
-public class OrderJsonConverter extends JsonConverter<Order> {
+public class OrderJsonConverter extends JsonConverter<OrderData> {
 
-    public Order createOrderFromJson(String s) {
-        final Order order = createInstanceFromJson(s, Order.class);
+    public OrderData createOrderFromJson(String s) {
+        final OrderData order = createInstanceFromJson(s, OrderData.class);
         return order;
     }
 

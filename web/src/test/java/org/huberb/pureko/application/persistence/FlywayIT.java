@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author berni3
  */
-public class FlywayTest {
+public class FlywayIT {
 
     private JdbcConnectionPool h2JdbcConnectionPool;
     Flyway flyway;

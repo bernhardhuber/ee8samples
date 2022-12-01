@@ -23,10 +23,10 @@ import org.huberb.pureko.application.support.JsonConverter;
  * @author berni3
  */
 @ApplicationScoped
-public class CustomerJsonConverter extends JsonConverter<Customer> {
+public class CustomerJsonConverter extends JsonConverter<CustomerData> {
 
-    public Customer createCustomerFromJson(String s) {
-        Customer customer = createInstanceFromJson(s, Customer.class);
+    public CustomerData createCustomerFromJson(String s) {
+        CustomerData customer = createInstanceFromJson(s, CustomerData.class);
         return customer;
     }
 

@@ -18,9 +18,8 @@ package org.huberb.pureko.application.customer;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.huberb.pureko.application.customer.Customer.FullAddress;
+import org.huberb.pureko.application.customer.CustomerData.FullAddress;
 import org.huberb.pureko.application.customer.CustomerEntity.FullAddressEmbeddable;
 
 /**
@@ -29,11 +28,11 @@ import org.huberb.pureko.application.customer.CustomerEntity.FullAddressEmbeddab
  */
 public class CustomerTransforming {
 
-    @ApplicationScoped
-    public static class TransformCustomerToExistingCustomerEntity implements BiFunction<Customer, CustomerEntity, CustomerEntity> {
+  
+    public static class TransformCustomerToExistingCustomerEntity implements BiFunction<CustomerData, CustomerEntity, CustomerEntity> {
 
         @Override
-        public CustomerEntity apply(Customer from, CustomerEntity to) {
+        public CustomerEntity apply(CustomerData from, CustomerEntity to) {
             to.setCompanyName(from.getCompanyName());
             to.setContactName(from.getCompanyName());
             to.setContactTitle(from.getContactTitle());
@@ -51,11 +50,11 @@ public class CustomerTransforming {
         }
     }
 
-    @ApplicationScoped
-    public static class TransformCustomerToNewCustomerEntity implements Function<Customer, CustomerEntity> {
+  
+    public static class TransformCustomerToNewCustomerEntity implements Function<CustomerData, CustomerEntity> {
 
         @Override
-        public CustomerEntity apply(Customer from) {
+        public CustomerEntity apply(CustomerData from) {
             final FullAddress fullAddress = Optional.ofNullable(from.getFullAddress())
                     .orElse(new FullAddress());
             final CustomerEntity to = CustomerEntity.builder()
@@ -77,16 +76,16 @@ public class CustomerTransforming {
         }
     }
 
-    @ApplicationScoped
-    public static class TransformCustomerEntityToNewCustomer implements Function<CustomerEntity, Customer> {
+  
+    public static class TransformCustomerEntityToNewCustomer implements Function<CustomerEntity, CustomerData> {
 
         @Override
-        public Customer apply(CustomerEntity from) {
+        public CustomerData apply(CustomerEntity from) {
 
             final FullAddressEmbeddable fullAddress = Optional.ofNullable(from.getFullAddress())
                     .orElse(new FullAddressEmbeddable());
 
-            final Customer to = Customer.builder()
+            final CustomerData to = CustomerData.builder()
                     .companyName(from.getCompanyName())
                     .contactName(from.getContactName())
                     .contactTitle(from.getContactTitle())
@@ -105,14 +104,14 @@ public class CustomerTransforming {
         }
     }
 
-    @ApplicationScoped
-    public static class TransformCustomerToJson implements Function<Customer, String> {
+  
+    public static class TransformCustomerToJson implements Function<CustomerData, String> {
 
         @Inject
         CustomerJsonConverter cjc;
 
         @Override
-        public String apply(Customer from) {
+        public String apply(CustomerData from) {
             final String s = cjc.createJsonObjectFrom(from);
             return s;
         }

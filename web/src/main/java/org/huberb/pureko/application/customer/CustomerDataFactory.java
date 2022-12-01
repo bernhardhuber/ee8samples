@@ -18,45 +18,50 @@ package org.huberb.pureko.application.customer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import net.datafaker.Faker;
-import org.huberb.pureko.application.customer.Customer.FullAddress;
+import org.huberb.pureko.application.customer.CustomerData.FullAddress;
 
 /**
  *
  * @author berni3
  */
 @ApplicationScoped
-public class CustomerRepository {
+public class CustomerDataFactory {
 
-    @Inject
-    private DataFakerFactory dataFakerFactory;
+    /**
+     * Create list of customer using {link Faker} data values.
+     *
+     * @param nMax
+     * @return
+     */
+    public List<CustomerData> createDataFakerCustomerList(int nMax) {
+        return createDataFakerCustomerList(nMax, createNthDataFakerCustomerData());
+    }
 
-    public List<Customer> loadCustomers(int n) {
-        final List<Customer> customerList = dataFakerFactory.createDataFakerCustomerList(n);
+    public List<CustomerData> createNaiveFakeCustomerList(int nMax) {
+        return createDataFakerCustomerList(nMax, createNthNaiveCustomerData());
+    }
+
+    /**
+     * Create list of customer using {link Faker} data values.
+     *
+     * @param nMax
+     * @param f
+     * @return
+     */
+    public List<CustomerData> createDataFakerCustomerList(int nMax, Function<Integer, CustomerData> f) {
+        final List<CustomerData> customerList = new ArrayList<>();
+        for (int i = 0; i < nMax; i += 1) {
+            final CustomerData customer = createNthDataFakerCustomerData().apply(i);
+            customerList.add(customer);
+        }
         return customerList;
     }
 
-    @ApplicationScoped
-    public static class DataFakerFactory {
-
-        /**
-         * Create list of customer using {link Faker} data values.
-         *
-         * @param n
-         * @return
-         */
-        public List<Customer> createDataFakerCustomerList(int n) {
-            final List<Customer> customerList = new ArrayList<>();
-            for (int i = 0; i < n; i += 1) {
-                final Customer customer = createCustomerUsingFaker(i);
-                customerList.add(customer);
-            }
-            return customerList;
-        }
-
-        public Customer createCustomerUsingFaker(int i) {
+    public static Function<Integer, CustomerData> createNthDataFakerCustomerData() {
+        return (Integer i) -> {
             Faker faker = Faker.instance(Locale.forLanguageTag("de-AT"));
             final FullAddress fullAddress = FullAddress.builder()
                     .address(faker.address().streetAddress())
@@ -65,7 +70,7 @@ public class CustomerRepository {
                     .postalcode(faker.address().postcode())
                     .region(faker.address().state())
                     .build();
-            final Customer customer = Customer.builder()
+            final CustomerData customer = CustomerData.builder()
                     .customerID("customerID-" + i)
                     .companyName(faker.company().name())
                     .contactName(faker.name().fullName())
@@ -75,22 +80,11 @@ public class CustomerRepository {
                     .fullAddress(fullAddress)
                     .build();
             return customer;
-        }
+        };
     }
 
-    @ApplicationScoped
-    public static class NaiveFakerFactory {
-
-        public List<Customer> createNaiveFakeCustomerList(int n) {
-            final List<Customer> customerList = new ArrayList<>();
-            for (int i = 0; i < n; i += 1) {
-                final Customer customer = createCustomerNaive(i);
-                customerList.add(customer);
-            }
-            return customerList;
-        }
-
-        public Customer createCustomerNaive(int i) {
+    public static Function<Integer, CustomerData> createNthNaiveCustomerData() {
+        return (Integer i) -> {
             final FullAddress fullAddress = FullAddress.builder()
                     .address("address-" + i)
                     .city("city-" + i)
@@ -98,7 +92,7 @@ public class CustomerRepository {
                     .postalcode("postalcode-")
                     .region("region-" + i)
                     .build();
-            final Customer customer = Customer.builder()
+            final CustomerData customer = CustomerData.builder()
                     .customerID("customerID-" + i)
                     .companyName("companyName-" + i)
                     .contactName("contactName-" + i)
@@ -108,6 +102,6 @@ public class CustomerRepository {
                     .fullAddress(fullAddress)
                     .build();
             return customer;
-        }
+        };
     }
 }

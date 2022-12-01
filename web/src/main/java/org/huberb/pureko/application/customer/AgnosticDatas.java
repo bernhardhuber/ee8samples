@@ -1,5 +1,4 @@
 /*
-
  * Copyright 2022 berni3.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,8 @@
  */
 package org.huberb.pureko.application.customer;
 
+import java.io.Serializable;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,31 +26,34 @@ import lombok.NoArgsConstructor;
  *
  * @author berni3
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Customer {
-
-    private String customerID;
-    private String companyName;
-    private String contactName;
-    private String contactTitle;
-    private String phone;
-    private String fax;
-    private FullAddress fullAddress;
+public class AgnosticDatas {
 
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FullAddress {
+    public static class ListData<T> implements Serializable {
 
-        private String address;
-        private String city;
-        private String region;
-        private String postalcode;
-        private String country;
+        public static final long serialVersionUID = 20221201L;
+
+        private List<T> l;
+        private int totalLength;
+        private int page;
+        private int elementsPerPage;
+
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MetaData implements Serializable {
+
+        public static final long serialVersionUID = 20221201L;
+
+        private String validationMessage;
+        private String systemMessage;
+        private boolean valid;
 
     }
 }

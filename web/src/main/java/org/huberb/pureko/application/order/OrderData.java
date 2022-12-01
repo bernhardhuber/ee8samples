@@ -15,10 +15,12 @@
  */
 package org.huberb.pureko.application.order;
 
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.huberb.pureko.application.customer.AgnosticDatas.MetaData;
 
 /**
  *
@@ -28,19 +30,26 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order {
+public class OrderData implements Serializable {
+
+    public static final long serialVersionUID = 20221201L;
+
+    private MetaData metaData;
 
     private String customerID;
     private String employeeID;
     private String orderDate;
     private String requiredDate;
+
     private ShipInfo shipInfo;
 
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ShipInfo {
+    public static class ShipInfo implements Serializable {
+
+        public static final long serialVersionUID = 20221201L;
 
         private String shippedDate;
         private String shipVia;

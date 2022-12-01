@@ -47,7 +47,7 @@ import org.hibernate.dialect.H2Dialect;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.huberb.pureko.application.customer.CustomerEntity;
 import org.huberb.pureko.application.order.OrderEntity;
-import org.huberb.pureko.application.persistence.EntityManagerTest.CustomizableEntityManagerFactory.DefaultPersistenceUnitInfo;
+import org.huberb.pureko.application.persistence.EntityManagerIT.CustomizableEntityManagerFactory.DefaultPersistenceUnitInfo;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,17 +61,17 @@ import org.junit.jupiter.api.Test;
  *
  * @author berni3
  */
-//@RunWith(JUnitPlatform.class)
-public class EntityManagerTest {
+public class EntityManagerIT {
 
     private static EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
 
     @BeforeAll
     public static void setUpAll() {
+        String h2JdbcUrl = "jdbc:h2:mem:testCreateEntityManagerUsingCustomizableEntityManagerFactory";
         final Map<String, Object> props = ImmutableMap.<String, Object>builder()
                 //.put(JPA_JDBC_DRIVER, JDBC_DRIVER)
-                .put(JPA_JDBC_URL, "jdbc:h2:mem:testCreateEntityManagerUsingCustomizableEntityManagerFactory")
+                .put(JPA_JDBC_URL, h2JdbcUrl)
                 .put(DIALECT, H2Dialect.class)
                 .put(HBM2DDL_AUTO, org.hibernate.tool.schema.Action.CREATE_ONLY)
                 .put(SHOW_SQL, true)
@@ -86,7 +86,7 @@ public class EntityManagerTest {
                 .build();
         final DefaultPersistenceUnitInfo pui = new DefaultPersistenceUnitInfo();
         entityManagerFactory = CustomizableEntityManagerFactory.builder()
-                .putProps(JPA_JDBC_URL, "jdbc:h2:mem:testCreateEntityManagerUsingCustomizableEntityManagerFactory")
+                .putProps(JPA_JDBC_URL, h2JdbcUrl)
                 .putProps(DIALECT, H2Dialect.class)
                 .putProps(HBM2DDL_AUTO, org.hibernate.tool.schema.Action.CREATE_ONLY)
                 .putAllProps(props)
@@ -155,10 +155,10 @@ public class EntityManagerTest {
         this.entityManager.getTransaction().rollback();
     }
 
-    static class CustomizableEntityManagerFactory {
+    public static class CustomizableEntityManagerFactory {
 
-        PersistenceUnitInfo pui;
-        Map<String, Object> props;
+        private PersistenceUnitInfo pui;
+        private Map<String, Object> props;
 
         public static CustomizableEntityManagerFactory builder() {
             return new CustomizableEntityManagerFactory();
@@ -322,7 +322,7 @@ public class EntityManagerTest {
 
     }
 
-    static class ImmutableMap<K, V> {
+    public static class ImmutableMap<K, V> {
 
         private Map<K, V> m = new HashMap<>();
 
@@ -375,4 +375,5 @@ public class EntityManagerTest {
             <!--property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/-->
         </properties>
        
-    </persistence-unit>*/
+    </persistence-unit>
+ */

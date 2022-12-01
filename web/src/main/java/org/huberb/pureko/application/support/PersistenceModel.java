@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -39,6 +40,22 @@ public class PersistenceModel {
     @Inject
     private EntityManager em;
 
+    public static class QueryCreatorFunctions {
+
+        public static <T> Function<EntityManager, Query> createByNativeString(String sqlString) {
+            return (EntityManager _em) -> {
+                return _em.createNativeQuery(sqlString);
+            };
+        }
+
+        public static <T> Function<EntityManager, Query> createByNativeString(String sqlString, Class<T> resultClass) {
+            return (EntityManager _em) -> {
+                return _em.createNativeQuery(sqlString, resultClass);
+            };
+        }
+
+    }
+
     public static class TypedQueryCreatorFunctions {
 
         public static <T> Function<EntityManager, TypedQuery<T>> createByQlString(String qlString, Class<T> resultClass) {
@@ -52,6 +69,110 @@ public class PersistenceModel {
                 return _em.createNamedQuery(name, resultClass);
             };
         }
+    }
+
+    public static class QueryConsumers {
+
+        public static Consumer<Query> noop() {
+            return (Query q) -> {
+            };
+        }
+
+        public static Consumer<Query> parameterByName(String name, Object value) {
+            return (Query tq) -> {
+                tq.setParameter(name, value);
+            };
+        }
+
+        public static Consumer<Query> parametersByName(Object[][] parameters) {
+            return (Query tq) -> {
+                for (int i = 0; i < parameters.length; i += 1) {
+                    final Object[] kv = parameters[i];
+                    final String k = (String) kv[0];
+                    final Object v = kv[1];
+                    tq.setParameter(k, v);
+                }
+            };
+        }
+
+        public static Consumer<Query> parametersByName(Map<String, Object> kvMap) {
+            return (Query tq) -> {
+                kvMap.entrySet().forEach(e -> {
+                    tq.setParameter(e.getKey(), e.getValue());
+                });
+            };
+        }
+
+        public static Consumer<Query> parameter(int position, Object value) {
+            return (Query tq) -> {
+                tq.setParameter(position, value);
+            };
+        }
+
+        public static Consumer<Query> startPositionMaxResult(int startPosition, int maxResult) {
+            return (Query tq) -> {
+                tq.setFirstResult(startPosition);
+                tq.setMaxResults(maxResult);
+            };
+        }
+
+        public static Consumer<Query> startPosition(int startPosition) {
+            return (Query tq) -> {
+                tq.setFirstResult(startPosition);
+            };
+        }
+
+        public static Consumer<Query> maxResult(int maxResult) {
+            return (Query tq) -> {
+                tq.setMaxResults(maxResult);
+            };
+        }
+
+        public static Consumer<Query> flushMode(FlushModeType flushModeType) {
+            return (Query tq) -> {
+                tq.setFlushMode(flushModeType);
+            };
+        }
+
+        public static Consumer<Query> lockMode(LockModeType lockModeType) {
+            return (Query tq) -> {
+                tq.setLockMode(lockModeType);
+            };
+        }
+
+        public static Consumer<Query> hint(String hintName, Object value) {
+            return (Query tq) -> {
+                tq.setHint(hintName, value);
+            };
+        }
+
+        public static Consumer<Query> consumers(Consumer<Query>[] consumers) {
+            Consumer<Query> c;
+
+            if (consumers != null && consumers.length >= 0) {
+                c = consumers[0];
+                for (int i = 1; i < consumers.length; i += 1) {
+                    c = c.andThen(consumers[i]);
+                }
+            } else {
+                c = noop();
+            }
+            return c;
+        }
+
+        public static Consumer<Query> consumers(List<Consumer<Query>> consumers) {
+            Consumer<Query> c;
+            if (consumers != null && consumers.size() >= 0) {
+                c = consumers.get(0);
+                for (int i = 1; i < consumers.size(); i += 1) {
+                    c = c.andThen(consumers.get(i));
+                }
+            } else {
+                c = noop();
+            }
+            return c;
+        }
+
     }
 
     public static class TypedQueryConsumers {
@@ -157,6 +278,22 @@ public class PersistenceModel {
         }
     }
 
+    public static class QueryResultFunctions {
+
+        public static Function<Query, Object> singleResult() {
+            return (tq) -> tq.getSingleResult();
+        }
+
+        public static Function<Query, List> resultList() {
+            return (tq) -> tq.getResultList();
+        }
+
+        public static Function<Query, Stream> resultStream() {
+            return (tq) -> tq.getResultStream();
+        }
+
+    }
+
     public static class TypedQueryResultFunctions {
 
         public static <T> Function<TypedQuery<T>, T> singleResult() {
@@ -170,6 +307,16 @@ public class PersistenceModel {
         public static <T> Function<TypedQuery<T>, Stream<T>> resultStream() {
             return (tq) -> tq.getResultStream();
         }
+    }
+
+    //----
+    @Transactional(TxType.MANDATORY)
+    public <T, V> V findResult2(Function<EntityManager, Query> f,
+            Consumer<Query> c,
+            Function<Query, V> f2) {
+        final Query tq = f.apply(em);
+        final V v = f2.apply(tq);
+        return v;
     }
 
     //----

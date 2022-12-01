@@ -16,7 +16,7 @@
 package org.huberb.pureko.application.order;
 
 import org.huberb.pureko.application.order.OrderJsonConverter;
-import org.huberb.pureko.application.order.Order;
+import org.huberb.pureko.application.order.OrderData;
 import java.util.Arrays;
 import java.util.List;
 import javax.json.JsonObject;
@@ -44,12 +44,11 @@ public class OrderJsonConverterTest {
      */
     @Test
     public void testCreateJsonArrayFrom() {
-        final List<Order> orderList = Arrays.asList(
-                Order.builder()
+        final List<OrderData> orderList = Arrays.asList(OrderData.builder()
                         .customerID("customerID_1")
                         .employeeID("employeeID_1")
                         .build(),
-                Order.builder()
+                OrderData.builder()
                         .customerID("customerID_2")
                         .employeeID("employeeID_2")
                         .build()
@@ -66,7 +65,7 @@ public class OrderJsonConverterTest {
      */
     @Test
     public void testCreateJsonObjectFrom() {
-        final Order order = Order.builder()
+        final OrderData order = OrderData.builder()
                 .customerID("customerID_1")
                 .employeeID("employeeID_1")
                 .build();
@@ -79,13 +78,13 @@ public class OrderJsonConverterTest {
      */
     @Test
     public void testCreateOrderFromJson() {
-        final Order order = Order.builder()
+        final OrderData order = OrderData.builder()
                 .customerID("customerID_1")
                 .employeeID("employeeID_1")
                 .build();
         final String s = instance.createJsonObjectFrom(order);
         assertEquals("{\"customerID\":\"customerID_1\",\"employeeID\":\"employeeID_1\"}", s);
-        final Order orderFromJson = instance.createOrderFromJson(s);
+        final OrderData orderFromJson = instance.createOrderFromJson(s);
 
         assertAll(
                 () -> order.equals(orderFromJson),

@@ -1,9 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+            <groupId>org.huberb.ee8sample</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    </parent>
+    
     <groupId>org.huberb.ee8sample</groupId>
     <artifactId>web</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <properties>
@@ -247,49 +252,4 @@
         </plugins>
     </build>
 
-    <!-- remove me moved to wildfly module profiles>
-        <profile>
-            <id>wildfly</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <wildflyVersion>25.0.0.Final</wildflyVersion>
-                <wildflyOutputDirectory>${project.build.directory}/wildfly</wildflyOutputDirectory>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
-                            <execution>
-                                <id>unpack</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>org.wildfly</groupId>
-                                            <artifactId>wildfly-dist</artifactId>
-                                            <version>${wildflyVersion}</version>
-                                            <type>zip</type>
-                                            <overWrite>false</overWrite>
-                                            < ! - -outputDirectory>${project.build.directory}/wildfly</outputDirectory- - >
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>${wildflyOutputDirectory}</outputDirectory>
-                                    <overWriteReleases>false</overWriteReleases>
-                                    <overWriteSnapshots>true</overWriteSnapshots>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles-->
 </project>

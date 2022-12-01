@@ -15,7 +15,7 @@
  */
 package org.huberb.pureko.application.customer;
 
-import org.huberb.pureko.application.customer.Customer;
+import org.huberb.pureko.application.customer.CustomerData;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,16 +25,16 @@ import org.junit.jupiter.api.Test;
  *
  * @author berni3
  */
-public class CustomerTest {
+public class CustomerDataTest {
 
     /**
-     * Test of equals method, of class Customer.
+     * Test of equals method, of class CustomerData.
      */
     @Test
     public void testEquals() {
-        Customer customer1_1 = Customer.builder().companyName("companyName_1").customerID("customerID_1").build();
-        Customer customer1_2 = Customer.builder().companyName("companyName_1").customerID("customerID_1").build();
-        Customer customer2_1 = Customer.builder().companyName("companyName_2").customerID("customerID_2").build();
+        CustomerData customer1_1 = CustomerData.builder().companyName("companyName_1").customerID("customerID_1").build();
+        CustomerData customer1_2 = CustomerData.builder().companyName("companyName_1").customerID("customerID_1").build();
+        CustomerData customer2_1 = CustomerData.builder().companyName("companyName_2").customerID("customerID_2").build();
 
         assertTrue(customer1_1.equals(customer1_1));
         assertTrue(customer1_1.equals(customer1_2));
@@ -46,13 +46,13 @@ public class CustomerTest {
     }
 
     /**
-     * Test of hashCode method, of class Customer.
+     * Test of hashCode method, of class CustomerData.
      */
     @Test
     public void testHashCode() {
-        Customer customer1_1 = Customer.builder().companyName("companyName_1").customerID("customerID_1").build();
-        Customer customer1_2 = Customer.builder().companyName("companyName_1").customerID("customerID_1").build();
-        Customer customer2_1 = Customer.builder().companyName("companyName_2").customerID("customerID_2").build();
+        CustomerData customer1_1 = CustomerData.builder().companyName("companyName_1").customerID("customerID_1").build();
+        CustomerData customer1_2 = CustomerData.builder().companyName("companyName_1").customerID("customerID_1").build();
+        CustomerData customer2_1 = CustomerData.builder().companyName("companyName_2").customerID("customerID_2").build();
 
         assertTrue(customer1_1.hashCode() == customer1_1.hashCode());
         assertTrue(customer1_1.hashCode() == customer1_2.hashCode());
@@ -60,11 +60,11 @@ public class CustomerTest {
     }
 
     /**
-     * Test of toString method, of class Customer.
+     * Test of toString method, of class CustomerData.
      */
     @Test
     public void testToString() {
-        Customer customer1_1 = Customer.builder().companyName("companyName_1").customerID("customerID_1").build();
+        CustomerData customer1_1 = CustomerData.builder().companyName("companyName_1").customerID("customerID_1").build();
 
         assertNotNull(customer1_1.toString());
     }

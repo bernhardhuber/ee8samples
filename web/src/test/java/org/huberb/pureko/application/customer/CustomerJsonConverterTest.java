@@ -16,7 +16,7 @@
 package org.huberb.pureko.application.customer;
 
 import org.huberb.pureko.application.customer.CustomerJsonConverter;
-import org.huberb.pureko.application.customer.Customer;
+import org.huberb.pureko.application.customer.CustomerData;
 import java.util.Arrays;
 import java.util.List;
 import javax.json.JsonObject;
@@ -44,7 +44,7 @@ public class CustomerJsonConverterTest {
      */
     @Test
     public void given_a_customer_json_is_created() {
-        final Customer customer = Customer.builder()
+        final CustomerData customer = CustomerData.builder()
                 .customerID("customerID_1")
                 .companyName("companyName_1")
                 .build();
@@ -60,9 +60,8 @@ public class CustomerJsonConverterTest {
      */
     @Test
     public void given_mulitple_customers_json_is_created() {
-        final List<Customer> customerList = Arrays.asList(
-                Customer.builder().customerID("customerID_1").companyName("companyName_1").build(),
-                Customer.builder().customerID("customerID_2").companyName("companyName_2").build()
+        final List<CustomerData> customerList = Arrays.asList(CustomerData.builder().customerID("customerID_1").companyName("companyName_1").build(),
+                CustomerData.builder().customerID("customerID_2").companyName("companyName_2").build()
         );
         final String s = instance.createJsonArrayFrom(customerList);
         assertEquals("["
@@ -76,13 +75,13 @@ public class CustomerJsonConverterTest {
      */
     @Test
     public void given_a_json_then_customer_is_created() {
-        final Customer customer = Customer.builder()
+        final CustomerData customer = CustomerData.builder()
                 .customerID("customerID_1")
                 .companyName("companyName_1")
                 .build();
         final String s = instance.createJsonObjectFrom(customer);
         assertEquals("{\"companyName\":\"companyName_1\",\"customerID\":\"customerID_1\"}", s);
-        Customer customerFromJson = instance.createCustomerFromJson(s);
+        CustomerData customerFromJson = instance.createCustomerFromJson(s);
 
         assertAll(
                 () -> customer.equals(customerFromJson),

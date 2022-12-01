@@ -15,7 +15,7 @@
  */
 package org.huberb.pureko.application.order;
 
-import org.huberb.pureko.application.order.Order;
+import org.huberb.pureko.application.order.OrderData;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,22 +25,22 @@ import org.junit.jupiter.api.Test;
  *
  * @author berni3
  */
-public class OrderTest {
+public class OrderDataTest {
 
     /**
-     * Test of equals method, of class Order.
+     * Test of equals method, of class OrderData.
      */
     @Test
     public void testEquals() {
-        Order order1_1 = Order.builder()
+        OrderData order1_1 = OrderData.builder()
                 .customerID("customerID_1")
                 .employeeID("employeeID_1")
                 .build();
-        Order order1_2 = Order.builder()
+        OrderData order1_2 = OrderData.builder()
                 .customerID("customerID_1")
                 .employeeID("employeeID_1")
                 .build();
-        Order order2_1 = Order.builder()
+        OrderData order2_1 = OrderData.builder()
                 .customerID("customerID_2")
                 .employeeID("employeeID_2")
                 .build();
@@ -52,19 +52,19 @@ public class OrderTest {
     }
 
     /**
-     * Test of hashCode method, of class Order.
+     * Test of hashCode method, of class OrderData.
      */
     @Test
     public void testHashCode() {
-        Order order1_1 = Order.builder()
+        OrderData order1_1 = OrderData.builder()
                 .customerID("customerID_1")
                 .employeeID("employeeID_1")
                 .build();
-        Order order1_2 = Order.builder()
+        OrderData order1_2 = OrderData.builder()
                 .customerID("customerID_1")
                 .employeeID("employeeID_1")
                 .build();
-        Order order2_1 = Order.builder()
+        OrderData order2_1 = OrderData.builder()
                 .customerID("customerID_2")
                 .employeeID("employeeID_2")
                 .build();
@@ -76,11 +76,11 @@ public class OrderTest {
     }
 
     /**
-     * Test of toString method, of class Order.
+     * Test of toString method, of class OrderData.
      */
     @Test
     public void testToString() {
-        Order order1_1 = Order.builder()
+        OrderData order1_1 = OrderData.builder()
                 .customerID("customerID_1")
                 .employeeID("employeeID_1")
                 .build();

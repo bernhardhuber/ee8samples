@@ -24,9 +24,6 @@ import javax.transaction.Transactional;
 import org.huberb.pureko.application.customer.CustomerTransforming.TransformCustomerEntityToNewCustomer;
 import org.huberb.pureko.application.customer.CustomerTransforming.TransformCustomerToNewCustomerEntity;
 import org.huberb.pureko.application.support.PersistenceModel;
-import org.huberb.pureko.application.support.PersistenceModel.QueryConsumers;
-import org.huberb.pureko.application.support.PersistenceModel.QueryCreatorFunctions;
-import org.huberb.pureko.application.support.PersistenceModel.QueryResultFunctions;
 import org.huberb.pureko.application.support.PersistenceModel.TypedQueryConsumers;
 import org.huberb.pureko.application.support.Transformers;
 
@@ -44,25 +41,26 @@ public class CustomerCommands {
         @Inject
         private PersistenceModel persistenceModel;
         @Inject
-        CustomerDataFactory customerDataFactory;
+        private CustomerDataFactory customerDataFactory;
         @Inject
         private Transformers transformers;
 
         @Transactional
-        public void seedDataBase() {
-            final Object object = persistenceModel.findResult2(
-                    QueryCreatorFunctions.createByNativeString("select count(*) from Customer", Number.class),
-                    QueryConsumers.noop(),
-                    QueryResultFunctions.singleResult()
-            );
-            final Number n = (Number) object;
-            if (n.intValue() == 0) {
-                final List<CustomerData> customerDataList = customerDataFactory.createDataFakerCustomerList(10);
-                customerDataList.forEach((CustomerData cd) -> {
-                    CustomerEntity ce = transformers.transformTo(cd, new TransformCustomerToNewCustomerEntity());
+        public int seedDataBase(int maxSeeded) {
+            final Number n = persistenceModel.findNamedSingleResult(
+                    "countOfCustomerEntity", Number.class,
+                    TypedQueryConsumers.noop());
+
+            Integer countOfSeeded = 0;
+            if (n.intValue() == 0 && maxSeeded > 0) {
+                final List<CustomerData> customerDataList = customerDataFactory.createDataFakerCustomerList(maxSeeded);
+                for (final CustomerData cd : customerDataList) {
+                    final CustomerEntity ce = transformers.transformTo(cd, new TransformCustomerToNewCustomerEntity());
                     persistenceModel.create(ce);
-                });
+                    countOfSeeded += 1;
+                }
             }
+            return countOfSeeded;
         }
     }
 

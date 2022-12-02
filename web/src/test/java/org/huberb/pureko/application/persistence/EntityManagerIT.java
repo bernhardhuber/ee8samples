@@ -95,7 +95,6 @@ public class EntityManagerIT {
                         .excludeUnlistedClasses(true)
                         .build())
                 .build();
-
     }
 
     @AfterAll
@@ -169,28 +168,28 @@ public class EntityManagerIT {
             props = new HashMap<>();
         }
 
-        CustomizableEntityManagerFactory putAllProps(Map<String, Object> props) {
+        public CustomizableEntityManagerFactory putAllProps(Map<String, Object> props) {
             this.props.putAll(props);
             return this;
         }
 
-        CustomizableEntityManagerFactory putProps(String k, Object v) {
+        public CustomizableEntityManagerFactory putProps(String k, Object v) {
             this.props.put(k, v);
             return this;
         }
 
-        CustomizableEntityManagerFactory assignPersistenceUnit(PersistenceUnitInfo pui) {
+        public CustomizableEntityManagerFactory assignPersistenceUnit(PersistenceUnitInfo pui) {
             this.pui = pui;
             return this;
         }
 
-        EntityManagerFactory build() {
+        public EntityManagerFactory build() {
             EntityManagerFactory entityManagerFactory = new HibernatePersistenceProvider()
                     .createContainerEntityManagerFactory(pui, props);
             return entityManagerFactory;
         }
 
-        static class DefaultPersistenceUnitInfo implements PersistenceUnitInfo {
+        public static class DefaultPersistenceUnitInfo implements PersistenceUnitInfo {
 
             String persistenceUnitName = "ApplicationPersistenceUnit";
             String persistenceProviderClassName = "org.hibernate.jpa.HibernatePersistenceProvider";
@@ -209,7 +208,7 @@ public class EntityManagerIT {
             ClassLoader classLoader = null;
             ClassLoader newTempClassLoader = null;
 
-            static DefaultPersistenceUnitInfo builder() {
+            public static DefaultPersistenceUnitInfo builder() {
                 return new DefaultPersistenceUnitInfo();
             }
 
@@ -224,12 +223,12 @@ public class EntityManagerIT {
             }
 
             //---
-            DefaultPersistenceUnitInfo excludeUnlistedClasses(boolean v) {
+            public DefaultPersistenceUnitInfo excludeUnlistedClasses(boolean v) {
                 this.excludeUnlistedClasses = v;
                 return this;
             }
 
-            DefaultPersistenceUnitInfo build() {
+            public DefaultPersistenceUnitInfo build() {
                 return this;
             }
 
@@ -326,16 +325,16 @@ public class EntityManagerIT {
 
         private Map<K, V> m = new HashMap<>();
 
-        static <K, V> ImmutableMap<K, V> builder() {
+        public static <K, V> ImmutableMap<K, V> builder() {
             return new ImmutableMap<>();
         }
 
-        ImmutableMap<K, V> put(K k, V v) {
+        public ImmutableMap<K, V> put(K k, V v) {
             m.put(k, v);
             return this;
         }
 
-        Map<K, V> build() {
+        public Map<K, V> build() {
             return this.m;
         }
     }

@@ -37,8 +37,14 @@ import javax.transaction.Transactional.TxType;
 @RequestScoped
 public class PersistenceModel {
 
-    @Inject
     private EntityManager em;
+
+    @Inject
+    public PersistenceModel(EntityManager em) {
+        this.em = em;
+    }
+
+public EntityManager getEntityManager() { return this.em; }
 
     public static class QueryCreatorFunctions {
 

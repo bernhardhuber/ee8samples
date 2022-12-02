@@ -23,6 +23,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,6 +40,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedQueries({
+    @NamedQuery(name = "countOfOrderEntity", query = "SELECT COUNT(o) FROM OrderEntity o")
+})
+
 public class OrderEntity implements Serializable {
 
     private static final long serialVersionUID = 20221127L;

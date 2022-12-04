@@ -28,7 +28,22 @@ import org.huberb.pureko.application.customer.CustomerEntity.FullAddressEmbeddab
  */
 public class CustomerTransforming {
 
-  
+    public static BiFunction<CustomerData, CustomerEntity, CustomerEntity> transformCustomerToExistingCustomerEntity() {
+        return new TransformCustomerToExistingCustomerEntity();
+    }
+
+    public static Function<CustomerData, CustomerEntity> transformCustomerToNewCustomerEntity() {
+        return new TransformCustomerToNewCustomerEntity();
+    }
+
+    public static TransformCustomerEntityToNewCustomer transformCustomerEntityToNewCustomer() {
+        return new TransformCustomerEntityToNewCustomer();
+    }
+
+    public static Function<CustomerData, String> transformCustomerToJson() {
+        return new TransformCustomerToJson();
+    }
+
     public static class TransformCustomerToExistingCustomerEntity implements BiFunction<CustomerData, CustomerEntity, CustomerEntity> {
 
         @Override
@@ -50,7 +65,6 @@ public class CustomerTransforming {
         }
     }
 
-  
     public static class TransformCustomerToNewCustomerEntity implements Function<CustomerData, CustomerEntity> {
 
         @Override
@@ -76,7 +90,6 @@ public class CustomerTransforming {
         }
     }
 
-  
     public static class TransformCustomerEntityToNewCustomer implements Function<CustomerEntity, CustomerData> {
 
         @Override
@@ -104,7 +117,6 @@ public class CustomerTransforming {
         }
     }
 
-  
     public static class TransformCustomerToJson implements Function<CustomerData, String> {
 
         @Inject

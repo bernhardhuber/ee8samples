@@ -31,7 +31,7 @@ import static org.hibernate.cfg.AvailableSettings.USE_REFLECTION_OPTIMIZER;
 import static org.hibernate.cfg.AvailableSettings.USE_SECOND_LEVEL_CACHE;
 import static org.hibernate.cfg.AvailableSettings.USE_STRUCTURED_CACHE;
 import org.hibernate.dialect.H2Dialect;
-import org.huberb.pureko.application.customer.CustomerCommands.CustomerSeedCommand;
+import org.huberb.pureko.application.customer.CustomerCommands.SeedCustomersCommand;
 import org.huberb.pureko.application.persistence.EntityManagerIT.CustomizableEntityManagerFactory;
 import org.huberb.pureko.application.persistence.EntityManagerIT.CustomizableEntityManagerFactory.DefaultPersistenceUnitInfo;
 import org.huberb.pureko.application.persistence.EntityManagerIT.ImmutableMap;
@@ -56,7 +56,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * @author berni3
  */
 @ExtendWith(MockitoExtension.class)
-public class CustomerSeedCommandTest {
+public class SeedCustomersCommandTest {
 
     private static EntityManagerFactory entityManagerFactory;
 
@@ -68,7 +68,7 @@ public class CustomerSeedCommandTest {
     private Transformers transformers;
 
     @InjectMocks
-    CustomerSeedCommand instance;
+    SeedCustomersCommand instance;
 
     @BeforeAll
     public static void setUpAll() {

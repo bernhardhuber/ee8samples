@@ -53,9 +53,13 @@ public class CustomerEntity implements Serializable {
     private Long id;
     @Version
     @Column(name = "version", updatable = false, nullable = false)
-    private int version;
+    private Integer version;
 
+    @Column(nullable = false, length = 100)
+    @javax.validation.constraints.Size(min = 1, max = 100)
     private String customerID;
+    @Column(nullable = false, length = 100)
+    @javax.validation.constraints.Size(min = 1, max = 100)
     private String companyName;
     private String contactName;
     private String contactTitle;

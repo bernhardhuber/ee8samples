@@ -28,37 +28,37 @@
 create sequence hibernate_sequence start with 1 increment by 1;
     
 create table CustomerEntity (
-   id bigint not null,
-    companyName varchar(255),
-    contactName varchar(255),
-    contactTitle varchar(255),
-    customerID varchar(255),
-    fax varchar(255),
-    address varchar(255),
-    city varchar(255),
-    country varchar(255),
-    postalcode varchar(255),
-    region varchar(255),
-    phone varchar(255),
-    version integer not null,
-    primary key (id)
-);
+       id bigint not null,
+        companyName varchar(100) not null,
+        contactName varchar(255),
+        contactTitle varchar(255),
+        customerID varchar(100) not null,
+        fax varchar(255),
+        address varchar(255),
+        city varchar(255),
+        country varchar(255),
+        postalcode varchar(255),
+        region varchar(255),
+        phone varchar(255),
+        version integer not null,
+        primary key (id)
+    );
     
 create table OrderEntity (
-   id bigint not null,
-    customerID varchar(255),
-    employeeID varchar(255),
-    orderDate varchar(255),
-    requiredDate varchar(255),
-    freight varchar(255),
-    shipAddress varchar(255),
-    shipCity varchar(255),
-    shipCountry varchar(255),
-    shipName varchar(255),
-    shipPostalcode varchar(255),
-    shipRegion varchar(255),
-    shipVia varchar(255),
-    shippedDate varchar(255),
-    version integer not null,
-    primary key (id)
-);
+       id bigint not null,
+        customerID varchar(100) not null,
+        employeeID varchar(100) not null,
+        orderDate varchar(255),
+        requiredDate varchar(255),
+        freight varchar(255),
+        shipAddress varchar(255),
+        shipCity varchar(255),
+        shipCountry varchar(255),
+        shipName varchar(100) not null,
+        shipPostalcode varchar(255),
+        shipRegion varchar(255),
+        shipVia varchar(255),
+        shippedDate varchar(255),
+        version integer not null,
+        primary key (id)
+    );

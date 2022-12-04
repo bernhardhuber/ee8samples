@@ -44,7 +44,9 @@ public class PersistenceModel {
         this.em = em;
     }
 
-public EntityManager getEntityManager() { return this.em; }
+    public EntityManager getEntityManager() {
+        return this.em;
+    }
 
     public static class QueryCreatorFunctions {
 

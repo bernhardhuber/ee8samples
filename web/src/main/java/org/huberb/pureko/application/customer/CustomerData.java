@@ -32,7 +32,8 @@ import org.huberb.pureko.application.customer.AgnosticDatas.MetaData;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerData implements Serializable {
-public static final long serialVersionUID = 20221201L;
+
+    public static final long serialVersionUID = 20221201L;
 
     private MetaData metaData;
     private String customerID;
@@ -48,7 +49,8 @@ public static final long serialVersionUID = 20221201L;
     @NoArgsConstructor
     @AllArgsConstructor
     public static class FullAddress implements Serializable {
-public static final long serialVersionUID = 20221201L;
+
+        public static final long serialVersionUID = 20221201L;
 
         private String address;
         private String city;

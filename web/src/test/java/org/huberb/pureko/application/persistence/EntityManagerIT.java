@@ -47,6 +47,7 @@ import org.hibernate.dialect.H2Dialect;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.huberb.pureko.application.customer.CustomerEntity;
 import org.huberb.pureko.application.order.OrderEntity;
+import org.huberb.pureko.application.order.OrderEntity.ShipInfoEmbeddable;
 import org.huberb.pureko.application.persistence.EntityManagerIT.CustomizableEntityManagerFactory.DefaultPersistenceUnitInfo;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -125,13 +126,17 @@ public class EntityManagerIT {
         this.entityManager.getTransaction().begin();
 
         final CustomerEntity c1 = CustomerEntity.builder()
-                .companyName("companyNameFromC1")
+                .customerID("customerID1FromC11")
+                .companyName("companyName1FromC1")
                 .build();
         this.entityManager.persist(c1);
         this.entityManager.flush();
         assertTrue(this.entityManager.contains(c1));
         final CustomerEntity c2 = this.entityManager.createQuery("from CustomerEntity", CustomerEntity.class).getSingleResult();
-        assertEquals("companyNameFromC1", c2.getCompanyName());
+        assertNotNull(c2.getId());
+        assertEquals(0, c2.getVersion());
+        assertEquals("customerID1FromC11", c2.getCustomerID());
+        assertEquals("companyName1FromC1", c2.getCompanyName());
         this.entityManager.getTransaction().commit();
     }
 
@@ -143,13 +148,21 @@ public class EntityManagerIT {
 
         this.entityManager.getTransaction().begin();
         final OrderEntity o1 = OrderEntity.builder()
-                .customerID("customerIDFromO1")
+                .customerID("customerID1FromC1")
+                .employeeID("employeeID1FromC1")
+                .shipInfo(ShipInfoEmbeddable.builder()
+                        .shipName("shipName1FromC1")
+                        .build())
                 .build();
         this.entityManager.persist(o1);
         this.entityManager.flush();
         assertTrue(this.entityManager.contains(o1));
         final OrderEntity c2 = this.entityManager.createQuery("from OrderEntity", OrderEntity.class).getSingleResult();
-        assertEquals("customerIDFromO1", c2.getCustomerID());
+        assertNotNull(c2.getId());
+        assertEquals(0, c2.getVersion());
+        assertEquals("customerID1FromC1", c2.getCustomerID());
+        assertEquals("employeeID1FromC1", c2.getEmployeeID());
+        assertEquals("shipName1FromC1", c2.getShipInfo().getShipName());
 
         this.entityManager.getTransaction().rollback();
     }

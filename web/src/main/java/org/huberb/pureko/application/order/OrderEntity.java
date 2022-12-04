@@ -53,9 +53,13 @@ public class OrderEntity implements Serializable {
     private Long id;
     @Version
     @Column(name = "version", updatable = false, nullable = false)
-    private int version;
+    private Integer version;
 
+    @Column(nullable = false, length = 100)
+    @javax.validation.constraints.Size(min = 1, max = 100)
     private String customerID;
+    @Column(nullable = false, length = 100)
+    @javax.validation.constraints.Size(min = 1, max = 100)
     private String employeeID;
     private String orderDate;
     private String requiredDate;
@@ -72,6 +76,7 @@ public class OrderEntity implements Serializable {
         private String shippedDate;
         private String shipVia;
         private String freight;
+        @Column(nullable = false, length = 100)
         private String shipName;
         private String shipAddress;
         private String shipCity;

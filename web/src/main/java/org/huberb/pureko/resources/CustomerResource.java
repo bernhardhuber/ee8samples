@@ -15,7 +15,6 @@
  */
 package org.huberb.pureko.resources;
 
-import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -24,8 +23,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import org.huberb.pureko.application.customer.CustomerCommands.CreateDefaultCustomerCommand;
 import org.huberb.pureko.application.customer.CustomerData;
-import org.huberb.pureko.application.customer.CustomerTransforming;
-import org.huberb.pureko.application.support.Transformers;
+import org.huberb.pureko.application.customer.CustomerJsonConverter;
 
 /**
  *
@@ -39,14 +37,13 @@ public class CustomerResource {
     private CreateDefaultCustomerCommand createDefaultCustomerCommand;
 
     @Inject
-    private Transformers transformers;
+    private CustomerJsonConverter customerJsonConverter;
 
     @GET
     @Produces("application/json")
     public Response customer() {
         final CustomerData customer = createDefaultCustomer();
-        final Function<CustomerData, String> f = CustomerTransforming.transformCustomerToJson();
-        final String s2 = transformers.transformTo(customer, f);
+        final String s2 = customerJsonConverter.createJsonObjectFrom(customer);
         return Response
                 .ok(s2)
                 .build();

@@ -113,7 +113,7 @@ decoded  s2: [E1DRyst9FvFCoZBSVyrnIPE4Plw=::MjAyMi0xMi0wNFQxOTozNjo0NS40NzI0NDEx
         //System.out.println(m);
         assertAll(
                 () -> assertEquals(s1, s2, m),
-                () -> assertEquals(70, s1.length(), m)
+                () -> assertTrue(s1.length() >=60 && s1.length() <= 70, m)
         );
     }
 

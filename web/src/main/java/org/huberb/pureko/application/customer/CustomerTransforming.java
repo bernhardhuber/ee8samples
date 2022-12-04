@@ -18,7 +18,6 @@ package org.huberb.pureko.application.customer;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import javax.inject.Inject;
 import org.huberb.pureko.application.customer.CustomerData.FullAddress;
 import org.huberb.pureko.application.customer.CustomerEntity.FullAddressEmbeddable;
 
@@ -40,9 +39,9 @@ public class CustomerTransforming {
         return new TransformCustomerEntityToNewCustomer();
     }
 
-    public static Function<CustomerData, String> transformCustomerToJson() {
-        return new TransformCustomerToJson();
-    }
+//    public static Function<CustomerData, String> transformCustomerToJson() {
+//        return new TransformCustomerToJson();
+//    }
 
     public static class TransformCustomerToExistingCustomerEntity implements BiFunction<CustomerData, CustomerEntity, CustomerEntity> {
 
@@ -117,16 +116,16 @@ public class CustomerTransforming {
         }
     }
 
-    public static class TransformCustomerToJson implements Function<CustomerData, String> {
-
-        @Inject
-        CustomerJsonConverter cjc;
-
-        @Override
-        public String apply(CustomerData from) {
-            final String s = cjc.createJsonObjectFrom(from);
-            return s;
-        }
-    }
+//    public static class TransformCustomerToJson implements Function<CustomerData, String> {
+//
+//        @Inject
+//        CustomerJsonConverter cjc;
+//
+//        @Override
+//        public String apply(CustomerData from) {
+//            final String s = cjc.createJsonObjectFrom(from);
+//            return s;
+//        }
+//    }
 
 }

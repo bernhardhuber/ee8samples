@@ -64,7 +64,6 @@ limitations under the License.
                 this.loadData = function () {
                     $.getJSON(resturl, function (items) {
                         console.log("json items " + items);
-
                         // setup property self.customers from json-data
                         self.customers.removeAll();
                         for (const item of items) {

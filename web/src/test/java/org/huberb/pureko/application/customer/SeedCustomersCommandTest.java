@@ -36,7 +36,7 @@ import org.huberb.pureko.application.persistence.EntityManagerIT.CustomizableEnt
 import org.huberb.pureko.application.persistence.EntityManagerIT.CustomizableEntityManagerFactory.DefaultPersistenceUnitInfo;
 import org.huberb.pureko.application.persistence.EntityManagerIT.ImmutableMap;
 import org.huberb.pureko.application.support.PersistenceModel;
-import org.huberb.pureko.application.support.PersistenceModel.TypedQueryConsumers;
+import org.huberb.pureko.application.support.PersistenceModel.QueryConsumers;
 import org.huberb.pureko.application.support.Transformers;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -128,7 +128,7 @@ public class SeedCustomersCommandTest {
         assertEquals(maxSeeded, instance.seedDataBase(maxSeeded));
         //---
         String ql = "from CustomerEntity c";
-        List<CustomerEntity> cel = persistenceModel.findResultList(ql, CustomerEntity.class, TypedQueryConsumers.noop());
+        List<CustomerEntity> cel = persistenceModel.findResultList(ql, CustomerEntity.class, QueryConsumers.noop());
         String m = String.format("cel: %s", cel);
         assertFalse(cel.isEmpty(), m);
         this.persistenceModel.getEntityManager().getTransaction().rollback();

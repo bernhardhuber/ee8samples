@@ -186,108 +186,108 @@ public class PersistenceModel {
 
     }
 
-    public static class TypedQueryConsumers {
-
-        public static <T> Consumer<TypedQuery<T>> noop() {
-            return (TypedQuery<T> tq) -> {
-            };
-        }
-
-        public static <T> Consumer<TypedQuery<T>> parameterByName(String name, Object value) {
-            return (TypedQuery<T> tq) -> {
-                tq.setParameter(name, value);
-            };
-        }
-
-        public static <T> Consumer<TypedQuery<T>> parametersByName(Object[][] parameters) {
-            return (TypedQuery<T> tq) -> {
-                for (int i = 0; i < parameters.length; i += 1) {
-                    final Object[] kv = parameters[i];
-                    final String k = (String) kv[0];
-                    final Object v = kv[1];
-                    tq.setParameter(k, v);
-                }
-            };
-        }
-
-        public static <T> Consumer<TypedQuery<T>> parametersByName(Map<String, Object> kvMap) {
-            return (TypedQuery<T> tq) -> {
-                kvMap.entrySet().forEach(e -> {
-                    tq.setParameter(e.getKey(), e.getValue());
-                });
-            };
-        }
-
-        public static <T> Consumer<TypedQuery<T>> parameter(int position, Object value) {
-            return (TypedQuery<T> tq) -> {
-                tq.setParameter(position, value);
-            };
-        }
-
-        public static <T> Consumer<TypedQuery<T>> startPositionMaxResult(int startPosition, int maxResult) {
-            return (TypedQuery<T> tq) -> {
-                tq.setFirstResult(startPosition);
-                tq.setMaxResults(maxResult);
-            };
-        }
-
-        public static <T> Consumer<TypedQuery<T>> startPosition(int startPosition) {
-            return (TypedQuery<T> tq) -> {
-                tq.setFirstResult(startPosition);
-            };
-        }
-
-        public static <T> Consumer<TypedQuery<T>> maxResult(int maxResult) {
-            return (TypedQuery<T> tq) -> {
-                tq.setMaxResults(maxResult);
-            };
-        }
-
-        public static <T> Consumer<TypedQuery<T>> flushMode(FlushModeType flushModeType) {
-            return (TypedQuery<T> tq) -> {
-                tq.setFlushMode(flushModeType);
-            };
-        }
-
-        public static <T> Consumer<TypedQuery<T>> lockMode(LockModeType lockModeType) {
-            return (TypedQuery<T> tq) -> {
-                tq.setLockMode(lockModeType);
-            };
-        }
-
-        public static <T> Consumer<TypedQuery<T>> hint(String hintName, Object value) {
-            return (TypedQuery<T> tq) -> {
-                tq.setHint(hintName, value);
-            };
-        }
-
-        public static <T> Consumer<TypedQuery<T>> consumers(Consumer<TypedQuery<T>>[] consumers) {
-            Consumer<TypedQuery<T>> c;
-
-            if (consumers != null && consumers.length >= 0) {
-                c = consumers[0];
-                for (int i = 1; i < consumers.length; i += 1) {
-                    c = c.andThen(consumers[i]);
-                }
-            } else {
-                c = noop();
-            }
-            return c;
-        }
-
-        public static <T> Consumer<TypedQuery<T>> consumers(List<Consumer<TypedQuery<T>>> consumers) {
-            Consumer<TypedQuery<T>> c;
-            if (consumers != null && consumers.size() >= 0) {
-                c = consumers.get(0);
-                for (int i = 1; i < consumers.size(); i += 1) {
-                    c = c.andThen(consumers.get(i));
-                }
-            } else {
-                c = noop();
-            }
-            return c;
-        }
-    }
+//    public static class TypedQueryConsumers {
+//
+//        public static <T> Consumer<TypedQuery<T>> noop() {
+//            return (TypedQuery<T> tq) -> {
+//            };
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> parameterByName(String name, Object value) {
+//            return (TypedQuery<T> tq) -> {
+//                tq.setParameter(name, value);
+//            };
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> parametersByName(Object[][] parameters) {
+//            return (TypedQuery<T> tq) -> {
+//                for (int i = 0; i < parameters.length; i += 1) {
+//                    final Object[] kv = parameters[i];
+//                    final String k = (String) kv[0];
+//                    final Object v = kv[1];
+//                    tq.setParameter(k, v);
+//                }
+//            };
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> parametersByName(Map<String, Object> kvMap) {
+//            return (TypedQuery<T> tq) -> {
+//                kvMap.entrySet().forEach(e -> {
+//                    tq.setParameter(e.getKey(), e.getValue());
+//                });
+//            };
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> parameter(int position, Object value) {
+//            return (TypedQuery<T> tq) -> {
+//                tq.setParameter(position, value);
+//            };
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> startPositionMaxResult(int startPosition, int maxResult) {
+//            return (TypedQuery<T> tq) -> {
+//                tq.setFirstResult(startPosition);
+//                tq.setMaxResults(maxResult);
+//            };
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> startPosition(int startPosition) {
+//            return (TypedQuery<T> tq) -> {
+//                tq.setFirstResult(startPosition);
+//            };
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> maxResult(int maxResult) {
+//            return (TypedQuery<T> tq) -> {
+//                tq.setMaxResults(maxResult);
+//            };
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> flushMode(FlushModeType flushModeType) {
+//            return (TypedQuery<T> tq) -> {
+//                tq.setFlushMode(flushModeType);
+//            };
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> lockMode(LockModeType lockModeType) {
+//            return (TypedQuery<T> tq) -> {
+//                tq.setLockMode(lockModeType);
+//            };
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> hint(String hintName, Object value) {
+//            return (TypedQuery<T> tq) -> {
+//                tq.setHint(hintName, value);
+//            };
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> consumers(Consumer<TypedQuery<T>>[] consumers) {
+//            Consumer<TypedQuery<T>> c;
+//
+//            if (consumers != null && consumers.length >= 0) {
+//                c = consumers[0];
+//                for (int i = 1; i < consumers.length; i += 1) {
+//                    c = c.andThen(consumers[i]);
+//                }
+//            } else {
+//                c = noop();
+//            }
+//            return c;
+//        }
+//
+//        public static <T> Consumer<TypedQuery<T>> consumers(List<Consumer<TypedQuery<T>>> consumers) {
+//            Consumer<TypedQuery<T>> c;
+//            if (consumers != null && consumers.size() >= 0) {
+//                c = consumers.get(0);
+//                for (int i = 1; i < consumers.size(); i += 1) {
+//                    c = c.andThen(consumers.get(i));
+//                }
+//            } else {
+//                c = noop();
+//            }
+//            return c;
+//        }
+//    }
 
     public static class QueryResultFunctions {
 
@@ -334,7 +334,7 @@ public class PersistenceModel {
     // ql queries full functional
     @Transactional(TxType.MANDATORY)
     public <T, V> V findResult(Function<EntityManager, TypedQuery<T>> f,
-            Consumer<TypedQuery<T>> c,
+            Consumer<Query> c,
             Function<TypedQuery<T>, V> f2) {
         final TypedQuery<T> tq = f.apply(em);
         final V v = f2.apply(tq);
@@ -344,7 +344,7 @@ public class PersistenceModel {
     //----
     // ql queries short hands
     @Transactional(TxType.MANDATORY)
-    public <T> T findSingleResult(String qlString, Class<T> resultClass, Consumer<TypedQuery<T>> c) {
+    public <T> T findSingleResult(String qlString, Class<T> resultClass, Consumer<Query> c) {
         final T t = findResult(TypedQueryCreatorFunctions.createByQlString(qlString, resultClass),
                 c,
                 TypedQueryResultFunctions.singleResult()
@@ -353,7 +353,7 @@ public class PersistenceModel {
     }
 
     @Transactional(TxType.MANDATORY)
-    public <T> List<T> findResultList(String qlString, Class<T> resultClass, Consumer<TypedQuery<T>> c) {
+    public <T> List<T> findResultList(String qlString, Class<T> resultClass, Consumer<Query> c) {
         final List<T> lt = findResult(TypedQueryCreatorFunctions.createByQlString(qlString, resultClass),
                 c,
                 TypedQueryResultFunctions.resultList()
@@ -362,7 +362,7 @@ public class PersistenceModel {
     }
 
     @Transactional(TxType.MANDATORY)
-    public <T> Stream<T> findResultStream(String qlString, Class<T> resultClass, Consumer<TypedQuery<T>> c) {
+    public <T> Stream<T> findResultStream(String qlString, Class<T> resultClass, Consumer<Query> c) {
         final Stream<T> st = findResult(TypedQueryCreatorFunctions.createByQlString(qlString, resultClass),
                 c,
                 TypedQueryResultFunctions.resultStream()
@@ -373,7 +373,7 @@ public class PersistenceModel {
     //----
     // named queries short hands
     @Transactional(TxType.MANDATORY)
-    public <T> T findNamedSingleResult(String name, Class<T> resultClass, Consumer<TypedQuery<T>> c) {
+    public <T> T findNamedSingleResult(String name, Class<T> resultClass, Consumer<Query> c) {
         final T t = findResult(TypedQueryCreatorFunctions.createByNamedQuery(name, resultClass),
                 c,
                 TypedQueryResultFunctions.singleResult()
@@ -382,7 +382,7 @@ public class PersistenceModel {
     }
 
     @Transactional(TxType.MANDATORY)
-    public <T> List<T> findNamedResultList(String name, Class<T> resultClass, Consumer<TypedQuery<T>> c) {
+    public <T> List<T> findNamedResultList(String name, Class<T> resultClass, Consumer<Query> c) {
         final List<T> lt = findResult(TypedQueryCreatorFunctions.createByNamedQuery(name, resultClass),
                 c,
                 TypedQueryResultFunctions.resultList()
@@ -391,7 +391,7 @@ public class PersistenceModel {
     }
 
     @Transactional(TxType.MANDATORY)
-    public <T> Stream<T> findNamedResultStream(String name, Class<T> resultClass, Consumer<TypedQuery<T>> c) {
+    public <T> Stream<T> findNamedResultStream(String name, Class<T> resultClass, Consumer<Query> c) {
         final Stream<T> st = findResult(TypedQueryCreatorFunctions.createByNamedQuery(name, resultClass),
                 c,
                 TypedQueryResultFunctions.resultStream()
@@ -408,15 +408,26 @@ public class PersistenceModel {
 
     //----
     @Transactional(TxType.MANDATORY)
-    public <T> T create(T t) {
-        this.em.persist(t);
-        return t;
+    public <T> T create(T entity) {
+        em.persist(entity);
+        return entity;
     }
 
     @Transactional(TxType.MANDATORY)
-    public <T> T update(T t) {
-        T tMerged = this.em.merge(t);
-        return tMerged;
+    public <T> T update(T entity) {
+        final T result;
+        if (em.contains(entity)) {
+            em.persist(entity);
+            result = entity;
+        } else {
+            result = em.merge(entity);
+        }
+        return result;
+    }
+
+    @Transactional(TxType.MANDATORY)
+    public <T> void remove(T entity) {
+        em.remove(entity);
     }
 
 }

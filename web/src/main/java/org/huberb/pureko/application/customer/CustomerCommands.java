@@ -28,7 +28,7 @@ import javax.validation.ConstraintViolationException;
 import org.huberb.pureko.application.customer.CustomerTransforming.TransformCustomerEntityToNewCustomer;
 import org.huberb.pureko.application.customer.CustomerTransforming.TransformCustomerToNewCustomerEntity;
 import org.huberb.pureko.application.support.PersistenceModel;
-import org.huberb.pureko.application.support.PersistenceModel.TypedQueryConsumers;
+import org.huberb.pureko.application.support.PersistenceModel.QueryConsumers;
 import org.huberb.pureko.application.support.Transformers;
 
 /**
@@ -40,7 +40,7 @@ import org.huberb.pureko.application.support.Transformers;
 public class CustomerCommands {
 
     @ApplicationScoped
-    public static class CreateDefaultCustomerCommand {
+    public static class ReadDefaultCustomerCommand {
 
         @Inject
         private CustomerDataFactory customerDataFactory;
@@ -73,7 +73,7 @@ public class CustomerCommands {
         public int seedDataBase(int maxSeeded) {
             final Number n = persistenceModel.findNamedSingleResult(
                     "countOfCustomerEntity", Number.class,
-                    TypedQueryConsumers.noop());
+                    QueryConsumers.noop());
 
             int countOfSeeded = 0;
             if (n.intValue() == 0 && maxSeeded > 0) {
@@ -89,7 +89,7 @@ public class CustomerCommands {
     }
 
     @ApplicationScoped
-    public static class ReadCustomerCommand {
+    public static class ReadAllCustomersCommand {
 
         @Inject
         private PersistenceModel persistenceModel;
@@ -104,7 +104,7 @@ public class CustomerCommands {
         //---
         List<CustomerData> readCustomersUsingForLoop() {
             final String ql = "from Customer";
-            final List<CustomerEntity> resultList = persistenceModel.findResultList(ql, CustomerEntity.class, TypedQueryConsumers.noop());
+            final List<CustomerEntity> resultList = persistenceModel.findResultList(ql, CustomerEntity.class, QueryConsumers.noop());
             final List<CustomerData> l = new ArrayList<>();
             resultList.forEach((CustomerEntity ce) -> {
                 final CustomerData cd = transformers.transformTo(ce, CustomerTransforming.transformCustomerEntityToNewCustomer());
@@ -116,13 +116,49 @@ public class CustomerCommands {
         List<CustomerData> readCustomersStreamCollectorsToList() {
             final String ql = "from Customer";
             final TransformCustomerEntityToNewCustomer f = CustomerTransforming.transformCustomerEntityToNewCustomer();
-            final List<CustomerEntity> resultList = persistenceModel.findResultList(ql, CustomerEntity.class, TypedQueryConsumers.noop());
+            final List<CustomerEntity> resultList = persistenceModel.findResultList(ql, CustomerEntity.class, QueryConsumers.noop());
 
             final List<CustomerData> l = resultList.stream()
                     .map(e -> f.apply(e))
                     .collect(Collectors.toList());
             return l;
         }
+    }
+
+    @ApplicationScoped
+    public static class CreateNewCustomerCommand {
+
+        @Inject
+        private PersistenceModel persistenceModel;
+        @Inject
+        private Transformers transformers;
+
+        @Transactional
+        public CustomerData createCustomer(CustomerData customerData) {
+            validateCustomerData(customerData);
+
+            final Function<CustomerData, CustomerEntity> func = CustomerTransforming.transformCustomerToNewCustomerEntity();
+            final CustomerEntity ce = transformers.transformTo(customerData, func);
+            validateCustomerEntity(ce);
+            String cID = customerData.getCustomerID();
+
+            persistenceModel.create(ce);
+
+            CustomerData createdCustomerData = transformers.transformTo(ce, CustomerTransforming.transformCustomerEntityToNewCustomer());
+            return createdCustomerData;
+        }
+
+        void validateCustomerData(CustomerData cd) {
+            Objects.nonNull(cd.getCustomerID());
+        }
+
+        void validateCustomerEntity(CustomerEntity ce) {
+            Objects.nonNull(ce.getCustomerID());
+            if (ce.getId() != null || ce.getVersion() != null) {
+                throw new RuntimeException("Invalid customerEntity for create");
+            }
+        }
+
     }
 
     @ApplicationScoped
@@ -134,15 +170,17 @@ public class CustomerCommands {
         private Transformers transformers;
 
         @Transactional
-        public void updateCustomer(CustomerData customerData) {
+        public CustomerData updateCustomer(CustomerData customerData) {
             validateCustomerData(customerData);
 
             final Function<CustomerData, CustomerEntity> func = CustomerTransforming.transformCustomerToNewCustomerEntity();
             final CustomerEntity ce = transformers.transformTo(customerData, func);
             validateCustomerEntity(ce);
-            String cID = customerData.getCustomerID();
 
-            //persistenceModel.update(ce);
+            persistenceModel.update(ce);
+
+            CustomerData createdCustomerData = transformers.transformTo(ce, CustomerTransforming.transformCustomerEntityToNewCustomer());
+            return createdCustomerData;
         }
 
         void validateCustomerData(CustomerData cd) {
@@ -154,8 +192,6 @@ public class CustomerCommands {
             Objects.nonNull(ce.getVersion());
             Objects.nonNull(ce.getCustomerID());
         }
-
-
 
     }
 
@@ -172,6 +208,8 @@ public class CustomerCommands {
             String cID = customerData.getCustomerID();
             final Function<CustomerData, CustomerEntity> func = CustomerTransforming.transformCustomerToNewCustomerEntity();
             final CustomerEntity ce = transformers.transformTo(customerData, func);
+
+            persistenceModel.remove(ce);
         }
 
         void validateConstraints(CustomerEntity ce) {

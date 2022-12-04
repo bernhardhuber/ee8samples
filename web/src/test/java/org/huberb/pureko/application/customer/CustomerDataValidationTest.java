@@ -55,6 +55,8 @@ public class CustomerDataValidationTest {
     @Test
     public void validate1() {
         CustomerData cd = CustomerData.builder()
+                .customerID("customerID1")
+                .companyName("companyName1")
                 .build();
         Set<ConstraintViolation<CustomerData>> cvcds = defaultValidator.validate(cd, javax.validation.groups.Default.class);
         String m = "" + cvcds;
@@ -65,10 +67,12 @@ public class CustomerDataValidationTest {
     public void test_customCustomerDataValidator_fails() {
         final Validator validator = customCustomerDataValidator().get();
         final CustomerData cd = CustomerData.builder()
+                .customerID("customerID1")
+                .companyName("companyName1")
                 .build();
         final Set<ConstraintViolation<CustomerData>> cvcds = validator.validate(cd, javax.validation.groups.Default.class);
         final String m = "" + cvcds;
-        assertEquals(2, cvcds.size(), m);
+        assertEquals(0, cvcds.size(), m);
     }
 
     static Supplier<Validator> customCustomerDataValidator() {

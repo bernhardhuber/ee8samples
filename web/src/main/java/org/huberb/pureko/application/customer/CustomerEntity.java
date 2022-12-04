@@ -30,6 +30,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.huberb.pureko.application.support.ValidationContentCheckGroup;
 
 /**
  *
@@ -55,13 +56,25 @@ public class CustomerEntity implements Serializable {
     @Column(name = "version", updatable = false, nullable = false)
     private Integer version;
 
+    //---
     @Column(nullable = false, length = 100)
+    @javax.validation.constraints.NotBlank
     @javax.validation.constraints.Size(min = 1, max = 100)
+    @lombok.NonNull
     private String customerID;
+    //---
     @Column(nullable = false, length = 100)
+    @javax.validation.constraints.NotBlank
     @javax.validation.constraints.Size(min = 1, max = 100)
+    @javax.validation.constraints.Pattern(regexp = "^\\S+.*\\S+$", groups = {ValidationContentCheckGroup.class})
+    @lombok.NonNull
     private String companyName;
+    //---
+    @Column(nullable = true, length = 100)
+    @javax.validation.constraints.Size(min = 1, max = 100)
+    @javax.validation.constraints.Pattern(regexp = "^\\S+.*\\S+$", groups = {ValidationContentCheckGroup.class})
     private String contactName;
+    //---
     private String contactTitle;
     private String phone;
     private String fax;

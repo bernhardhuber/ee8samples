@@ -30,6 +30,7 @@ import javax.persistence.Persistence;
  *
  * @author berni3
  */
+@ApplicationScoped
 public class PersistenceProducers {
 
     @ApplicationScoped

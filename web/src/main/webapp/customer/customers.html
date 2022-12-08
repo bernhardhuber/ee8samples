@@ -20,14 +20,6 @@ limitations under the License.
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!--
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
-              integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
-              crossorigin="anonymous"/>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
-        <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
-        <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js'></script>
-        -->
         <!-- -->
         <link rel="stylesheet" href="../webjars/purecss/2.1.0/build/pure-min.css" />
         <link rel="stylesheet" href="../webjars/purecss/2.1.0/build/grids-responsive-min.css" />
@@ -38,7 +30,8 @@ limitations under the License.
             // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
             function AppViewModel() {
                 var self = this;
-                const resturl = "/ko_pure_web/resources/customers";
+                //const resturl = "/ko_pure_web/resources/customers";
+                const resturl = "/ko_pure_web/resources/customers/read";
 
                 // @data
                 const emptydata = [];
@@ -57,8 +50,25 @@ limitations under the License.
                 };
 
                 /** 
-                 * Load data via json.
+                 * POST REST seeding database if it is still empty.
                  * 
+                 * @returns {undefined}
+                 */
+                this.seedDatabase = function () {
+                    const resturlSeeddatabase = '/ko_pure_web/resources/customers/seed';
+                    $.post(resturlSeeddatabase, '', function (items) {
+                        console.log("json items " + items);
+                        // setup property self.customers from json-data
+                        self.customers.removeAll();
+                        for (const item of items) {
+                            self.customers.push(item);
+                        }
+                    });
+                };
+
+                /**
+                 * POST GET read all customers.
+                 *
                  * @returns {undefined}
                  */
                 this.loadData = function () {
@@ -85,6 +95,12 @@ limitations under the License.
 
     <body>
         <div class="pure-g" style="padding: 1em">
+            <div class="pure-u-1-1">
+                <button class="pure-button pure-button-primary"
+                        data-bind='click: seedDatabase'>
+                    Seed Sample Data
+                </button>
+            </div>
             <div class="pure-u-1-1">
                 <h2>Customers</h2>
                 <table class="pure-table pure-table-horizontal pure-table-striped">

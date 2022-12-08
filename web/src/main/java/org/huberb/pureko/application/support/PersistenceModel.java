@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
+import javax.persistence.NamedQuery;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
@@ -51,6 +52,9 @@ public class PersistenceModel {
         return this.em;
     }
 
+    /**
+     * Create a {@link Query}.
+     */
     public static class QueryCreatorFunctions {
 
         public static <T> Function<EntityManager, Query> createByNativeString(String sqlString) {
@@ -67,14 +71,39 @@ public class PersistenceModel {
 
     }
 
+    /**
+     * Create a {@link TypedQuery}.
+     */
     public static class TypedQueryCreatorFunctions {
 
+        /**
+         * Create a typed query from a JPA-QL String.
+         *
+         * @param <T>
+         * @param qlString
+         * @param resultClass
+         * @return
+         *
+         * @see EntityManager#createQuery(java.lang.String, java.lang.Class)
+         */
         public static <T> Function<EntityManager, TypedQuery<T>> createByQlString(String qlString, Class<T> resultClass) {
             return (EntityManager _em) -> {
                 return _em.createQuery(qlString, resultClass);
             };
         }
 
+        /**
+         * Create a typed query from a predefined JPA query.
+         *
+         * @param <T>
+         * @param name
+         * @param resultClass
+         * @return
+         *
+         * @see NamedQuery
+         * @see EntityManager#createNamedQuery(java.lang.String,
+         * java.lang.Class)
+         */
         public static <T> Function<EntityManager, TypedQuery<T>> createByNamedQuery(String name, Class<T> resultClass) {
             return (EntityManager _em) -> {
                 return _em.createNamedQuery(name, resultClass);
@@ -288,6 +317,9 @@ public class PersistenceModel {
 //            return c;
 //        }
 //    }
+    /**
+     * Provide query result(s).
+     */
     public static class QueryResultFunctions {
 
         public static Function<Query, Object> singleResult() {
@@ -304,6 +336,9 @@ public class PersistenceModel {
 
     }
 
+    /**
+     * Provide type query result(s).
+     */
     public static class TypedQueryResultFunctions {
 
         public static <T> Function<TypedQuery<T>, T> singleResult() {

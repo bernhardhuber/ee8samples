@@ -37,7 +37,7 @@ public class PageOffsetLengthCalculator {
         this.elementsPerPage = elementsPerPage_1;
     }
 
-//---
+    //---
     public int getPage() {
         return this.page;
     }
@@ -49,8 +49,8 @@ public class PageOffsetLengthCalculator {
     public int getTotalLength() {
         return this.totalLength;
     }
-//---
 
+    //---
     int calcNextPage() {
         assertMinMaxValues();
         final int nextOffset = page * elementsPerPage;
@@ -74,6 +74,7 @@ public class PageOffsetLengthCalculator {
         }
     }
 
+    //---
     public boolean nextPageExists() {
         int v = calcNextPage();
         return (v != page);
@@ -84,6 +85,7 @@ public class PageOffsetLengthCalculator {
         return (v != page);
     }
 
+    //---
     public void moveToNextPage() {
         page = calcNextPage();
     }
@@ -104,6 +106,7 @@ public class PageOffsetLengthCalculator {
         page = result;
     }
 
+    //---
     public int numberOfPages() {
         int result = (totalLength / elementsPerPage);
         if (totalLength % elementsPerPage != 0) {
@@ -118,6 +121,7 @@ public class PageOffsetLengthCalculator {
         return new int[]{offset, length};
     }
 
+    //---
     void assertMinMaxValues() {
         elementsPerPage = Math.max(1, elementsPerPage);
         if (page < 1) {

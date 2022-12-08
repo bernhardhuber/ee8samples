@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.application.customer;
+package org.huberb.pureko.application.support;
 
 import org.huberb.pureko.application.support.IdVersionTransferEncodings.DigestIdVersionTransferEncoding;
 import org.huberb.pureko.application.support.IdVersionTransferEncodings.NaiveIdVersionTransferEncoding;
@@ -37,24 +37,24 @@ public class IdVersionEncodingsTest {
         "1,1, 1_1",
         "100,200, 100_200",
         "991,992, 991_992",})
-    public void testNaiveIdVersionEncodingRoundTrip(long id, int version, String expectedEncoded) {
+    public void testNaiveIdVersionTransferEncodingRoundTrip(long id, int version, String expectedEncoded) {
         /*
-testNaiveIdVersionEncodingRoundTrip id 0, version 0
+testNaiveIdVersionTransferEncodingRoundTrip id 0, version 0
 encoding s1: [0_0],
 decoded s2: [0_0]
-testNaiveIdVersionEncodingRoundTrip id 1, version 0
+testNaiveIdVersionTransferEncodingRoundTrip id 1, version 0
 encoding s1: [1_0],
 decoded s2: [1_0]
-testNaiveIdVersionEncodingRoundTrip id 0, version 1
+testNaiveIdVersionTransferEncodingRoundTrip id 0, version 1
 encoding s1: [0_1],
 decoded s2: [0_1]
-testNaiveIdVersionEncodingRoundTrip id 1, version 1
+testNaiveIdVersionTransferEncodingRoundTrip id 1, version 1
 encoding s1: [1_1],
 decoded s2: [1_1]
-testNaiveIdVersionEncodingRoundTrip id 100, version 200
+testNaiveIdVersionTransferEncodingRoundTrip id 100, version 200
 encoding s1: [100_200],
 decoded s2: [100_200]
-testNaiveIdVersionEncodingRoundTrip id 991, version 992
+testNaiveIdVersionTransferEncodingRoundTrip id 991, version 992
 encoding s1: [991_992],
 decoded s2: [991_992]
          */
@@ -81,24 +81,24 @@ decoded s2: [991_992]
         "1,1",
         "100,200",
         "991,992",})
-    public void testIdVersionEncodingRoundTrip(Long id, Integer version) {
+    public void testDigestIdVersionTransferEncodingRoundTrip(Long id, Integer version) {
         /* sample results
-testIdVersionEncodingRoundTrip id 0, version 0
+testDigestIdVersionTransferEncodingRoundTrip id 0, version 0
 encoding s1: [pbXFsqn234PRDQirVGfTtVOWWxA=::MjAyMi0xMi0wNFQxOTozNjo0NS4zNjE5NDM4MDBa],
 decoded  s2: [pbXFsqn234PRDQirVGfTtVOWWxA=::MjAyMi0xMi0wNFQxOTozNjo0NS4zNjE5NDM4MDBa]
-testIdVersionEncodingRoundTrip id 1, version 0
+testDigestIdVersionTransferEncodingRoundTrip id 1, version 0
 encoding s1: [EUy7PbXXU9Kqj+IrVi6NCDzku9g=::MjAyMi0xMi0wNFQxOTozNjo0NS40Mjk5MzVa],
 decoded  s2: [EUy7PbXXU9Kqj+IrVi6NCDzku9g=::MjAyMi0xMi0wNFQxOTozNjo0NS40Mjk5MzVa]
-testIdVersionEncodingRoundTrip id 0, version 1
+testDigestIdVersionTransferEncodingRoundTrip id 0, version 1
 encoding s1: [i0On+NYZOhFSRehIVUPtIthtpB8=::MjAyMi0xMi0wNFQxOTozNjo0NS40NDM5OTMzMDBa],
 decoded  s2: [i0On+NYZOhFSRehIVUPtIthtpB8=::MjAyMi0xMi0wNFQxOTozNjo0NS40NDM5OTMzMDBa]
-testIdVersionEncodingRoundTrip id 1, version 1
+testDigestIdVersionTransferEncodingRoundTrip id 1, version 1
 encoding s1: [I/HofSvqRFC1CV35vHMeLusw3V8=::MjAyMi0xMi0wNFQxOTozNjo0NS40NTM5OTM4MDBa],
 decoded  s2: [I/HofSvqRFC1CV35vHMeLusw3V8=::MjAyMi0xMi0wNFQxOTozNjo0NS40NTM5OTM4MDBa]
-testIdVersionEncodingRoundTrip id 100, version 200
+testDigestIdVersionTransferEncodingRoundTrip id 100, version 200
 encoding s1: [8RdE0ewvY9tYnrZRwQkk2or0pwQ=::MjAyMi0xMi0wNFQxOTozNjo0NS40NjE3NTA4MDBa],
 decoded  s2: [8RdE0ewvY9tYnrZRwQkk2or0pwQ=::MjAyMi0xMi0wNFQxOTozNjo0NS40NjE3NTA4MDBa]
-testIdVersionEncodingRoundTrip id 991, version 992
+testDigestIdVersionTransferEncodingRoundTrip id 991, version 992
 encoding s1: [E1DRyst9FvFCoZBSVyrnIPE4Plw=::MjAyMi0xMi0wNFQxOTozNjo0NS40NzI0NDExMDBa],
 decoded  s2: [E1DRyst9FvFCoZBSVyrnIPE4Plw=::MjAyMi0xMi0wNFQxOTozNjo0NS40NzI0NDExMDBa]
          */
@@ -113,7 +113,7 @@ decoded  s2: [E1DRyst9FvFCoZBSVyrnIPE4Plw=::MjAyMi0xMi0wNFQxOTozNjo0NS40NzI0NDEx
         //System.out.println(m);
         assertAll(
                 () -> assertEquals(s1, s2, m),
-                () -> assertTrue(s1.length() >=60 && s1.length() <= 70, m)
+                () -> assertTrue(s1.length() >= 60 && s1.length() <= 70, m)
         );
     }
 

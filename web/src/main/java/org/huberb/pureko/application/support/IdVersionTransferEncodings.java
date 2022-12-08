@@ -53,9 +53,9 @@ public class IdVersionTransferEncodings {
 
         @Override
         public String decode(String s, Long id, Integer version) {
-            Scanner scn = new Scanner(s).useDelimiter(DELIM);
-            long idParsed = scn.nextLong();
-            int versionParsed = scn.nextInt();
+            final Scanner scn = new Scanner(s).useDelimiter(DELIM);
+            final long idParsed = scn.nextLong();
+            final int versionParsed = scn.nextInt();
             return String.format("%s" + DELIM + "%s", id, version);
         }
 

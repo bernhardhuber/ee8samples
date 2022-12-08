@@ -15,13 +15,7 @@
  */
 package org.huberb.pureko.application.support;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -36,6 +30,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.persistence.EntityManager;
+import org.huberb.pureko.application.support.JsonValues.JsonifyableToObject;
 
 /**
  *
@@ -79,7 +74,7 @@ public class SystemInfo {
             return jab.build();
         };
 
-        JsonifyableValue jv = new JsonifyableValue();
+        JsonifyableToObject jv = new JsonifyableToObject();
         JsonObjectBuilder job = Json.createObjectBuilder();
         job.add("properties", Json.createObjectBuilder(jv.jvMap(em.getProperties())).build());
         job.add("embeddables", embeddablesF.apply(em));
@@ -122,79 +117,21 @@ public class SystemInfo {
     }
 
     static Function<Bean<?>, Map<String, Object>> mapCdiBeanToMap() {
-        final JsonifyableValue jv = new JsonifyableValue();
+        final JsonifyableToObject jv = new JsonifyableToObject();
         return (b) -> {
             Map<String, Object> m = Map.ofEntries(
-                    Map.entry("beanClass", jv.jvObject(b.getBeanClass().getName())),
-                    Map.entry("injectionPoints", jv.jvObject(b.getInjectionPoints())),
-                    Map.entry("name", jv.jvObject(b.getName())),
-                    Map.entry("qualifiers", jv.jvObject(b.getQualifiers())),
-                    Map.entry("scope", jv.jvObject(b.getScope().getName())),
-                    Map.entry("stereotypes", jv.jvObject(b.getStereotypes())),
-                    Map.entry("types", jv.jvObject(b.getTypes())),
-                    Map.entry("alternative", b.isAlternative()),
-                    Map.entry("nullable", b.isNullable())
+                    Map.entry("beanClass", JsonifyableToObject.jvObject().apply(b.getBeanClass().getName())),
+                    Map.entry("injectionPoints", JsonifyableToObject.jvObject().apply(b.getInjectionPoints())),
+                    Map.entry("name", JsonifyableToObject.jvObject().apply(b.getName())),
+                    Map.entry("qualifiers", JsonifyableToObject.jvObject().apply(b.getQualifiers())),
+                    Map.entry("scope", JsonifyableToObject.jvObject().apply(b.getScope().getName())),
+                    Map.entry("stereotypes", JsonifyableToObject.jvObject().apply(b.getStereotypes())),
+                    Map.entry("types", JsonifyableToObject.jvObject().apply(b.getTypes())),
+                    Map.entry("alternative", JsonifyableToObject.jvObject().apply(b.isAlternative())),
+                    Map.entry("nullable", JsonifyableToObject.jvObject().apply(b.isNullable()))
             );
             return m;
         };
     }
 
-    static class JsonifyableValue {
-
-        Object jvObject(Object o) {
-            if (o == null) {
-                return "";
-            } else if (o instanceof String) {
-                return jvString((String) o);
-            } else if (o instanceof Number) {
-                return jvNumber((Number) o);
-            } else if (o instanceof Boolean) {
-                return jvBoolean((Boolean) o);
-            } else if (o instanceof Collection) {
-                return jvCollection((Collection) o);
-            } else if (o instanceof Map) {
-                return jvMap((Map) o);
-            } else {
-                return String.valueOf(o);
-            }
-        }
-
-        Number jvNumber(Number n) {
-            return n;
-        }
-
-        Boolean jvBoolean(Boolean b) {
-            return b;
-        }
-
-        String jvString(String s) {
-            return s;
-        }
-
-        Map jvMap(Map m) {
-            Map result = new HashMap<>();
-            for (Iterator<Entry> it = m.entrySet().iterator(); it.hasNext();) {
-                Entry e = it.next();
-                Object k = e.getKey();
-                if (k == null) {
-                    continue;
-                }
-                Object v = e.getValue();
-                Object kV = jvObject(k);
-                Object vV = jvObject(v);
-                result.put(kV, vV);
-
-            }
-            return result;
-        }
-
-        List jvCollection(Collection l) {
-            List result = new ArrayList<>();
-            for (Object e : l) {
-                Object ejfy = jvObject(e);
-                result.add(ejfy);
-            }
-            return result;
-        }
-    }
 }

@@ -56,7 +56,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * @author berni3
  */
 @ExtendWith(MockitoExtension.class)
-public class SeedCustomersCommandTest {
+public class SeedCustomersCommandIT {
 
     private static EntityManagerFactory entityManagerFactory;
 

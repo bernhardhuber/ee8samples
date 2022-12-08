@@ -37,6 +37,7 @@ public class CustomerData implements Serializable {
     public static final long serialVersionUID = 20221201L;
 
     private MetaData metaData;
+
     @javax.validation.constraints.NotBlank
     @javax.validation.constraints.Size(min = 1, max = 100)
     @javax.validation.constraints.Pattern(regexp = "^\\S+.*\\S+$", groups = {ValidationContentCheckGroup.class})

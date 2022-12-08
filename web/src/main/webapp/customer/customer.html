@@ -39,6 +39,7 @@ limitations under the License.
             function AppViewModel() {
                 var self = this;
                 const resturl = "/ko_pure_web/resources/customer";
+                const resturlCreate = "/ko_pure_web/resources/customer/create";
 
                 // @data                
                 // @data
@@ -75,7 +76,6 @@ limitations under the License.
 
                     $.getJSON(resturl, function (item) {
                         console.log("json item " + item);
-
                         // setup property self.customers from json-data
                         // TODO fix me implement correctly
                         self.customerID(item.customerID);
@@ -86,6 +86,9 @@ limitations under the License.
                         self.phone(item.phone);
                         // TODO add more
                     });
+                }
+                this.saveData = function () {
+                    alert("TODO post data to " + resturlCreate);
                 }
             }
 
@@ -160,7 +163,8 @@ limitations under the License.
                         </div>          
                     </fieldset>
                     <div class="pure-button-group" role="group" aria-label="...">
-                        <button class="pure-button pure-button-primary" onclick="alert('TODO implement me!');">Submit</button>
+                        <button class="pure-button pure-button-primary" 
+                                onclick="alert('TODO implement me!');">Submit</button>
                         <button class="pure-button pure-button-primary" 
                                 onclick="alert('TODO implement me!');">Reset</button>
                     </div>

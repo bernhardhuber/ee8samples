@@ -30,6 +30,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.persistence.EntityManager;
+import org.huberb.pureko.application.support.JsonValues.JsonifyableToJsonValue;
 import org.huberb.pureko.application.support.JsonValues.JsonifyableToObject;
 
 /**
@@ -57,26 +58,28 @@ public class SystemInfo {
         };
         Function<EntityManager, JsonValue> entitiesF = (_em) -> {
             JsonArrayBuilder jab = Json.createArrayBuilder();
-            _em.getMetamodel().getEmbeddables().forEach(et -> {
+            _em.getMetamodel().getEntities().forEach(et -> {
                 JsonObjectBuilder job = Json.createObjectBuilder();
-                job.add("java-type-name", _em.getMetamodel().getEntities().iterator().next().getJavaType().getName());
-                job.add("name", _em.getMetamodel().getEntities().iterator().next().getName());
-                job.add("persistent-type-name", _em.getMetamodel().getEntities().iterator().next().getPersistenceType().name());
+                job.add("java-type-name", et.getJavaType().getName());
+                job.add("name", et.getName());
+                job.add("persistent-type-name", et.getPersistenceType().name());
                 jab.add(job.build());
             });
             return jab.build();
         };
         Function<EntityManager, JsonValue> managedTypesF = (_em) -> {
             JsonArrayBuilder jab = Json.createArrayBuilder();
-            _em.getMetamodel().getManagedTypes().forEach(et -> {
-                jab.add(et.getJavaType().getName());
+            _em.getMetamodel().getManagedTypes().forEach(mt -> {
+                jab.add(mt.getJavaType().getName());
             });
             return jab.build();
         };
 
-        JsonifyableToObject jv = new JsonifyableToObject();
+        //JsonifyableToObject jv = new JsonifyableToObject();
         JsonObjectBuilder job = Json.createObjectBuilder();
-        job.add("properties", Json.createObjectBuilder(jv.jvMap(em.getProperties())).build());
+
+        //job.add("properties", Json.createObjectBuilder(jv.jvMap(em.getProperties())).build());
+        job.add("properties", JsonifyableToJsonValue.jvJsonValue().apply(em.getProperties()));
         job.add("embeddables", embeddablesF.apply(em));
         job.add("entities", entitiesF.apply(em));
         job.add("managedType", managedTypesF.apply(em));

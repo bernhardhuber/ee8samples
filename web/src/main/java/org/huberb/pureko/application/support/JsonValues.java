@@ -38,6 +38,9 @@ import javax.json.JsonValue;
  */
 public class JsonValues {
 
+    /**
+     * Convert to {@link JsonValue}.
+     */
     static class JsonifyableToJsonValue {
         //---
 
@@ -47,11 +50,11 @@ public class JsonValues {
             return INSTANCE;
         }
 
-        static Function<Object, JsonValue> jvJsonValue() {
+        public static Function<Object, JsonValue> jvJsonValue() {
             return (o) -> instance().jvObject(o);
         }
 
-        JsonValue jvObject(Object o) {
+        public JsonValue jvObject(Object o) {
             final JsonValue result;
             if (o == null) {
                 result = JsonValue.NULL;
@@ -81,7 +84,7 @@ public class JsonValues {
         }
 
         // basic values
-        JsonValue jvNumber(Number n) {
+        public JsonValue jvNumber(Number n) {
             final JsonValue result;
             if (n == null) {
                 result = JsonValue.NULL;
@@ -103,20 +106,20 @@ public class JsonValues {
             return result;
         }
 
-        JsonValue jvBoolean(Boolean b) {
+        public JsonValue jvBoolean(Boolean b) {
             return b ? JsonValue.TRUE : JsonValue.FALSE;
         }
 
-        JsonValue jvCharSequence(CharSequence s) {
+        public JsonValue jvCharSequence(CharSequence s) {
             return Json.createValue(((CharSequence) s).toString());
         }
 
-        JsonValue jvEnum(Enum<?> e) {
+        public JsonValue jvEnum(Enum<?> e) {
             return Json.createValue(e.name());
         }
 
         // date/time
-        JsonValue jvDate(Date d) {
+        public JsonValue jvDate(Date d) {
             final TemporalAccessor temporal = d.toInstant();
             final String result = java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
                     .withZone(ZoneId.of("UTC"))
@@ -124,7 +127,7 @@ public class JsonValues {
             return Json.createValue(result);
         }
 
-        JsonValue jvCalendar(Calendar cal) {
+        public JsonValue jvCalendar(Calendar cal) {
             final TemporalAccessor temporal = cal.toInstant();
             final String result = java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
                     .withZone(ZoneId.of("UTC"))
@@ -132,7 +135,7 @@ public class JsonValues {
             return Json.createValue(result);
         }
 
-        JsonValue jvTemporalAccessor(TemporalAccessor temporal) {
+        public JsonValue jvTemporalAccessor(TemporalAccessor temporal) {
             final String result = java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME
                     .withZone(ZoneId.of("UTC"))
                     .format(temporal);
@@ -140,7 +143,7 @@ public class JsonValues {
         }
 
         // map, collection
-        JsonValue jvMap(Map<?, ?> m) {
+        public JsonValue jvMap(Map<?, ?> m) {
             final JsonObjectBuilder job = Json.createObjectBuilder();
             m.forEach((k, v) -> {
                 if (k != null) {
@@ -152,7 +155,7 @@ public class JsonValues {
             return job.build();
         }
 
-        JsonValue jvCollection(Collection<?> c) {
+        public JsonValue jvCollection(Collection<?> c) {
             JsonArrayBuilder jab = Json.createArrayBuilder();
             c.forEach(e -> {
                 jab.add(jvObject(e));
@@ -161,6 +164,9 @@ public class JsonValues {
         }
     }
 
+    /**
+     * Convert to {@link Object} which shall be compatible to {@link JsonValue}.
+     */
     static class JsonifyableToObject {
         //---
 
@@ -170,11 +176,11 @@ public class JsonValues {
             return INSTANCE;
         }
 
-        static Function<Object, Object> jvObject() {
+        public static Function<Object, Object> jvObject() {
             return (o) -> instance().jvObject(o);
         }
 
-        Object jvObject(Object o) {
+        public Object jvObject(Object o) {
             final Object result;
             if (o == null) {
                 result = "";
@@ -204,27 +210,27 @@ public class JsonValues {
         }
 
         // basic values
-        Number jvNumber(Number n) {
+        public Number jvNumber(Number n) {
             if (n instanceof Float) {
                 return ((Float) n).doubleValue();
             }
             return n;
         }
 
-        Boolean jvBoolean(Boolean b) {
+        public Boolean jvBoolean(Boolean b) {
             return b;
         }
 
-        String jvCharSequence(CharSequence s) {
+        public String jvCharSequence(CharSequence s) {
             return s.toString();
         }
 
-        String jvEnum(Enum<?> e) {
+        public String jvEnum(Enum<?> e) {
             return e.name();
         }
 
         // date/time
-        String jvDate(Date d) {
+        public String jvDate(Date d) {
             final TemporalAccessor temporal = d.toInstant();
             final String result = java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
                     .withZone(ZoneId.of("UTC"))
@@ -232,7 +238,7 @@ public class JsonValues {
             return result;
         }
 
-        String jvCalendar(Calendar cal) {
+        public String jvCalendar(Calendar cal) {
             final TemporalAccessor temporal = cal.toInstant();
             final String result = java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
                     .withZone(ZoneId.of("UTC"))
@@ -240,7 +246,7 @@ public class JsonValues {
             return result;
         }
 
-        String jvTemporalAccessor(TemporalAccessor temporal) {
+        public String jvTemporalAccessor(TemporalAccessor temporal) {
             final String result = java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME
                     .withZone(ZoneId.of("UTC"))
                     .format(temporal);
@@ -248,7 +254,7 @@ public class JsonValues {
         }
 
         // map, collection
-        Map jvMap(Map<?, ?> m) {
+        public Map jvMap(Map<?, ?> m) {
             final Map result = new HashMap<>();
             m.forEach((k, v) -> {
                 if (k != null) {
@@ -260,7 +266,7 @@ public class JsonValues {
             return result;
         }
 
-        List jvCollection(Collection<?> l) {
+        public List jvCollection(Collection<?> l) {
             final List result = new ArrayList<>();
             l.forEach(e -> {
                 Object ejfy = jvObject(e);

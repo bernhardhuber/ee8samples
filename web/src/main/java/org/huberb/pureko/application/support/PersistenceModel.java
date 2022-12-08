@@ -288,7 +288,6 @@ public class PersistenceModel {
 //            return c;
 //        }
 //    }
-
     public static class QueryResultFunctions {
 
         public static Function<Query, Object> singleResult() {
@@ -322,7 +321,7 @@ public class PersistenceModel {
 
     //----
     @Transactional(TxType.MANDATORY)
-    public <T, V> V findResult2(Function<EntityManager, Query> f,
+    public <T, V> V findResultUsingTypedQuery(Function<EntityManager, Query> f,
             Consumer<Query> c,
             Function<Query, V> f2) {
         final Query tq = f.apply(em);
@@ -333,7 +332,7 @@ public class PersistenceModel {
     //----
     // ql queries full functional
     @Transactional(TxType.MANDATORY)
-    public <T, V> V findResult(Function<EntityManager, TypedQuery<T>> f,
+    public <T, V> V findResultUsingQuery(Function<EntityManager, TypedQuery<T>> f,
             Consumer<Query> c,
             Function<TypedQuery<T>, V> f2) {
         final TypedQuery<T> tq = f.apply(em);
@@ -345,7 +344,8 @@ public class PersistenceModel {
     // ql queries short hands
     @Transactional(TxType.MANDATORY)
     public <T> T findSingleResult(String qlString, Class<T> resultClass, Consumer<Query> c) {
-        final T t = findResult(TypedQueryCreatorFunctions.createByQlString(qlString, resultClass),
+        final T t = findResultUsingQuery(
+                TypedQueryCreatorFunctions.createByQlString(qlString, resultClass),
                 c,
                 TypedQueryResultFunctions.singleResult()
         );
@@ -354,7 +354,8 @@ public class PersistenceModel {
 
     @Transactional(TxType.MANDATORY)
     public <T> List<T> findResultList(String qlString, Class<T> resultClass, Consumer<Query> c) {
-        final List<T> lt = findResult(TypedQueryCreatorFunctions.createByQlString(qlString, resultClass),
+        final List<T> lt = findResultUsingQuery(
+                TypedQueryCreatorFunctions.createByQlString(qlString, resultClass),
                 c,
                 TypedQueryResultFunctions.resultList()
         );
@@ -363,7 +364,8 @@ public class PersistenceModel {
 
     @Transactional(TxType.MANDATORY)
     public <T> Stream<T> findResultStream(String qlString, Class<T> resultClass, Consumer<Query> c) {
-        final Stream<T> st = findResult(TypedQueryCreatorFunctions.createByQlString(qlString, resultClass),
+        final Stream<T> st = findResultUsingQuery(
+                TypedQueryCreatorFunctions.createByQlString(qlString, resultClass),
                 c,
                 TypedQueryResultFunctions.resultStream()
         );
@@ -374,7 +376,7 @@ public class PersistenceModel {
     // named queries short hands
     @Transactional(TxType.MANDATORY)
     public <T> T findNamedSingleResult(String name, Class<T> resultClass, Consumer<Query> c) {
-        final T t = findResult(TypedQueryCreatorFunctions.createByNamedQuery(name, resultClass),
+        final T t = findResultUsingQuery(TypedQueryCreatorFunctions.createByNamedQuery(name, resultClass),
                 c,
                 TypedQueryResultFunctions.singleResult()
         );
@@ -383,7 +385,8 @@ public class PersistenceModel {
 
     @Transactional(TxType.MANDATORY)
     public <T> List<T> findNamedResultList(String name, Class<T> resultClass, Consumer<Query> c) {
-        final List<T> lt = findResult(TypedQueryCreatorFunctions.createByNamedQuery(name, resultClass),
+        final List<T> lt = findResultUsingQuery(
+                TypedQueryCreatorFunctions.createByNamedQuery(name, resultClass),
                 c,
                 TypedQueryResultFunctions.resultList()
         );
@@ -392,7 +395,8 @@ public class PersistenceModel {
 
     @Transactional(TxType.MANDATORY)
     public <T> Stream<T> findNamedResultStream(String name, Class<T> resultClass, Consumer<Query> c) {
-        final Stream<T> st = findResult(TypedQueryCreatorFunctions.createByNamedQuery(name, resultClass),
+        final Stream<T> st = findResultUsingQuery(
+                TypedQueryCreatorFunctions.createByNamedQuery(name, resultClass),
                 c,
                 TypedQueryResultFunctions.resultStream()
         );

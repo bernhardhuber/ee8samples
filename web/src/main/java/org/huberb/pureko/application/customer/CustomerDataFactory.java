@@ -37,7 +37,8 @@ public class CustomerDataFactory {
      * @return
      */
     public List<CustomerData> createDataFakerCustomerList(int nMax) {
-        return createDataFakerCustomerList(nMax, createNthDataFakerCustomerData());
+        final Faker faker = Faker.instance(Locale.forLanguageTag("de-AT"));
+        return createDataFakerCustomerList(nMax, createNthDataFakerCustomerData(faker));
     }
 
     public List<CustomerData> createNaiveFakeCustomerList(int nMax) {
@@ -54,15 +55,14 @@ public class CustomerDataFactory {
     public List<CustomerData> createDataFakerCustomerList(int nMax, Function<Integer, CustomerData> f) {
         final List<CustomerData> customerList = new ArrayList<>();
         for (int i = 0; i < nMax; i += 1) {
-            final CustomerData customer = createNthDataFakerCustomerData().apply(i);
+            final CustomerData customer = f.apply(i);
             customerList.add(customer);
         }
         return customerList;
     }
 
-    public static Function<Integer, CustomerData> createNthDataFakerCustomerData() {
+    public static Function<Integer, CustomerData> createNthDataFakerCustomerData(Faker faker) {
         return (Integer i) -> {
-            Faker faker = Faker.instance(Locale.forLanguageTag("de-AT"));
             final FullAddress fullAddress = FullAddress.builder()
                     .address(faker.address().streetAddress())
                     .city(faker.address().city())

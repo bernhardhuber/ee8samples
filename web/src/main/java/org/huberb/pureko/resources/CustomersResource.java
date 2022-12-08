@@ -19,11 +19,12 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import org.huberb.pureko.application.customer.CustomerCommands;
 import org.huberb.pureko.application.customer.CustomerData;
-import org.huberb.pureko.application.customer.CustomerDataFactory;
 import org.huberb.pureko.application.customer.CustomerJsonConverter;
 
 /**
@@ -50,14 +51,43 @@ For JSONP (runnable JavaScript) with callback:
 application/javascript
      */
     @Inject
-    private CustomerDataFactory customerDataFactory;
+    private CustomerCommands.ReadAllCustomersCommand readAllCustomersCommand;
+    @Inject
+    private CustomerCommands.ReadDefaultCustomerCommand readDefaultCustomerCommand;
+    @Inject
+    private CustomerCommands.SeedCustomersCommand seedCustomersCommand;
     @Inject
     private CustomerJsonConverter customerJsonConverter;
 
     @GET
     @Produces("application/json")
+    public Response createSampleCustomers() {
+        final List<CustomerData> customerList = readDefaultCustomerCommand.createDefaultCustomerData(10);
+        final String s = customerJsonConverter.createJsonArrayFrom(customerList);
+
+        return Response
+                .ok(s)
+                .build();
+    }
+
+    @GET()
+    @Path("read")
+    @Produces("application/json")
     public Response customers() {
-        final List<CustomerData> customerList = customerDataFactory.createDataFakerCustomerList(10);
+        final List<CustomerData> customerList = readAllCustomersCommand.readCustomers();
+        final String s = customerJsonConverter.createJsonArrayFrom(customerList);
+
+        return Response
+                .ok(s)
+                .build();
+    }
+
+    @POST()
+    @Path("seed")
+    @Produces("application/json")
+    public Response seedDataBase() {
+        int createdCount = seedCustomersCommand.seedDataBase(5);
+        final List<CustomerData> customerList = readAllCustomersCommand.readCustomers();
         final String s = customerJsonConverter.createJsonArrayFrom(customerList);
 
         return Response

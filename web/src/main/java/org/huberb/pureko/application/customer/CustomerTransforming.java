@@ -39,10 +39,6 @@ public class CustomerTransforming {
         return new TransformCustomerEntityToNewCustomer();
     }
 
-//    public static Function<CustomerData, String> transformCustomerToJson() {
-//        return new TransformCustomerToJson();
-//    }
-
     public static class TransformCustomerToExistingCustomerEntity implements BiFunction<CustomerData, CustomerEntity, CustomerEntity> {
 
         @Override
@@ -115,17 +111,5 @@ public class CustomerTransforming {
             return to;
         }
     }
-
-//    public static class TransformCustomerToJson implements Function<CustomerData, String> {
-//
-//        @Inject
-//        CustomerJsonConverter cjc;
-//
-//        @Override
-//        public String apply(CustomerData from) {
-//            final String s = cjc.createJsonObjectFrom(from);
-//            return s;
-//        }
-//    }
 
 }

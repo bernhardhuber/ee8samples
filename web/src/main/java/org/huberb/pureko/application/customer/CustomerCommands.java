@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
@@ -39,7 +40,7 @@ import org.huberb.pureko.application.support.Transformers;
 @ApplicationScoped
 public class CustomerCommands {
 
-    @ApplicationScoped
+    @RequestScoped
     public static class ReadDefaultCustomerCommand {
 
         @Inject
@@ -47,19 +48,24 @@ public class CustomerCommands {
 
         @Transactional
         public CustomerData createDefaultCustomerData() {
-            final CustomerData cd = createDefaultCustomer();
+            final CustomerData cd = createDefaultCustomer(1).get(0);
             return cd;
         }
 
-        private CustomerData createDefaultCustomer() {
-            final CustomerData customer = customerDataFactory
-                    .createDataFakerCustomerList(1)
-                    .get(0);
-            return customer;
+        @Transactional
+        public List<CustomerData> createDefaultCustomerData(int count) {
+            final List<CustomerData> cdList = createDefaultCustomer(count);
+            return cdList;
+        }
+
+        private List<CustomerData> createDefaultCustomer(int count) {
+            final List<CustomerData> customerList = customerDataFactory
+                    .createDataFakerCustomerList(count);
+            return customerList;
         }
     }
 
-    @ApplicationScoped
+    @RequestScoped
     public static class SeedCustomersCommand {
 
         @Inject
@@ -88,7 +94,7 @@ public class CustomerCommands {
         }
     }
 
-    @ApplicationScoped
+    @RequestScoped
     public static class ReadAllCustomersCommand {
 
         @Inject
@@ -103,7 +109,8 @@ public class CustomerCommands {
 
         //---
         List<CustomerData> readCustomersUsingForLoop() {
-            final String ql = "from Customer";
+            String en = CustomerEntity.class.getSimpleName();
+            final String ql = "from " + en;
             final List<CustomerEntity> resultList = persistenceModel.findResultList(ql, CustomerEntity.class, QueryConsumers.noop());
             final List<CustomerData> l = new ArrayList<>();
             resultList.forEach((CustomerEntity ce) -> {
@@ -114,7 +121,8 @@ public class CustomerCommands {
         }
 
         List<CustomerData> readCustomersStreamCollectorsToList() {
-            final String ql = "from Customer";
+            String en = CustomerEntity.class.getSimpleName();
+            final String ql = "from " + en;
             final TransformCustomerEntityToNewCustomer f = CustomerTransforming.transformCustomerEntityToNewCustomer();
             final List<CustomerEntity> resultList = persistenceModel.findResultList(ql, CustomerEntity.class, QueryConsumers.noop());
 
@@ -125,7 +133,7 @@ public class CustomerCommands {
         }
     }
 
-    @ApplicationScoped
+    @RequestScoped
     public static class CreateNewCustomerCommand {
 
         @Inject
@@ -161,7 +169,7 @@ public class CustomerCommands {
 
     }
 
-    @ApplicationScoped
+    @RequestScoped
     public static class UpdateCustomerCommand {
 
         @Inject
@@ -195,7 +203,7 @@ public class CustomerCommands {
 
     }
 
-    @ApplicationScoped
+    @RequestScoped
     public static class DeleteCustomerCommand {
 
         @Inject

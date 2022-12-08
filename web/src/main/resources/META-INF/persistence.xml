@@ -8,13 +8,12 @@
     <!-- Define Persistence Unit -->
     <persistence-unit name="ee8samplesPU" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
-        <!--jta-data-source>java:jboss/datasources/Ee8SamplesDS</jta-data-source-->
         <!-- using java:module/env/.. and mapping via web.xml resource-ref
           makes problems, as pu is created before the web.xml resource-ref mapping
           when checking ddl or processing import.sql
         -->
-        <!--jta-data-source>java:/datasources/Ee8SamplesDS</jta-data-source-->
+        <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
+        <!--jta-data-source>java:jboss/datasources/Ee8SamplesDS</jta-data-source-->
         <class>org.huberb.pureko.application.order.OrderEntity</class>
         <class>org.huberb.pureko.application.customer.CustomerEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
@@ -28,9 +27,9 @@
             none
             <property name="hibernate.hbm2ddl.auto" value="validate"/>
             -->
-            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
-            <property name="hibernate.transaction.flush_before_completion" value="true"/>
+            <!--property name="hibernate.transaction.flush_before_completion" value="true"/-->
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <!--property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/-->
         </properties>

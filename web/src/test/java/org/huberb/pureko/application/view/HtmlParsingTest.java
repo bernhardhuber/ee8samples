@@ -21,7 +21,9 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -97,6 +99,20 @@ public class HtmlParsingTest {
         });
     }
 
+    @Test
+    public void given_html_then_attributes_are_unique() throws Exception {
+        final File start = new File("src/main/webapp");
+        final List<Path> l = FindFiles.findTheFilesReturningList(start, ".html");
+        assertTrue(l.size() > 0L);
+        l.forEach((Path p) -> {
+            final File fFromP = p.toFile();
+            Document document = parseToJsoupHtmlDocument(fFromP);
+            assertAttrValueUnique("id").accept(document);
+            assertAttrValueUnique("src").accept(document);
+            assertAttrValueUnique("name").accept(document);
+        });
+    }
+
     static Document parseToJsoupHtmlDocument(File f) {
         try {
             Document document = Jsoup.parse(f, "UTF-8");
@@ -117,6 +133,28 @@ public class HtmlParsingTest {
                 final String attrV = e.attr(attributeName);
                 String m = String.format("node [%s], attribute [%s: '%s']", n, attributeName, attrV);
                 assertFalse(attrV.contains(doesNotContain), m);
+            });
+        };
+    }
+
+    static Consumer<Document> assertAttrValueUnique(String attributeName) {
+        return (Document document) -> {
+            Set<String> synthKeyList = new HashSet<>();
+            Set<String> dupSynthKeyList = new HashSet<>();
+            Elements elements = document.getElementsByAttribute(attributeName);
+            elements.forEach(e -> {
+                final String n = e.normalName();
+                final String attrV = e.attr(attributeName);
+
+                String synthKey = n + "_" + attrV;
+                if (synthKeyList.contains(synthKey)) {
+                    dupSynthKeyList.add(synthKey);
+                } else {
+                    synthKeyList.add(synthKey);
+                }
+
+                String m = String.format("node [%s], attribute [%s], dups [%s]", n, attributeName, dupSynthKeyList);
+                assertTrue(dupSynthKeyList.isEmpty(), m);
             });
         };
     }

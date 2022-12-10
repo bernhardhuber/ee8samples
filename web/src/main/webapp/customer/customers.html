@@ -20,22 +20,13 @@ limitations under the License.
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- 
-        <link rel="stylesheet" href="../webjars/purecss/2.1.0/build/pure-min.css" />
-        <link rel="stylesheet" href="../webjars/purecss/2.1.0/build/grids-responsive-min.css" />
-        -->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <link rel="stylesheet" href="../webjars/bootstrap/5.2.3/dist/css/bootstrap.min.css" />
-        
+
         <script type="text/javascript" src="../webjars/knockout/3.5.1/build/output/knockout-latest.js"></script>
         <script type="text/javascript" src="../webjars/jquery/3.6.1/dist/jquery.min.js"></script>
 
-        <!--
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" 
-                integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-        crossorigin="anonymous"></script>
-        -->
-        <script type="text/javascript" src="../webjars/popper__core/2.11.6/dist/cjs/popper.min.js"></script>        
+        <script type="text/javascript" src="../webjars/popperjs__core/2.11.6/dist/umd/popper.min.js"></script>
         <script type="text/javascript" src="../webjars/bootstrap/5.2.3/dist/js/bootstrap.min.js"></script>
 
         <script type="text/javascript">
@@ -61,9 +52,9 @@ limitations under the License.
                     return fullAddress.address + " " + fullAddress.postalcode + " " + fullAddress.city;
                 };
 
-                /** 
+                /**
                  * POST REST seeding database if it is still empty.
-                 * 
+                 *
                  * @returns {undefined}
                  */
                 this.seedDatabase = function () {
@@ -106,38 +97,43 @@ limitations under the License.
     </head>
 
     <body>
-        <div class="pure-g" style="padding: 1em">
-            <div class="pure-u-1-1">
-                <button class="pure-button pure-button-primary"
-                        data-bind='click: seedDatabase'>
-                    Seed Sample Data
-                </button>
+        <div class="container">
+            <div class="row" >
+                <div class="col">
+                    <h2>Seed Database</h2>
+                    <button class="btn btn-primary"
+                            data-bind='click: seedDatabase'>
+                        Seed Sample Data
+                    </button>
+                </div>
             </div>
-            <div class="pure-u-1-1">
-                <h2>Customers</h2>
-                <table class="pure-table pure-table-horizontal pure-table-striped">
-                    <thead><tr>
-                            <th>Customer ID</th><th>Company Name</th>
-                            <th>Contact Name</th><th>Contact Title</th>
-                            <th>Phone</th><th>Fax</th>
-                            <th>Full Address</th>
-                        </tr>
-                    </thead>
-                    <tbody data-bind="foreach: customers">
-                        <tr>
-                            <td><span data-bind="text: customerID"></span></td>
-                            <td><span data-bind="text: companyName"></span></td>
+            <div class="row" >
+                <div class="col">
+                    <h2>Customers</h2>
+                    <table class="table table-horizontal table-striped">
+                        <thead><tr>
+                                <th>Customer ID</th><th>Company Name</th>
+                                <th>Contact Name</th><th>Contact Title</th>
+                                <th>Phone</th><th>Fax</th>
+                                <th>Full Address</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: customers">
+                            <tr>
+                                <td><span data-bind="text: customerID"></span></td>
+                                <td><span data-bind="text: companyName"></span></td>
 
-                            <td><span data-bind="text: contactName"></span></td>
-                            <td><span data-bind="text: contactTitle"></span></td>
+                                <td><span data-bind="text: contactName"></span></td>
+                                <td><span data-bind="text: contactTitle"></span></td>
 
-                            <td><span data-bind="text: phone"></span></td>
-                            <td><span data-bind="text: fax"></span></td>
+                                <td><span data-bind="text: phone"></span></td>
+                                <td><span data-bind="text: fax"></span></td>
 
-                            <td><span data-bind="text: $parent.fullAddressInline($data.fullAddress)"></span></td>
-                        </tr>
-                    </tbody>
-                </table>
+                                <td><span data-bind="text: $parent.fullAddressInline($data.fullAddress)"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </body>

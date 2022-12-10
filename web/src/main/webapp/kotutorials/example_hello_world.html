@@ -42,8 +42,8 @@ limitations under the License.
                 self.lastName = ko.observable(last);
 
                 self.fullName = ko.pureComputed(function () {
-                    // Knockout tracks dependencies automatically. 
-                    // It knows that fullName depends on firstName and lastName, 
+                    // Knockout tracks dependencies automatically.
+                    // It knows that fullName depends on firstName and lastName,
                     // because these get called when evaluating fullName.
                     return self.firstName() + " " + self.lastName();
                 }, self);

@@ -20,22 +20,13 @@ limitations under the License.
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- 
-        <link rel="stylesheet" href="../webjars/purecss/2.1.0/build/pure-min.css" />
-        <link rel="stylesheet" href="../webjars/purecss/2.1.0/build/grids-responsive-min.css" />
-        -->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <link rel="stylesheet" href="../webjars/bootstrap/5.2.3/dist/css/bootstrap.min.css" />
-        
+
         <script type="text/javascript" src="../webjars/knockout/3.5.1/build/output/knockout-latest.js"></script>
         <script type="text/javascript" src="../webjars/jquery/3.6.1/dist/jquery.min.js"></script>
 
-        <!--
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" 
-                integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-        crossorigin="anonymous"></script>
-        -->
-        <script type="text/javascript" src="../webjars/popper__core/2.11.6/dist/cjs/popper.min.js"></script>        
+        <script type="text/javascript" src="../webjars/popperjs__core/2.11.6/dist/umd/popper.min.js"></script>
         <script type="text/javascript" src="../webjars/bootstrap/5.2.3/dist/js/bootstrap.min.js"></script>
 
         <script type="text/javascript">
@@ -46,7 +37,7 @@ limitations under the License.
                 const resturl = "/ko_pure_web/resources/customer";
                 const resturlCreate = "/ko_pure_web/resources/customer/create";
 
-                // @data                
+                // @data
                 // @data
                 const data = {
                     customerID: "customerID " + -1,
@@ -72,9 +63,9 @@ limitations under the License.
                     return self.contactTitle + " " + self.contanctName;
                 }, self);
 
-                /** 
+                /**
                  * Load data via json.
-                 * 
+                 *
                  * @returns {undefined}
                  */
                 this.loadData = function () {
@@ -108,72 +99,78 @@ limitations under the License.
     </head>
 
     <body>
-        <div class="pure-g" style="padding: 1em">
-            <div class="pure-u-1-1">
-                <h2>Customer</h2>
-                <ul>
-                    <li><span data-bind="text: customerID"></span></li>
-                    <li><span data-bind="text: companyName"></span></li>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h2>Customer</h2>
+                    <ul>
+                        <li><span data-bind="text: customerID"></span></li>
+                        <li><span data-bind="text: companyName"></span></li>
 
-                    <li><span data-bind="text: contactName"></span></li>
-                    <li><span data-bind="text: contactTitle"></span></li>
+                        <li><span data-bind="text: contactName"></span></li>
+                        <li><span data-bind="text: contactTitle"></span></li>
 
-                    <li><span data-bind="text: phone"></span></li>
-                    <li><span data-bind="text: fax"></span></li>
+                        <li><span data-bind="text: phone"></span></li>
+                        <li><span data-bind="text: fax"></span></li>
 
-                    <li><span data-bind="text: fullAddress"></span></li>
-                </ul>
+                        <li><span data-bind="text: fullAddress"></span></li>
+                    </ul>
+                </div>
             </div>
-            <div class="pure-u-1-1 ">
-                <h2>Input Form 1</h2>
-                <form class="pure-form pure-form-aligned">
+            <form class="row">
+                <div class="col">
+                    <h2>Input Form 1</h2>
+
                     <fieldset>
                         <legend>Company Information</legend>
 
-                        <div class="pure-control-group">
-                            <label for="customerID_1">Customer ID</label>
-                            <input id="customerID_1" type="text" class="pure-input-1-2"
+                        <div class="control-group">
+                            <label for="customerID_1" class="form-label">Customer ID</label>
+                            <input id="customerID_1" type="text" class="form-control"
                                    readonly="true"
                                    data-bind="value: customerID" title="Customer ID"/>
-                        </div>                
-                        <div class="pure-control-group">
-                            <label for="companyName_1">Company Name</label>
-                            <input id="companyName_1" type="text" class="pure-input-1-2"
+                        </div>
+                        <div class="control-group">
+                            <label for="companyName_1" class="form-label">Company Name</label>
+                            <input id="companyName_1" type="text" class="form-control"
                                    autofocus="true"
                                    data-bind="value: companyName" title="Company Name"/>
-                        </div>          
+                        </div>
                     </fieldset>
                     <fieldset>
                         <legend>Contact Information</legend>
 
-                        <div class="pure-control-group">
-                            <label for="contactName_1">Contact Name</label>
-                            <input id="contactName_1" type="text" class="pure-input-1-2"
+                        <div class="control-group">
+                            <label for="contactName_1" class="form-label">Contact Name</label>
+                            <input id="contactName_1" type="text" class="form-control"
                                    data-bind="value: contactName" title="Contact Name"/>
-                        </div>                
-                        <div class="pure-control-group">
-                            <label for="contactTitle_1">Contact Title</label>
-                            <input id="contactTitle_1" type="text" class="pure-input-1-2"
+                        </div>
+                        <div class="control-group">
+                            <label for="contactTitle_1" class="form-label">Contact Title</label>
+                            <input id="contactTitle_1" type="text" class="form-control"
                                    data-bind="value: contactTitle" title="Contact Title"/>
-                        </div>          
-                        <div class="pure-control-group">
-                            <label for="phone_1">Phone</label>
-                            <input id="phone_1" type="text" class="pure-input-1-3"
+                        </div>
+                        <div class="control-group">
+                            <label for="phone_1" class="form-label">Phone</label>
+                            <input id="phone_1" type="text" class="form-control"
                                    data-bind="value: phone" title="Phone"/>
-                        </div>          
-                        <div class="pure-control-group">
-                            <label for="fax_1">Fax</label>
-                            <input id="fax_1" type="text" class="pure-input-1-3"
+                        </div>
+                        <div class="control-group">
+                            <label for="fax_1" class="form-label">Fax</label>
+                            <input id="fax_1" type="text" class="form-control"
                                    data-bind="value: fax" title="Fax"/>
-                        </div>          
+                        </div>
                     </fieldset>
-                    <div class="pure-button-group" role="group" aria-label="...">
-                        <button class="pure-button pure-button-primary" 
+                    <p></p>
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button class="btn btn-primary"
                                 onclick="alert('TODO implement me!');">Submit</button>
-                        <button class="pure-button pure-button-primary" 
+                        <button class="btn btn-primary"
                                 onclick="alert('TODO implement me!');">Reset</button>
                     </div>
-                </form>
-            </div>
-    </body>
+                </div>
+            </form>
+        </div>
+    </form>
+</body>
 </html>

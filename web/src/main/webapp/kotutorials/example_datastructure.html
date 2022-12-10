@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<!--
+Copyright 2022 berni3.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+    <head>
+        <title>Knockout Knockout Example Datastructure</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="../webjars/purecss/2.1.0/build/pure-min.css" />
+        <link rel="stylesheet" href="../webjars/purecss/2.1.0/build/grids-responsive-min.css" />
+
+        <script type="text/javascript" src="../webjars/knockout/3.5.1/build/output/knockout-latest.js"></script>
+        <script type="text/javascript" src="../webjars/jquery/3.6.1/dist/jquery.min.js"></script>
+
+        <script type="text/javascript">
+            var AppViewModel = function (dm) {
+                var self = this;
+                self.name = dm.name;
+                self.alternativeNames = dm.designations.alternative_names;
+                self.adjectives = dm.designations.adjectives;
+                self.dataModelStringified = JSON.stringify(dm, null, 2);
+                self.rawDataModel = dm;
+                self.quasi_satellites = ko.observable(dm.orbital_characteristics.satellites.quasi_satellites);
+                self.operational_artificial_satellites = ko.observable(dm.orbital_characteristics.satellites.operational_artificial_satellites);
+                self.tracked_space_debris = ko.observable(dm.orbital_characteristics.satellites.tracked_space_debris);
+
+                //---
+                this.submitNewData = function () {
+                    alert('TODO implement me!');
+                };
+            };
+            // Here's my data model
+            const dataModel = {
+                name: 'Earth',
+                designations: {
+                    alternative_names: ['Gaia', 'Terra', 'Tellus', 'the world', 'the globe'],
+                    adjectives: ['earthly', 'terrestrial', 'terran', 'tellurian']
+                },
+                orbital_characteristics: {
+                    epoch: 'J2000',
+                    aphelion: 152100000,
+                    perihelion: 147095000,
+                    semi_major_axis: 149598023,
+                    eccentricity: 0.0167086,
+                    orbital_period: 365.256363004,
+                    average_orbital_speed: 29.78,
+                    mean_anomaly: 358.617,
+                    inclination: 7.155,
+                    longitude_of_ascending_node: -11.26064,
+                    satellites: {
+                        natural: ['Moon'],
+                        quasi_satellites: 5,
+                        operational_artificial_satellites: 4500,
+                        tracked_space_debris: 18000
+                    },
+                },
+                physical_characteristics: {
+                    mean_radius: 6371.0,
+                    equatorial_radius: 6378.137,
+                    polar_radius: 6356.752,
+                    circumference: {
+                        equatorial: 40075.017,
+                        meridional: 40007.86
+                    },
+                    surface_area: 510072000,
+                    volume: '1.08321*1012',
+                    mass: '5.97217*1024',
+                    mean_density: 5.514,
+                    surface_gravity: 9.80665,
+                    moment_of_inertia_factor: 0.3307,
+                    escape_velocity: 11.186,
+                    synodic_rotation_period: 1.0,
+                    sidereal_rotation_period: 0.99726968,
+                    equatorial_rotation_velocity: 0.4651,
+                    axial_tilt: 23.4392811,
+                    albedo: 0.367
+                }
+            };
+            // setup AppViewModel
+            $(document).ready(function () {
+                var appViewModel = new AppViewModel(dataModel);
+                // Activates knockout.js
+                ko.applyBindings(appViewModel);
+                // set input focus
+                $('#quasi_satellites').focus();
+            });
+        </script>
+    </head>
+    <body>
+        <div class="pure-g" style="padding: 1em">
+            <div class="pure-u-1-1">
+                <h2>Basic Information</h2>
+                <dl>
+                    <dt>
+                        Name
+                    </dt>
+                    <dd>
+                        <span data-bind="text: name"> </span>
+                    </dd>
+                    <dt>
+                        Alternative Names
+                    </dt>
+                    <dd>
+                        <span data-bind="text: alternativeNames"></span>
+                    </dd>
+                    <dt>
+                        Adjectives
+                    </dt>
+                    <dd>
+                        <span data-bind="text: adjectives"></span>
+                    </dd>
+                    <dt>
+                        Mean Radius
+                    </dt>
+                    <dd>
+                        <span data-bind="text: rawDataModel.physical_characteristics.mean_radius"></span>
+                    </dd>
+                    <dt>
+                        Equatorial Radius
+                    </dt>
+                    <dd>
+                        <span data-bind="text: rawDataModel.physical_characteristics.equatorial_radius"></span>
+                    </dd>
+                </dl>
+                <h2>Satellites</h2>
+                <dl>
+                    <dt>
+                        Quasi Satellites
+                    </dt>
+                    <dd>
+                        Original <span data-bind="text: rawDataModel.orbital_characteristics.satellites.quasi_satellites"></span>
+                        <br/>
+                        <strong>New <span data-bind="text: quasi_satellites"></span></strong>
+                    </dd>
+                    <dt>
+                        Operational Artificial Satellites
+                    </dt>
+                    <dd>
+                        Original <span data-bind="text: rawDataModel.orbital_characteristics.satellites.operational_artificial_satellites"></span>
+                        <br/>
+                        <strong>New <span data-bind="text: operational_artificial_satellites"></span></strong>
+                    </dd>
+                    <dt>
+                        Tracked Space Debris
+                    </dt>
+                    <dd>
+                        Original <span data-bind="text: rawDataModel.orbital_characteristics.satellites.tracked_space_debris"></span>
+                        <br/>
+                        <strong>New <span data-bind="text: tracked_space_debris"></span></strong>
+                    </dd>
+                </dl>
+            </div>
+            <div class="pure-u-1-1">
+                <h2>Satellites</h2>
+                <form class="pure-form pure-form-aligned">
+                    <fieldset>
+                        <div class="pure-control-group">
+                            <label  for="quasi_satellites">Quasi Satellites</label>
+                            <input id="quasi_satellites" type="text" data-bind="value: quasi_satellites"/>
+                        </div>
+                        <div class="pure-control-group">
+                            <label for="operational_artificial_satellites">Operational Artificial Satellites</label>
+                            <input id="operational_artificial_satellites" type="text" data-bind="value: operational_artificial_satellites"/>
+                        </div>
+                        <div class="pure-control-group">
+                            <label for="tracked_space_debris">Tracked Space Debris</label>
+                            <input id="tracked_space_debris" type="text" data-bind="value: tracked_space_debris"/>
+                        </div>
+                    </fieldset>
+                    <button class="pure-button pure-button-primary"
+                            data-bind="click: submitNewData">Submit</button>
+                </form>
+            </div>
+            <div class="pure-u-1-1">
+                <h2>Raw Json Data</h2>
+                <div>
+                    <pre data-bind="text: dataModelStringified">
+                    </pre>
+                </div>
+            </div>
+            <div class="pure-u-1-1">---</div>
+    </body>
+</html>

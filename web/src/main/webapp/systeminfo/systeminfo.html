@@ -26,7 +26,7 @@ limitations under the License.
         <script type="text/javascript" src="../webjars/knockout/3.5.1/build/output/knockout-latest.js"></script>
         <script type="text/javascript" src="../webjars/jquery/3.6.1/dist/jquery.min.js"></script>
 
-        <script type="text/javascript" src="../webjars/popper__core/2.11.6/dist/cjs/popper.min.js"></script>
+        <script type="text/javascript" src="../webjars/popperjs__core/2.11.6/dist/umd/popper.min.js"></script>
         <script type="text/javascript" src="../webjars/bootstrap/5.2.3/dist/js/bootstrap.min.js"></script>
 
         <script type="text/javascript">
@@ -173,27 +173,15 @@ limitations under the License.
                     <thead>
                         <tr>
                             <th>beanClass</th>
-                            <th>injectionPoints</th>
                             <th>name</th>
-                            <th>qualifiers</th>
                             <th>scope</th>
-                            <th>stereotypes</th>
-                            <th>types</th>
-                            <th>alternative</th>
-                            <th>nullable</th>
                         </tr>
                     </thead>
                     <tbody data-bind="foreach: cdi">
                         <tr>
                             <td><span data-bind="text: beanClass"></span></td>
-                            <td><span data-bind="text: injectionPoints"></span></td>
                             <td><span data-bind="text: name"></span></td>
-                            <td><span data-bind="text: qualifiers"></span></td>
                             <td><span data-bind="text: scope"></span></td>
-                            <td><span data-bind="text: stereotypes"></span></td>
-                            <td><span data-bind="text: types"></span></td>
-                            <td><span data-bind="text: alternative"></span></td>
-                            <td><span data-bind="text: nullable"></span></td>
                         </tr>
                     </tbody>
                 </table>

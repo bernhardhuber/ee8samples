@@ -25,8 +25,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
@@ -43,24 +45,29 @@ public class XmlParsingTest {
 
     static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 
-    @Test
-    public void helloXml() throws Exception {
-        parseXmlFApi();
+    @ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {
+        "src/main/resources/META-INF/persistence.xml",
+        "src/main/webapp/WEB-INF/beans.xml",
+        "src/main/webapp/WEB-INF/web.xml"
+    })
+    public void given_an_xml_file_then_it_is_parsable_and_well_formed(String fn) throws Exception {
+        parseXmlFApi(fn);
     }
 
-    void parseXmlStandardApi() throws ParserConfigurationException, SAXException, IOException {
-        final File f = new File("src/main/resources/META-INF/persistence.xml");
-        final DocumentBuilder db = DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
-        final Document document = db.parse(f);
-        assertNotNull(document);
-    }
+    void parseXmlFApi(String fn) throws ParserConfigurationException {
+        final File f = new File(fn);
+        assertAll(
+                () -> f.exists(),
+                () -> f.isFile(),
+                () -> f.canRead()
+        );
 
-    void parseXmlFApi() {
-        final File f = new File("src/main/resources/META-INF/persistence.xml");
-
-        final Document document = new DocumentBuilderF(new DocumentBuilderFactoryF(DOCUMENT_BUILDER_FACTORY).newDocumentBuilder())
+        final Document document = new DocumentBuilderF(DOCUMENT_BUILDER_FACTORY.newDocumentBuilder())
                 .transformTo(DocumentBuilderF.parse(f));
-        assertNotNull(document);
+        assertAll(
+                () -> assertNotNull(document),
+                () -> assertTrue(document.getChildNodes().getLength() > 0));
     }
 
     static class DocumentBuilderFactoryF {

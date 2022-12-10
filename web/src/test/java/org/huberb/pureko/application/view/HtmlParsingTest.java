@@ -86,7 +86,7 @@ public class HtmlParsingTest {
     }
 
     @Test
-    public void given_Html_then_no_src_attribute_references_http_url() throws Exception {
+    public void given_html_then_no_src_attribute_references_http_url() throws Exception {
         final File start = new File("src/main/webapp");
         final List<Path> l = FindFiles.findTheFilesReturningList(start, ".html");
         assertTrue(l.size() > 0L);

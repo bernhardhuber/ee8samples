@@ -119,9 +119,9 @@ limitations under the License.
                     }
                 ];
                 // @properties
-                self.greeting = ko.observable(greetingdata.greeting);
-                self.pu = ko.observable(pudata)
-                self.cdi = ko.observableArray(cdidata);
+                self.greeting = greetingdata.greeting;
+                self.pu = pudata;
+                self.cdi = cdidata;
 
                 // @function computing
 
@@ -154,38 +154,137 @@ limitations under the License.
     <body>
         <div class="container">
             <div class="row">
-                <h2>Greeting</h2>
-                <span data-bind="text: greeting"></span>
+                <div class="col">
+                    <h2>Greeting</h2>
+                    <span data-bind="text: greeting"></span>
+                </div>
             </div>
             <div class="row">
-                <h2>PU</h2>
-                pu <span data-bind="text: pu"></span>
-                properties <span data-bind="text: pu().properties"></span>
-                embeddables <span data-bind="text: pu().embeddables"></span>
-                entities <span data-bind="text: pu().entities"></span>
-                managedType <span data-bind="text: pu().managedType"></span>
-            </div>
-            <div class="row">
-                <h2>CDI</h2>
-                <span data-bind="text: cdi"></span>
+                <div class="col">
+                    <h2>PU</h2>
 
-                <table class="table table-striped table-bordered table-sm">
-                    <thead>
-                        <tr>
-                            <th>beanClass</th>
-                            <th>name</th>
-                            <th>scope</th>
-                        </tr>
-                    </thead>
-                    <tbody data-bind="foreach: cdi">
-                        <tr>
-                            <td><span data-bind="text: beanClass"></span></td>
-                            <td><span data-bind="text: name"></span></td>
-                            <td><span data-bind="text: scope"></span></td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <h3>Properties</h3>
+                    <table class="table table-striped table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: Object.entries(pu.properties)">
+                            <tr>
+                                <td>
+                                    <span data-bind="text: $data[0]"/>
+                                </td>
+                                <td>
+                                    <span data-bind="text: $data[1]"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Embeddables</h3>
+                    <table class="table table-striped table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: pu.embeddables">
+                            <tr>
+                                <td><span data-bind="text: $data"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Entities</h3>
+                    <table class="table table-striped table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Java Type Name</th>
+                                <th>Persistent Type Name</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: pu.entities">
+                            <tr>
+                                <td><span data-bind="text: $data.name"></span></td>
+                                <td><span data-bind="text: $data['java-type-name']"></span></td>
+                                <td><span data-bind="text: $data['persistent-type-name']"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                    <h3>Managed Type</h3>
+                    <table class="table table-striped table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: pu.managedType">
+                            <tr>
+                                <td><span data-bind="text: $data"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
+            <div class="row">
+                <div class="col">
+                    <h2>CDI</h2>
+
+                    <table class="table table-striped table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Bean Class</th>
+                                <th>Name</th>
+                                <th>Scope</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: cdi">
+                            <tr>
+                                <td><span data-bind="text: beanClass"></span></td>
+                                <td><span data-bind="text: name"></span></td>
+                                <td><span data-bind="text: scope"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <h2>Raw Json</h2>
+                <div class="col">
+                    <button class="btn btn-outline-primary" 
+                            type="button" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#collapsePuRawJson" 
+                            aria-expanded="false" 
+                            aria-controls="collapsePuRawJson">
+                        PU raw json
+                    </button>
+                    <div class="collapse" id="collapsePuRawJson">
+                        <pre data-bind="text: JSON.stringify(pu, null, 2)"></span>
+                        </pre>
+                    </div>
+
+                    <button class="btn btn-outline-primary" 
+                            type="button" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#collapseCdiRawJson" 
+                            aria-expanded="false" 
+                            aria-controls="collapseCdiRawJson">
+                        CDI raw json
+                    </button>
+                    <div class="collapse" id="collapseCdiRawJson">
+                        <pre data-bind="text: JSON.stringify(cdi, null, 2)"></span>
+                        </pre>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </body>
 </html>

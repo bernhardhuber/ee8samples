@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jsoup.Jsoup;
@@ -76,13 +77,13 @@ public class HtmlParsingTest {
          * java.util.function.BiPredicate, java.nio.file.FileVisitOption...)
          */
         static Stream<Path> findTheFilesReturningStream(File start, String matchingExt) throws IOException {
-            BiPredicate<Path, BasicFileAttributes> matcher = (p, bfa) -> {
+            final BiPredicate<Path, BasicFileAttributes> matcher = (p, bfa) -> {
                 return bfa.isRegularFile()
                         && p.toFile().getName().endsWith(matchingExt);
             };
             final FileVisitOption[] options = new FileVisitOption[0];
             final int maxDepth = 10;
-            Stream<Path> result = Files.find(start.toPath(), maxDepth, matcher, options);
+            final Stream<Path> result = Files.find(start.toPath(), maxDepth, matcher, options);
             return result;
         }
     }
@@ -94,7 +95,7 @@ public class HtmlParsingTest {
         assertTrue(l.size() > 0L);
         l.forEach((Path p) -> {
             final File fFromP = p.toFile();
-            Document document = parseToJsoupHtmlDocument(fFromP);
+            final Document document = parseToJsoupHtmlDocument(fFromP);
             assertAttrValueDoesNot("src", "http").accept(document);
         });
     }
@@ -106,7 +107,7 @@ public class HtmlParsingTest {
         assertTrue(l.size() > 0L);
         l.forEach((Path p) -> {
             final File fFromP = p.toFile();
-            Document document = parseToJsoupHtmlDocument(fFromP);
+            final Document document = parseToJsoupHtmlDocument(fFromP);
             assertAttrValueUnique("id").accept(document);
             assertAttrValueUnique("src").accept(document);
             assertAttrValueUnique("name").accept(document);
@@ -127,34 +128,34 @@ public class HtmlParsingTest {
 
     static Consumer<Document> assertAttrValueDoesNot(String attributeName, String doesNotContain) {
         return (Document document) -> {
-            Elements elements = document.getElementsByAttribute(attributeName);
+            final Elements elements = document.getElementsByAttribute(attributeName);
             elements.forEach(e -> {
                 final String n = e.normalName();
                 final String attrV = e.attr(attributeName);
-                String m = String.format("node [%s], attribute [%s: '%s']", n, attributeName, attrV);
-                assertFalse(attrV.contains(doesNotContain), m);
+                final Supplier<String> mSupp = () -> String.format("node [%s], attribute [%s: '%s']", n, attributeName, attrV);
+                assertFalse(attrV.contains(doesNotContain), mSupp);
             });
         };
     }
 
     static Consumer<Document> assertAttrValueUnique(String attributeName) {
         return (Document document) -> {
-            Set<String> synthKeyList = new HashSet<>();
-            Set<String> dupSynthKeyList = new HashSet<>();
-            Elements elements = document.getElementsByAttribute(attributeName);
+            final Set<String> synthKeyList = new HashSet<>();
+            final Set<String> dupSynthKeyList = new HashSet<>();
+            final Elements elements = document.getElementsByAttribute(attributeName);
             elements.forEach(e -> {
                 final String n = e.normalName();
                 final String attrV = e.attr(attributeName);
 
-                String synthKey = n + "_" + attrV;
+                final String synthKey = n + "_" + attributeName + "_" + attrV;
                 if (synthKeyList.contains(synthKey)) {
                     dupSynthKeyList.add(synthKey);
                 } else {
                     synthKeyList.add(synthKey);
                 }
 
-                String m = String.format("node [%s], attribute [%s], dups [%s]", n, attributeName, dupSynthKeyList);
-                assertTrue(dupSynthKeyList.isEmpty(), m);
+                final Supplier<String> mSupp = () -> String.format("node [%s], attribute [%s], dups [%s]", n, attributeName, dupSynthKeyList);
+                assertTrue(dupSynthKeyList.isEmpty(), mSupp);
             });
         };
     }

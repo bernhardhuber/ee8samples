@@ -26,7 +26,9 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.persistence.EntityManager;
@@ -78,45 +80,29 @@ public class SystemInfo {
         //JsonifyableToObject jv = new JsonifyableToObject();
         JsonObjectBuilder job = Json.createObjectBuilder();
 
-        //job.add("properties", Json.createObjectBuilder(jv.jvMap(em.getProperties())).build());
         job.add("properties", JsonifyableToJsonValue.jvJsonValue().apply(em.getProperties()));
         job.add("embeddables", embeddablesF.apply(em));
         job.add("entities", entitiesF.apply(em));
         job.add("managedType", managedTypesF.apply(em));
-        return job.build();
+        final JsonObject jo = job.build();
+        final String joAsJsonString = jo.toString();
+        LOG.info(() -> joAsJsonString);
+        return jo;
+
     }
 
     public JsonValue cdi() {
-        JsonArrayBuilder jab = Json.createArrayBuilder();
+        final JsonArrayBuilder jab = Json.createArrayBuilder();
         final Set<Bean<?>> beans = beanManager.getBeans(Object.class,
                 new AnnotationLiteral<Any>() {
         });
         for (Bean<?> bean : beans) {
-            final String beanInfo = String.format("bean: "
-                    + "bean class %s, "
-                    + "bean injections points %s, "
-                    + "bean name %s, "
-                    + "bean qualifiers %s, "
-                    + "bean scope %s, "
-                    + "bean sterotypes %s, "
-                    + "bean types %s, "
-                    + "bean alternative %s, "
-                    + "bean nullable %s, ",
-                    bean.getBeanClass().getName(),
-                    bean.getInjectionPoints(),
-                    bean.getName(),
-                    bean.getQualifiers(),
-                    bean.getScope(),
-                    bean.getStereotypes(),
-                    bean.getTypes(),
-                    bean.isAlternative(),
-                    bean.isNullable()
-            );
-            LOG.info(() -> beanInfo);
-
             jab.add(Json.createObjectBuilder(mapCdiBeanToMap().apply(bean)).build());
         }
-        return jab.build();
+        final JsonArray ja = jab.build();
+        final String jaAsJsonString = ja.toString();
+        LOG.info(() -> jaAsJsonString);
+        return ja;
     }
 
     static Function<Bean<?>, Map<String, Object>> mapCdiBeanToMap() {

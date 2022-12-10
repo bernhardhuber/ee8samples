@@ -26,7 +26,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -40,26 +39,26 @@ import org.xml.sax.SAXParseException;
  *
  * @author berni3
  */
-public class XhtmlParsingTest {
+public class XmlParsingTest {
+
+    static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 
     @Test
-    @Disabled
     public void helloXml() throws Exception {
         parseXmlFApi();
     }
 
     void parseXmlStandardApi() throws ParserConfigurationException, SAXException, IOException {
-        final File f = new File("src/main/webapp/index.html");
-        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        final DocumentBuilder db = dbf.newDocumentBuilder();
+        final File f = new File("src/main/resources/META-INF/persistence.xml");
+        final DocumentBuilder db = DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
         final Document document = db.parse(f);
         assertNotNull(document);
     }
 
     void parseXmlFApi() {
-        final File f = new File("src/main/webapp/index.html");
-        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        final Document document = new DocumentBuilderF(new DocumentBuilderFactoryF(dbf).newDocumentBuilder())
+        final File f = new File("src/main/resources/META-INF/persistence.xml");
+
+        final Document document = new DocumentBuilderF(new DocumentBuilderFactoryF(DOCUMENT_BUILDER_FACTORY).newDocumentBuilder())
                 .transformTo(DocumentBuilderF.parse(f));
         assertNotNull(document);
     }

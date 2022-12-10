@@ -62,13 +62,6 @@
             <version>5.3.23.Final</version>
             <scope>test</scope>
         </dependency>
-        <!--dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>6.2.5.Final</version>
-            <scope>test</scope>
-        </dependency-->
-        
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
@@ -81,12 +74,6 @@
             <version>3.0.3</version>
             <scope>test</scope>
         </dependency>        
-        <!--dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-jpa-2.2</artifactId>
-            <version>5.6.14.Final</version>
-            <scope>test</scope>
-        </dependency-->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -138,33 +125,31 @@
             <version>1.35.0</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <!-- jsoup HTML parser library @ https://jsoup.org/ -->
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.15.3</version>
+            <scope>test</scope>
+        </dependency>        
+        
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.24</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency>        
         <dependency>
             <groupId>net.datafaker</groupId>
             <artifactId>datafaker</artifactId>
             <version>1.6.0</version>
         </dependency>
-        <!--
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
-              integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
-              crossorigin="anonymous"/>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
-        -->
+        
         <dependency>
             <groupId>org.webjars.npm</groupId>
             <artifactId>purecss</artifactId>
             <version>2.1.0</version>
         </dependency>
-        <!--
-            <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
-            <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js'></script>
-        -->
         <dependency>
             <groupId>org.webjars.npm</groupId>
             <artifactId>knockout</artifactId>
@@ -180,6 +165,11 @@
             <artifactId>bootstrap</artifactId>
             <version>5.2.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>popperjs__core</artifactId>
+            <version>2.11.6</version>
+        </dependency>    
     </dependencies>
 
     <build>

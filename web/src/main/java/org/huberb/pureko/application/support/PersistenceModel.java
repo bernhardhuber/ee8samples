@@ -111,6 +111,9 @@ public class PersistenceModel {
         }
     }
 
+    /**
+     * Define consumers for setting up a query.
+     */
     public static class QueryConsumers {
 
         public static Consumer<Query> noop() {

@@ -17,18 +17,12 @@ package org.huberb.pureko.application.view;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -42,51 +36,6 @@ import org.junit.jupiter.api.Test;
  * @author berni3
  */
 public class HtmlParsingTest {
-
-    /**
-     * Find files.
-     */
-    static class FindFiles {
-
-        /**
-         * Find regular files matching a given extension.
-         *
-         * @param start base directory
-         * @param matchingExt required matched extension
-         * @return
-         * @throws IOException
-         *
-         * @see Files#find(java.nio.file.Path, int,
-         * java.util.function.BiPredicate, java.nio.file.FileVisitOption...)
-         */
-        static List<Path> findTheFilesReturningList(File start, String matchingExt) throws IOException {
-            Stream<Path> result = findTheFilesReturningStream(start, matchingExt);
-            List<Path> l = result.collect(Collectors.toList());
-            return l;
-        }
-
-        /**
-         * Find regular files matching a given extension.
-         *
-         * @param start base directory
-         * @param matchingExt required matched extension
-         * @return lazy stream of {@link Path}
-         * @throws IOException
-         *
-         * @see Files#find(java.nio.file.Path, int,
-         * java.util.function.BiPredicate, java.nio.file.FileVisitOption...)
-         */
-        static Stream<Path> findTheFilesReturningStream(File start, String matchingExt) throws IOException {
-            final BiPredicate<Path, BasicFileAttributes> matcher = (p, bfa) -> {
-                return bfa.isRegularFile()
-                        && p.toFile().getName().endsWith(matchingExt);
-            };
-            final FileVisitOption[] options = new FileVisitOption[0];
-            final int maxDepth = 10;
-            final Stream<Path> result = Files.find(start.toPath(), maxDepth, matcher, options);
-            return result;
-        }
-    }
 
     @Test
     public void given_html_then_no_src_attribute_references_http_url() throws Exception {

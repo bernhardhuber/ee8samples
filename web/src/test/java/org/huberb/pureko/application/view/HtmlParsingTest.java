@@ -17,6 +17,7 @@ package org.huberb.pureko.application.view;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +41,7 @@ public class HtmlParsingTest {
     @Test
     public void given_html_then_no_src_attribute_references_http_url() throws Exception {
         final File start = new File("src/main/webapp");
-        final List<Path> l = FindFiles.findTheFilesReturningList(start, ".html");
+        final List<Path> l = new FindFiles(start.toPath(), 10, new FileVisitOption[0]).findTheFilesReturningList(".html");
         assertTrue(l.size() > 0L);
         l.forEach((Path p) -> {
             final File fFromP = p.toFile();
@@ -52,7 +53,7 @@ public class HtmlParsingTest {
     @Test
     public void given_html_then_attributes_are_unique() throws Exception {
         final File start = new File("src/main/webapp");
-        final List<Path> l = FindFiles.findTheFilesReturningList(start, ".html");
+        final List<Path> l = new FindFiles(start.toPath(), 10, new FileVisitOption[0]).findTheFilesReturningList(".html");
         assertTrue(l.size() > 0L);
         l.forEach((Path p) -> {
             final File fFromP = p.toFile();

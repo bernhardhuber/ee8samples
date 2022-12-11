@@ -15,7 +15,6 @@
  */
 package org.huberb.pureko.application.view;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -31,6 +30,20 @@ import java.util.stream.Stream;
  */
 class FindFiles {
 
+    final Path start;
+    final int maxDepth;
+    final FileVisitOption[] options;
+
+    public FindFiles(Path start, int maxDepth) {
+        this(start, maxDepth, new FileVisitOption[0]);
+    }
+
+    public FindFiles(Path start, int maxDepth, FileVisitOption[] options) {
+        this.start = start;
+        this.maxDepth = maxDepth;
+        this.options = options;
+    }
+
     /**
      * Find regular files matching a given extension.
      *
@@ -39,12 +52,12 @@ class FindFiles {
      * @return
      * @throws IOException
      *
-     * @see Files#find(java.nio.file.Path, int,
-     * java.util.function.BiPredicate, java.nio.file.FileVisitOption...)
+     * @see Files#find(java.nio.file.Path, int, java.util.function.BiPredicate,
+     * java.nio.file.FileVisitOption...)
      */
-    static List<Path> findTheFilesReturningList(File start, String matchingExt) throws IOException {
-        Stream<Path> result = findTheFilesReturningStream(start, matchingExt);
-        List<Path> l = result.collect(Collectors.toList());
+    List<Path> findTheFilesReturningList(String matchingExt) throws IOException {
+        final Stream<Path> result = findTheFilesReturningStream(matchingExt);
+        final List<Path> l = result.collect(Collectors.toList());
         return l;
     }
 
@@ -56,17 +69,33 @@ class FindFiles {
      * @return lazy stream of {@link Path}
      * @throws IOException
      *
-     * @see Files#find(java.nio.file.Path, int,
-     * java.util.function.BiPredicate, java.nio.file.FileVisitOption...)
+     * @see Files#find(java.nio.file.Path, int, java.util.function.BiPredicate,
+     * java.nio.file.FileVisitOption...)
      */
-    static Stream<Path> findTheFilesReturningStream(File start, String matchingExt) throws IOException {
+    Stream<Path> findTheFilesReturningStream(String matchingExt) throws IOException {
+        final BiPredicate<Path, BasicFileAttributes> matcher = matchingFilenameEndingWithExtension(matchingExt);
+        final Stream<Path> result = findTheFilesMatching(matcher);
+        return result;
+    }
+
+    /**
+     * General find files matching a given {@link Predicate}.
+     *
+     * @param matchingPred
+     * @return
+     * @throws IOException
+     */
+    Stream<Path> findTheFilesMatching(BiPredicate<Path, BasicFileAttributes> matchingPred) throws IOException {
+        final BiPredicate<Path, BasicFileAttributes> matcher = matchingPred;
+        final Stream<Path> result = Files.find(start, maxDepth, matcher, options);
+        return result;
+    }
+
+    //---
+    static BiPredicate<Path, BasicFileAttributes> matchingFilenameEndingWithExtension(String matchingExt) {
         final BiPredicate<Path, BasicFileAttributes> matcher = (p, bfa) -> {
             return bfa.isRegularFile() && p.toFile().getName().endsWith(matchingExt);
         };
-        final FileVisitOption[] options = new FileVisitOption[0];
-        final int maxDepth = 10;
-        final Stream<Path> result = Files.find(start.toPath(), maxDepth, matcher, options);
-        return result;
+        return matcher;
     }
-    
 }

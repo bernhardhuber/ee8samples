@@ -16,7 +16,7 @@ limitations under the License.
 -->
 <html>
     <head>
-        <title>Systeminfo</title>
+        <title>System Info</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,122 +31,151 @@ limitations under the License.
 
         <script type="text/javascript">
             // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
-            function AppViewModel() {
+            function AppViewModel(greetingdata, pudata, cdidata) {
                 var self = this;
 
-                // @data
-                const emptydata = [];
-                //---
-                const resturlGreetingdata = '/ko_pure_web/resources/systeminfo';
-                const greetingdata = {
-                    "greeting": "Hello World"
-                };
-                //---
-                const resturlPudata = '/ko_pure_web/resources/systeminfo/pu';
-                const pudata = {
-                    "properties": {
-                        "javax.persistence.lock.timeout": -1,
-                        "org.hibernate.flushMode": "AUTO",
-                        "javax.persistence.cache.retrieveMode": "USE",
-                        "javax.persistence.lock.scope": "EXTENDED",
-                        "javax.persistence.cache.storeMode": "USE"
-                    },
-                    "embeddables": [
-                        "org.huberb.pureko.application.order.OrderEntity$ShipInfoEmbeddable",
-                        "org.huberb.pureko.application.customer.CustomerEntity$FullAddressEmbeddable"
-                    ],
-                    "entities": [
-                        {
-                            "java-type-name": "org.huberb.pureko.application.customer.CustomerEntity",
-                            "name": "CustomerEntity",
-                            "persistent-type-name": "ENTITY"
-                        },
-                        {
-                            "java-type-name": "org.huberb.pureko.application.order.OrderEntity",
-                            "name": "OrderEntity",
-                            "persistent-type-name": "ENTITY"
-                        }
-                    ],
-                    "managedType": [
-                        "org.huberb.pureko.application.order.OrderEntity$ShipInfoEmbeddable",
-                        "org.huberb.pureko.application.customer.CustomerEntity",
-                        "org.huberb.pureko.application.order.OrderEntity",
-                        "org.huberb.pureko.application.customer.CustomerEntity$FullAddressEmbeddable"
-                    ]
-                };
-                //---
-                const resurlCdiData = 'ko_pure_web/resources/systeminfo/cdi';
-                const cdidata = [
-                    {
-                        "alternative": false,
-                        "injectionPoints": [
-                            "[UnbackedAnnotatedParameter] Parameter 1 of [UnbackedAnnotatedMethod] @Produces @BatchProperty public org.jberet.creation.BatchBeanProducer.getCharacter(InjectionPoint)"
-                        ],
-                        "qualifiers": [
-                            "@javax.batch.api.BatchProperty(name=\"\")",
-                            "@javax.enterprise.inject.Any()"
-                        ],
-                        "name": "",
-                        "scope": "javax.enterprise.context.Dependent",
-                        "types": [
-                            "java.lang.Comparable<java.lang.Character>",
-                            "interface java.io.Serializable",
-                            "class java.lang.Character",
-                            "class java.lang.Object"
-                        ],
-                        "stereotypes": [],
-                        "beanClass": "org.jberet.creation.BatchBeanProducer",
-                        "nullable": false
-                    },
-                    {
-                        "alternative": false,
-                        "injectionPoints": [
-                            "[UnbackedAnnotatedParameter] Parameter 1 of [UnbackedAnnotatedMethod] @Produces @BatchProperty public org.jberet.creation.BatchBeanProducer.getCharacterArray(InjectionPoint)"
-                        ],
-                        "qualifiers": [
-                            "@javax.batch.api.BatchProperty(name=\"\")",
-                            "@javax.enterprise.inject.Any()"
-                        ],
-                        "name": "",
-                        "scope": "javax.enterprise.context.Dependent",
-                        "types": [
-                            "class [Ljava.lang.Character;",
-                            "class java.lang.Object"
-                        ],
-                        "stereotypes": [],
-                        "beanClass": "org.jberet.creation.BatchBeanProducer",
-                        "nullable": false
-                    }
-                ];
                 // @properties
-                self.greeting = greetingdata.greeting;
+                self.greeting = ko.observable(greetingdata.greeting);
                 self.pu = pudata;
                 self.cdi = cdidata;
 
                 // @function computing
+            }
 
-                /**
-                 * Load data via json.
-                 *
-                 * @returns {undefined}
-                 */
-                this.loadData = function () {
-                    $.getJSON(resturl, function (items) {
-                        console.log("json items " + items);
-                        // setup property self.customers from json-data
-                        //self.customers.removeAll();
-                        //for (const item of items) {
-                        //    self.customers.push(item);
-                        //}
+            function AppDataLoader() {
+                var self = this;
+                // @data
+                const resturlGreetingdata = '/ko_pure_web/resources/systeminfo';
+                const resturlPudata = '/ko_pure_web/resources/systeminfo/pu';
+                const resturlCdidata = '/ko_pure_web/resources/systeminfo/cdi';
+                var greeting;
+                var pudata;
+                var cdidata;
+
+
+                self.loadAllData = function () {
+
+                    $.getJSON(resturlGreetingdata, function (jsondata) {
+                        console.log("loadGreetingdata1 " + JSON.stringify(jsondata, null, 2));
+                        self.greeting = jsondata;
                     });
+                    $.getJSON(resturlGreetingdata, function (jsondata) {
+                        //console.log("loadPudata " + JSON.stringify(jsondata, null, 2));
+                        pudata = jsondata;
+                    });
+                    $.getJSON(resturlCdidata, function (jsondata) {
+                        //console.log("loadCdidata " + JSON.stringify(jsondata, null, 2));
+                        cdidata = jsondata;
+                    });
+                    console.log("loadGreetingdata2 " + JSON.stringify(greeting, null, 2));
+                    return {
+                        greetingdata: self.greeting,
+                        pudata: self.pudata,
+                        cdidata: self.cdidata
+                    };
+                }
+                self.defaultAllData = function () {
+                    const greetingdata = {
+                        "greeting": "Hello World"
+                    };
+                    const pudata = {
+                        "properties": {
+                            "javax.persistence.lock.timeout": -1,
+                            "org.hibernate.flushMode": "AUTO",
+                            "javax.persistence.cache.retrieveMode": "USE",
+                            "javax.persistence.lock.scope": "EXTENDED",
+                            "javax.persistence.cache.storeMode": "USE"
+                        },
+                        "embeddables": [
+                            "org.huberb.pureko.application.order.OrderEntity$ShipInfoEmbeddable",
+                            "org.huberb.pureko.application.customer.CustomerEntity$FullAddressEmbeddable"
+                        ],
+                        "entities": [
+                            {
+                                "java-type-name": "org.huberb.pureko.application.customer.CustomerEntity",
+                                "name": "CustomerEntity",
+                                "persistent-type-name": "ENTITY"
+                            },
+                            {
+                                "java-type-name": "org.huberb.pureko.application.order.OrderEntity",
+                                "name": "OrderEntity",
+                                "persistent-type-name": "ENTITY"
+                            }
+                        ],
+                        "managedType": [
+                            "org.huberb.pureko.application.order.OrderEntity$ShipInfoEmbeddable",
+                            "org.huberb.pureko.application.customer.CustomerEntity",
+                            "org.huberb.pureko.application.order.OrderEntity",
+                            "org.huberb.pureko.application.customer.CustomerEntity$FullAddressEmbeddable"
+                        ]
+                    };
+                    const cdidata = [
+                        {
+                            "alternative": false,
+                            "injectionPoints": [
+                                "[UnbackedAnnotatedParameter] Parameter 1 of [UnbackedAnnotatedMethod] @Produces @BatchProperty public org.jberet.creation.BatchBeanProducer.getCharacter(InjectionPoint)"
+                            ],
+                            "qualifiers": [
+                                "@javax.batch.api.BatchProperty(name=\"\")",
+                                "@javax.enterprise.inject.Any()"
+                            ],
+                            "name": "",
+                            "scope": "javax.enterprise.context.Dependent",
+                            "types": [
+                                "java.lang.Comparable<java.lang.Character>",
+                                "interface java.io.Serializable",
+                                "class java.lang.Character",
+                                "class java.lang.Object"
+                            ],
+                            "stereotypes": [],
+                            "beanClass": "org.jberet.creation.BatchBeanProducer",
+                            "nullable": false
+                        },
+                        {
+                            "alternative": false,
+                            "injectionPoints": [
+                                "[UnbackedAnnotatedParameter] Parameter 1 of [UnbackedAnnotatedMethod] @Produces @BatchProperty public org.jberet.creation.BatchBeanProducer.getCharacterArray(InjectionPoint)"
+                            ],
+                            "qualifiers": [
+                                "@javax.batch.api.BatchProperty(name=\"\")",
+                                "@javax.enterprise.inject.Any()"
+                            ],
+                            "name": "",
+                            "scope": "javax.enterprise.context.Dependent",
+                            "types": [
+                                "class [Ljava.lang.Character;",
+                                "class java.lang.Object"
+                            ],
+                            "stereotypes": [],
+                            "beanClass": "org.jberet.creation.BatchBeanProducer",
+                            "nullable": false
+                        }
+                    ];
+                    return {greetingdata: greetingdata, pudata: pudata, cdidata: cdidata};
                 }
             }
 
             // setup AppViewModel
             $(document).ready(function () {
+
                 // Run code
-                var appViewModel = new AppViewModel();
+                var allData;
+                const mode = 0;
+                if (mode == 0) {
+                    var appDataLoader = new AppDataLoader();
+                    allData = appDataLoader.defaultAllData();
+                } else if (mode == 1) {
+                    var appDataLoader = new AppDataLoader();
+                    allData = appDataLoader.loadAllData();
+                }
+                console.log("appDataLoader.loadAllData " + JSON.stringify(allData, null, 2));
+
+
+                var appViewModel = new AppViewModel(allData.greetingdata,
+                        allData.pudata,
+                        allData.cdidata);
                 ko.applyBindings(appViewModel);
+
             });
         </script>
     </head>

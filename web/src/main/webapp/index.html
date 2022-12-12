@@ -33,26 +33,10 @@ limitations under the License.
 
         <script type="text/javascript">
             // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
-            function AppViewModel() {
+            function AppViewModel(data) {
 
                 var self = this;
                 // @data
-                var data = [
-                    {href: 'kotutorials/example_click_counter.html', value: 'example_click_counter'},
-                    {href: 'kotutorials/example_hello_world.html', value: 'example_hello_world'},
-                    {href: 'kotutorials/example_datastructure.html', value: 'example_datastructure.html'},
-                    
-                    {href: '#', value: '---'},
-                    {href: 'kotutorials/tutorial1.html', value: 'tutorial1'},
-                    {href: 'kotutorials/tutorial2.html', value: 'tutorial2'},
-                    
-                    {href: '#', value: '---'},
-                    {href: 'customer/customer.html', value: 'customer'},
-                    {href: 'customer/customers.html', value: 'customers'},
-                    
-                    {href: '#', value: '---'},
-                    {href: 'systeminfo/systeminfo.html', value: 'systeminfo'}
-                ];
 
                 // @properties
                 self.links = data;
@@ -60,18 +44,50 @@ limitations under the License.
         </script>
     </head>
     <body>
-        <h1>Hello World!!!</h1>
+        <div class="pure-g">
+            <div class="pure-u-1-1">
+            </div>
+            <div class="pure-u-1-1">
 
-        <ul data-bind="foreach: links">
-            <li>
-                <a data-bind="attr: {'href': href}"><span data-bind="text: value"/></a> /
-                <a data-bind="attr: {'href': href}"> <!--ko text: value--><!--/ko--> </a>
-            </li>
-        </ul>
+                <h2 class="pure-menu-heading">Single Page Applications</h2>
 
+                <p>
+                    List of single page applications
+                    featuring knockout and ee8 rest services.
+                </p>
+
+                <ul class="pure-menu-list" 
+                    data-bind="foreach: links">
+                    <li class="pure-menu-item" 
+                        data-bind="hidden: value == '---'">
+                        <a class="pure-menu-link" 
+                           data-bind="attr: {'href': href}" >
+                            <span data-bind="text: value"/></a>
+                    </li>
+                    <hr data-bind="visible: value == '---'" />
+                </ul>
+            </div>
+        </div>
     </body>
     <script type="text/javascript">
         // Activates knockout.js
-        ko.applyBindings(new AppViewModel());
+        const data = [
+            {href: 'kotutorials/example_click_counter.html', value: 'example_click_counter'},
+            {href: 'kotutorials/example_hello_world.html', value: 'example_hello_world'},
+            {href: 'kotutorials/example_datastructure.html', value: 'example_datastructure.html'},
+
+            {href: '#', value: '---'},
+            {href: 'kotutorials/tutorial1.html', value: 'tutorial1'},
+            {href: 'kotutorials/tutorial2.html', value: 'tutorial2'},
+
+            {href: '#', value: '---'},
+            {href: 'customer/customer.html', value: 'customer'},
+            {href: 'customer/customers.html', value: 'customers'},
+
+                    {href: '#', value: '---'},
+                    {href: 'systeminfo/systeminfo.html', value: 'systeminfo'}
+                ];
+                const appViewModel = new AppViewModel(data)
+        ko.applyBindings(appViewModel);
     </script>
 </html>

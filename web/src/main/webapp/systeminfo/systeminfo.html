@@ -74,6 +74,17 @@ limitations under the License.
                     $.ajax(resturlCdidata, {
                         data: {},
                         success: function (data) {
+                            data.sort(function (a, b) {
+                                let x = a.beanClass.toLowerCase();
+                                let y = b.beanClass.toLowerCase();
+                                if (x < y) {
+                                    return -1;
+                                }
+                                if (x > y) {
+                                    return 1;
+                                }
+                                return 0;
+                            });
                             self.cdi(data);
                         }
                     });
@@ -88,8 +99,7 @@ limitations under the License.
                         "greeting": "Default: Hello World"
                     };
                     const emptypudata = {
-                        "properties": {a: 'b'
-                        },
+                        "properties": {},
                         embeddables: [
                         ],
                         entities: [
@@ -274,6 +284,7 @@ limitations under the License.
                                 <th>Bean Class</th>
                                 <th>Name</th>
                                 <th>Scope</th>
+                                <th>Details</th>
                             </tr>
                         </thead>
                         <tbody data-bind="foreach: cdi">
@@ -281,6 +292,7 @@ limitations under the License.
                                 <td><span data-bind="text: beanClass"></span></td>
                                 <td><span data-bind="text: name"></span></td>
                                 <td><span data-bind="text: scope"></span></td>
+                                <td><span><pre data-bind="text: JSON.stringify($data, null,2)"></pre></span></td>
                             </tr>
                         </tbody>
                     </table>

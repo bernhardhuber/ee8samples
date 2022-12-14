@@ -77,16 +77,13 @@ public class SystemInfo {
             return jab.build();
         };
 
-        //JsonifyableToObject jv = new JsonifyableToObject();
         JsonObjectBuilder job = Json.createObjectBuilder();
-
         job.add("properties", JsonifyableToJsonValue.jvJsonValue().apply(em.getProperties()));
         job.add("embeddables", embeddablesF.apply(em));
         job.add("entities", entitiesF.apply(em));
         job.add("managedType", managedTypesF.apply(em));
         final JsonObject jo = job.build();
-        final String joAsJsonString = jo.toString();
-        LOG.info(() -> joAsJsonString);
+        LOG.info(() -> jo.toString());
         return jo;
 
     }
@@ -100,8 +97,7 @@ public class SystemInfo {
             jab.add(Json.createObjectBuilder(mapCdiBeanToMap().apply(bean)).build());
         }
         final JsonArray ja = jab.build();
-        final String jaAsJsonString = ja.toString();
-        LOG.info(() -> jaAsJsonString);
+        LOG.info(() ->  ja.toString());
         return ja;
     }
 

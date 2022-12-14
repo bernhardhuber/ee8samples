@@ -31,52 +31,71 @@ limitations under the License.
 
         <script type="text/javascript">
             // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
-            function AppViewModel(greetingdata, pudata, cdidata) {
+            function AppViewModel() {
+                const baseUrl = '/ko_pure_web/resources/systeminfo';
+                const resturlGreetingdata = baseUrl;
+                const resturlPudata = baseUrl + '/pu';
+                const resturlCdidata = baseUrl + '/cdi';
+
                 var self = this;
 
                 // @properties
-                self.greeting = ko.observable(greetingdata.greeting);
-                self.pu = pudata;
-                self.cdi = cdidata;
+                self.greeting = ko.observable();
+
+                self.pu_properties = ko.observable();
+                self.pu_embeddables = ko.observable();
+                self.pu_entities = ko.observable();
+                self.pu_managedType = ko.observable();
+
+                self.cdi = ko.observable();
 
                 // @function computing
+                ko.computed(function () {
+                    $.ajax(resturlGreetingdata, {
+                        data: {},
+                        success: function (data) {
+                            self.greeting(data.greeting);
+                        }
+                    });
+                }, this);
+                ko.computed(function () {
+                    $.ajax(resturlPudata, {
+                        data: {},
+                        success: function (data) {
+                            console.log("loadPudata " + JSON.stringify(data, null, 2));
+                            self.pu_properties(Object.entries(data.properties));
+                            self.pu_embeddables(data.embeddables);
+                            self.pu_entities(data.entities);
+                            self.pu_managedType(data.managedType);
+                        }
+                    });
+                }, this);
+                ko.computed(function () {
+                    $.ajax(resturlCdidata, {
+                        data: {},
+                        success: function (data) {
+                            self.cdi(data);
+                        }
+                    });
+                }, this);
             }
 
-            function AppDataLoader() {
+            function AppDataSample() {
                 var self = this;
                 // @data
-                const resturlGreetingdata = '/ko_pure_web/resources/systeminfo';
-                const resturlPudata = '/ko_pure_web/resources/systeminfo/pu';
-                const resturlCdidata = '/ko_pure_web/resources/systeminfo/cdi';
-                var greeting;
-                var pudata;
-                var cdidata;
-
-
-                self.loadAllData = function () {
-
-                    $.getJSON(resturlGreetingdata, function (jsondata) {
-                        console.log("loadGreetingdata1 " + JSON.stringify(jsondata, null, 2));
-                        self.greeting = jsondata;
-                    });
-                    $.getJSON(resturlGreetingdata, function (jsondata) {
-                        //console.log("loadPudata " + JSON.stringify(jsondata, null, 2));
-                        pudata = jsondata;
-                    });
-                    $.getJSON(resturlCdidata, function (jsondata) {
-                        //console.log("loadCdidata " + JSON.stringify(jsondata, null, 2));
-                        cdidata = jsondata;
-                    });
-                    console.log("loadGreetingdata2 " + JSON.stringify(greeting, null, 2));
-                    return {
-                        greetingdata: self.greeting,
-                        pudata: self.pudata,
-                        cdidata: self.cdidata
-                    };
-                }
                 self.defaultAllData = function () {
                     const greetingdata = {
-                        "greeting": "Hello World"
+                        "greeting": "Default: Hello World"
+                    };
+                    const emptypudata = {
+                        "properties": {a: 'b'
+                        },
+                        embeddables: [
+                        ],
+                        entities: [
+                        ],
+                        managedType: [
+                        ]
                     };
                     const pudata = {
                         "properties": {
@@ -151,31 +170,15 @@ limitations under the License.
                             "nullable": false
                         }
                     ];
-                    return {greetingdata: greetingdata, pudata: pudata, cdidata: cdidata};
-                }
+                    return {greetingdata: greetingdata, pudata: emptypudata, cdidata: cdidata};
+                };
             }
 
             // setup AppViewModel
             $(document).ready(function () {
-
                 // Run code
-                var allData;
-                const mode = 0;
-                if (mode == 0) {
-                    var appDataLoader = new AppDataLoader();
-                    allData = appDataLoader.defaultAllData();
-                } else if (mode == 1) {
-                    var appDataLoader = new AppDataLoader();
-                    allData = appDataLoader.loadAllData();
-                }
-                console.log("appDataLoader.loadAllData " + JSON.stringify(allData, null, 2));
-
-
-                var appViewModel = new AppViewModel(allData.greetingdata,
-                        allData.pudata,
-                        allData.cdidata);
+                var appViewModel = new AppViewModel();
                 ko.applyBindings(appViewModel);
-
             });
         </script>
     </head>
@@ -200,7 +203,7 @@ limitations under the License.
                                 <th>Value</th>
                             </tr>
                         </thead>
-                        <tbody data-bind="foreach: Object.entries(pu.properties)">
+                        <tbody data-bind="foreach: pu_properties">
                             <tr>
                                 <td>
                                     <span data-bind="text: $data[0]"/>
@@ -219,7 +222,7 @@ limitations under the License.
                                 <th>Name</th>
                             </tr>
                         </thead>
-                        <tbody data-bind="foreach: pu.embeddables">
+                        <tbody data-bind="foreach: pu_embeddables">
                             <tr>
                                 <td><span data-bind="text: $data"></span></td>
                             </tr>
@@ -235,7 +238,7 @@ limitations under the License.
                                 <th>Persistent Type Name</th>
                             </tr>
                         </thead>
-                        <tbody data-bind="foreach: pu.entities">
+                        <tbody data-bind="foreach: pu_entities">
                             <tr>
                                 <td><span data-bind="text: $data.name"></span></td>
                                 <td><span data-bind="text: $data['java-type-name']"></span></td>
@@ -252,7 +255,7 @@ limitations under the License.
                                 <th>Name</th>
                             </tr>
                         </thead>
-                        <tbody data-bind="foreach: pu.managedType">
+                        <tbody data-bind="foreach: pu_managedType">
                             <tr>
                                 <td><span data-bind="text: $data"></span></td>
                             </tr>
@@ -286,30 +289,17 @@ limitations under the License.
             <div class="row">
                 <h2>Raw Json</h2>
                 <div class="col">
-                    <button class="btn btn-outline-primary" 
-                            type="button" 
-                            data-bs-toggle="collapse" 
-                            data-bs-target="#collapsePuRawJson" 
-                            aria-expanded="false" 
-                            aria-controls="collapsePuRawJson">
-                        PU raw json
-                    </button>
-                    <div class="collapse" id="collapsePuRawJson">
-                        <pre data-bind="text: JSON.stringify(pu, null, 2)">
-                        </pre>
-                    </div>
 
-                    <button class="btn btn-outline-primary" 
-                            type="button" 
-                            data-bs-toggle="collapse" 
-                            data-bs-target="#collapseCdiRawJson" 
-                            aria-expanded="false" 
-                            aria-controls="collapseCdiRawJson">
-                        CDI raw json
+                    <button class="btn btn-outline-primary"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseRawJson"
+                            aria-expanded="false"
+                            aria-controls="collapseRawJson">
+                        Raw json
                     </button>
-                    <div class="collapse" id="collapseCdiRawJson">
-                        <pre data-bind="text: JSON.stringify(cdi, null, 2)">
-                        </pre>
+                    <div class="collapse" id="collapseRawJson">
+                        <pre data-bind="text: ko.toJSON($root, null, 2)"></pre>
                     </div>
                 </div>
             </div>

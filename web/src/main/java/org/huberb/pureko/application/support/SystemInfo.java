@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Logger;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -39,7 +39,7 @@ import org.huberb.pureko.application.support.JsonValues.JsonifyableToObject;
  *
  * @author berni3
  */
-@ApplicationScoped
+@RequestScoped
 public class SystemInfo {
 
     private static final Logger LOG = Logger.getLogger(SystemInfo.class.getName());
@@ -97,7 +97,7 @@ public class SystemInfo {
             jab.add(Json.createObjectBuilder(mapCdiBeanToMap().apply(bean)).build());
         }
         final JsonArray ja = jab.build();
-        LOG.info(() ->  ja.toString());
+        LOG.info(() -> ja.toString());
         return ja;
     }
 

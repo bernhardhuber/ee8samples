@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -42,7 +43,7 @@ import org.huberb.pureko.application.support.PuName.PuType;
 @ApplicationScoped
 public class SystemInfo {
 
-    @ApplicationScoped
+    @RequestScoped
     public static class SystemInfoPu {
 
         @PuName(puType = PuType.ee8samplePu)
@@ -88,7 +89,7 @@ public class SystemInfo {
         }
     }
 
-    @ApplicationScoped
+    @RequestScoped
     public static class SystemInfoCdi {
 
         @Inject

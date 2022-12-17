@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.application.support;
+package org.huberb.ee8sample.mail;
 
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;

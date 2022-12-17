@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.application.support;
+package org.huberb.ee8sample.mail;
 
 import java.util.Properties;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import org.huberb.pureko.application.support.MailsF.SessionTransportF;
-import org.huberb.pureko.application.support.MailsF.TransportF;
+import org.huberb.ee8sample.mail.MailsF.SessionTransportF;
+import org.huberb.ee8sample.mail.MailsF.TransportF;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;

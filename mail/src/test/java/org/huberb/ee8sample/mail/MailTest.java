@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.application.support;
+package org.huberb.ee8sample.mail;
 
 import java.util.Properties;
 import java.util.function.Consumer;
@@ -23,11 +23,11 @@ import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import org.huberb.pureko.application.support.MailsF.InternetAddressBuilderF;
-import org.huberb.pureko.application.support.MailsF.InternetAddressBuilderTraditional;
-import org.huberb.pureko.application.support.MailsF.InternetAddressF;
-import org.huberb.pureko.application.support.MailsF.MimeMessageF;
-import org.huberb.pureko.application.support.MailsF.SessionTransportF;
+import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilderF;
+import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilderTraditional;
+import org.huberb.ee8sample.mail.MailsF.InternetAddressF;
+import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
+import org.huberb.ee8sample.mail.MailsF.SessionTransportF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;

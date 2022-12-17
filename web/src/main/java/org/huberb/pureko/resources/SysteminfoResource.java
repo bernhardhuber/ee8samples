@@ -35,7 +35,9 @@ import org.huberb.pureko.application.support.SystemInfo;
 public class SysteminfoResource {
 
     @Inject
-    SystemInfo systemInfo;
+    SystemInfo.SystemInfoCdi systemInfoCdi;
+    @Inject
+    SystemInfo.SystemInfoPu systemInfoPu;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -47,22 +49,23 @@ public class SysteminfoResource {
     }
 
     @GET
-    @Path("pu")
+    @Path("cdi")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response pu() {
-        JsonValue jv = systemInfo.pu();
+    public Response cdi() {
+        JsonValue jv = systemInfoCdi.cdi();
         return Response
                 .ok(jv)
                 .build();
     }
 
     @GET
-    @Path("cdi")
+    @Path("pu")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response cdi() {
-        JsonValue jv = systemInfo.cdi();
+    public Response pu() {
+        JsonValue jv = systemInfoPu.pu();
         return Response
                 .ok(jv)
                 .build();
     }
+
 }

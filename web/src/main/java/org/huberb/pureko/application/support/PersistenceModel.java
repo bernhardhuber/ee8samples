@@ -30,6 +30,8 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
+import org.huberb.pureko.application.support.PuName.ManagedType;
+import org.huberb.pureko.application.support.PuName.PuType;
 
 /**
  *
@@ -38,6 +40,7 @@ import javax.transaction.Transactional.TxType;
 @RequestScoped
 public class PersistenceModel {
 
+    @PuName(puType = PuType.ee8samplePu, managedType = ManagedType.containerManaged)
     @Inject
     private EntityManager em;
 
@@ -362,6 +365,7 @@ public class PersistenceModel {
     public <T, V> V findResultUsingTypedQuery(Function<EntityManager, Query> f,
             Consumer<Query> c,
             Function<Query, V> f2) {
+        EntityManager em = getEntityManager();
         final Query tq = f.apply(em);
         final V v = f2.apply(tq);
         return v;
@@ -373,6 +377,7 @@ public class PersistenceModel {
     public <T, V> V findResultUsingQuery(Function<EntityManager, TypedQuery<T>> f,
             Consumer<Query> c,
             Function<TypedQuery<T>, V> f2) {
+        EntityManager em = getEntityManager();
         final TypedQuery<T> tq = f.apply(em);
         final V v = f2.apply(tq);
         return v;
@@ -444,6 +449,7 @@ public class PersistenceModel {
     //----
     @Transactional(TxType.MANDATORY)
     public <T> T findById(Long id, Class<T> resultClass) {
+        EntityManager em = getEntityManager();
         T t = em.find(resultClass, id);
         return t;
     }
@@ -451,12 +457,14 @@ public class PersistenceModel {
     //----
     @Transactional(TxType.MANDATORY)
     public <T> T create(T entity) {
+        EntityManager em = getEntityManager();
         em.persist(entity);
         return entity;
     }
 
     @Transactional(TxType.MANDATORY)
     public <T> T update(T entity) {
+        EntityManager em = getEntityManager();
         final T result;
         if (em.contains(entity)) {
             em.persist(entity);
@@ -469,6 +477,7 @@ public class PersistenceModel {
 
     @Transactional(TxType.MANDATORY)
     public <T> void remove(T entity) {
+        EntityManager em = getEntityManager();
         em.remove(entity);
     }
 

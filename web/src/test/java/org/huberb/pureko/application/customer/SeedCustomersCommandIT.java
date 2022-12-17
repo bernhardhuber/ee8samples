@@ -43,6 +43,7 @@ import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,6 +63,7 @@ public class SeedCustomersCommandIT {
 
     @Spy
     private PersistenceModel persistenceModel = new PersistenceModel(entityManagerFactory.createEntityManager());
+
     @Spy
     private CustomerDataFactory customerDataFactory;
     @Spy
@@ -122,8 +124,11 @@ public class SeedCustomersCommandIT {
         assertNotNull(instance);
         assertNotNull(this.persistenceModel);
         assertNotNull(this.persistenceModel.getEntityManager());
+        assertTrue(this.persistenceModel.getEntityManager().isOpen());
 
         this.persistenceModel.getEntityManager().getTransaction().begin();
+        assertTrue(this.persistenceModel.getEntityManager().getTransaction().isActive());
+
         int maxSeeded = 10;
         assertEquals(maxSeeded, instance.seedDataBase(maxSeeded));
         //---

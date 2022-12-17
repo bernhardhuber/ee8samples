@@ -25,6 +25,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
+import org.huberb.pureko.application.support.PuName.PuType;
 
 /**
  *
@@ -39,12 +41,12 @@ public class PersistenceProducers {
     @ApplicationScoped
     public static class EntityManagerFactoryProducer {
 
-        final String persistenceUnitName = "ee8samplesPU";
         final Map properties = Collections.emptyMap();
 
         /**
          * Creates an {@link EntityManagerFactory} instance.
          *
+         * @param puType
          * @return an {@link EntityManagerFactory} instance
          * @see EntityManager
          * @see Persistence#createEntityManagerFactory(java.lang.String,
@@ -52,9 +54,11 @@ public class PersistenceProducers {
          */
         @Produces
         @ApplicationScoped
+        @PuName(puType = PuType.ee8samplePu,
+                managedType = PuName.ManagedType.beanManaged)
         public EntityManagerFactory create() {
             return Persistence
-                    .createEntityManagerFactory(persistenceUnitName, properties);
+                    .createEntityManagerFactory(PuType.ee8samplePu.getPuName(), properties);
         }
 
         /**
@@ -66,7 +70,8 @@ public class PersistenceProducers {
          * @param factory
          * @see EntityManagerFactory#close()
          */
-        public void destroy(@Disposes EntityManagerFactory factory) {
+        public void destroy(@Disposes @PuName(puType = PuType.ee8samplePu,
+                managedType = PuName.ManagedType.beanManaged) EntityManagerFactory factory) {
             factory.close();
         }
     }
@@ -81,6 +86,8 @@ public class PersistenceProducers {
     public static class EntityManagerProducer {
 
         @Inject
+        @PuName(puType = PuType.ee8samplePu,
+                managedType = PuName.ManagedType.beanManaged)
         transient EntityManagerFactory emf;
 
         /**
@@ -89,9 +96,11 @@ public class PersistenceProducers {
          * @return entity manager instance
          * @see EntityManagerFactory#createEntityManager()
          */
+        @PuName(puType = PuType.ee8samplePu,
+                managedType = PuName.ManagedType.beanManaged)
         @Produces
         @RequestScoped
-        public EntityManager create() {
+        public EntityManager createEntityManager() {
             return emf.createEntityManager();
         }
 
@@ -104,11 +113,28 @@ public class PersistenceProducers {
          * @param em
          * @see EntityManager#close()
          */
-        public void close(@Disposes EntityManager em) {
+        public void closeEntityManager(@Disposes @PuName(puType = PuType.ee8samplePu,
+                managedType = PuName.ManagedType.beanManaged) EntityManager em) {
             if (em.isOpen()) {
                 em.flush();
             }
             em.close();
         }
+    }
+
+    @ApplicationScoped
+    public static class EntityManagerProducerViaPersistenceContext {
+
+        //---
+        @PersistenceContext(unitName = "ee8samplePu")
+        private EntityManager emEe8SamplePuViaPersistenceContext;
+
+        @PuName(puType = PuType.ee8samplePu, managedType = PuName.ManagedType.containerManaged)
+        @Produces
+        @RequestScoped
+        public EntityManager createEntityManagerViaPersistenceContext() {
+            return emEe8SamplePuViaPersistenceContext;
+        }
+
     }
 }

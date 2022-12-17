@@ -18,7 +18,6 @@ package org.huberb.pureko.application.support;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
@@ -34,6 +33,7 @@ import javax.json.JsonValue;
 import javax.persistence.EntityManager;
 import org.huberb.pureko.application.support.JsonValues.JsonifyableToJsonValue;
 import org.huberb.pureko.application.support.JsonValues.JsonifyableToObject;
+import org.huberb.pureko.application.support.PuName.PuType;
 
 /**
  *
@@ -42,81 +42,86 @@ import org.huberb.pureko.application.support.JsonValues.JsonifyableToObject;
 @ApplicationScoped
 public class SystemInfo {
 
-    private static final Logger LOG = Logger.getLogger(SystemInfo.class.getName());
-    @Inject
-    private BeanManager beanManager;
+    @ApplicationScoped
+    public static class SystemInfoPu {
 
-    @Inject
-    private EntityManager em;
+        @PuName(puType = PuType.ee8samplePu)
+        @Inject
+        private EntityManager em;
 
-    public JsonValue pu() {
+        public JsonValue pu() {
 
-        Function<EntityManager, JsonValue> embeddablesF = (_em) -> {
-            JsonArrayBuilder jab = Json.createArrayBuilder();
-            _em.getMetamodel().getEmbeddables().forEach(et -> {
-                jab.add(et.getJavaType().getName());
-            });
-            return jab.build();
-        };
-        Function<EntityManager, JsonValue> entitiesF = (_em) -> {
-            JsonArrayBuilder jab = Json.createArrayBuilder();
-            _em.getMetamodel().getEntities().forEach(et -> {
-                JsonObjectBuilder job = Json.createObjectBuilder();
-                job.add("java-type-name", et.getJavaType().getName());
-                job.add("name", et.getName());
-                job.add("persistent-type-name", et.getPersistenceType().name());
-                jab.add(job.build());
-            });
-            return jab.build();
-        };
-        Function<EntityManager, JsonValue> managedTypesF = (_em) -> {
-            JsonArrayBuilder jab = Json.createArrayBuilder();
-            _em.getMetamodel().getManagedTypes().forEach(mt -> {
-                jab.add(mt.getJavaType().getName());
-            });
-            return jab.build();
-        };
+            Function<EntityManager, JsonValue> embeddablesF = (_em) -> {
+                JsonArrayBuilder jab = Json.createArrayBuilder();
+                _em.getMetamodel().getEmbeddables().forEach(et -> {
+                    jab.add(et.getJavaType().getName());
+                });
+                return jab.build();
+            };
+            Function<EntityManager, JsonValue> entitiesF = (_em) -> {
+                JsonArrayBuilder jab = Json.createArrayBuilder();
+                _em.getMetamodel().getEntities().forEach(et -> {
+                    JsonObjectBuilder job = Json.createObjectBuilder();
+                    job.add("java-type-name", et.getJavaType().getName());
+                    job.add("name", et.getName());
+                    job.add("persistent-type-name", et.getPersistenceType().name());
+                    jab.add(job.build());
+                });
+                return jab.build();
+            };
+            Function<EntityManager, JsonValue> managedTypesF = (_em) -> {
+                JsonArrayBuilder jab = Json.createArrayBuilder();
+                _em.getMetamodel().getManagedTypes().forEach(mt -> {
+                    jab.add(mt.getJavaType().getName());
+                });
+                return jab.build();
+            };
 
-        JsonObjectBuilder job = Json.createObjectBuilder();
-        job.add("properties", JsonifyableToJsonValue.jvJsonValue().apply(em.getProperties()));
-        job.add("embeddables", embeddablesF.apply(em));
-        job.add("entities", entitiesF.apply(em));
-        job.add("managedType", managedTypesF.apply(em));
-        final JsonObject jo = job.build();
-        LOG.info(() -> jo.toString());
-        return jo;
+            JsonObjectBuilder job = Json.createObjectBuilder();
+            job.add("properties", JsonifyableToJsonValue.jvJsonValue().apply(em.getProperties()));
+            job.add("embeddables", embeddablesF.apply(em));
+            job.add("entities", entitiesF.apply(em));
+            job.add("managedType", managedTypesF.apply(em));
+            final JsonObject jo = job.build();
+            return jo;
 
-    }
-
-    public JsonValue cdi() {
-        final JsonArrayBuilder jab = Json.createArrayBuilder();
-        final Set<Bean<?>> beans = beanManager.getBeans(Object.class,
-                new AnnotationLiteral<Any>() {
-        });
-        for (Bean<?> bean : beans) {
-            jab.add(Json.createObjectBuilder(mapCdiBeanToMap().apply(bean)).build());
         }
-        final JsonArray ja = jab.build();
-        LOG.info(() ->  ja.toString());
-        return ja;
     }
 
-    static Function<Bean<?>, Map<String, Object>> mapCdiBeanToMap() {
-        final JsonifyableToObject jv = new JsonifyableToObject();
-        return (b) -> {
-            Map<String, Object> m = Map.ofEntries(
-                    Map.entry("beanClass", JsonifyableToObject.jvObject().apply(b.getBeanClass().getName())),
-                    Map.entry("injectionPoints", JsonifyableToObject.jvObject().apply(b.getInjectionPoints())),
-                    Map.entry("name", JsonifyableToObject.jvObject().apply(b.getName())),
-                    Map.entry("qualifiers", JsonifyableToObject.jvObject().apply(b.getQualifiers())),
-                    Map.entry("scope", JsonifyableToObject.jvObject().apply(b.getScope().getName())),
-                    Map.entry("stereotypes", JsonifyableToObject.jvObject().apply(b.getStereotypes())),
-                    Map.entry("types", JsonifyableToObject.jvObject().apply(b.getTypes())),
-                    Map.entry("alternative", JsonifyableToObject.jvObject().apply(b.isAlternative())),
-                    Map.entry("nullable", JsonifyableToObject.jvObject().apply(b.isNullable()))
-            );
-            return m;
-        };
-    }
+    @ApplicationScoped
+    public static class SystemInfoCdi {
 
+        @Inject
+        private BeanManager beanManager;
+
+        public JsonValue cdi() {
+            final JsonArrayBuilder jab = Json.createArrayBuilder();
+            final Set<Bean<?>> beans = beanManager.getBeans(Object.class,
+                    new AnnotationLiteral<Any>() {
+            });
+            for (Bean<?> bean : beans) {
+                jab.add(Json.createObjectBuilder(mapCdiBeanToMap().apply(bean)).build());
+            }
+            final JsonArray ja = jab.build();
+            return ja;
+        }
+
+        static Function<Bean<?>, Map<String, Object>> mapCdiBeanToMap() {
+            final JsonifyableToObject jv = new JsonifyableToObject();
+            return (b) -> {
+                Map<String, Object> m = Map.ofEntries(
+                        Map.entry("beanClass", JsonifyableToObject.jvObject().apply(b.getBeanClass().getName())),
+                        Map.entry("injectionPoints", JsonifyableToObject.jvObject().apply(b.getInjectionPoints())),
+                        Map.entry("name", JsonifyableToObject.jvObject().apply(b.getName())),
+                        Map.entry("qualifiers", JsonifyableToObject.jvObject().apply(b.getQualifiers())),
+                        Map.entry("scope", JsonifyableToObject.jvObject().apply(b.getScope().getName())),
+                        Map.entry("stereotypes", JsonifyableToObject.jvObject().apply(b.getStereotypes())),
+                        Map.entry("types", JsonifyableToObject.jvObject().apply(b.getTypes())),
+                        Map.entry("alternative", JsonifyableToObject.jvObject().apply(b.isAlternative())),
+                        Map.entry("nullable", JsonifyableToObject.jvObject().apply(b.isNullable()))
+                );
+                return m;
+            };
+        }
+    }
 }

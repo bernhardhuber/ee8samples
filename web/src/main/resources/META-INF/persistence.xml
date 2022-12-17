@@ -6,7 +6,7 @@
              version="2.2">
 
     <!-- Define Persistence Unit -->
-    <persistence-unit name="ee8samplesPU" transaction-type="JTA">
+    <persistence-unit name="ee8samplePu" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <!-- using java:module/env/.. and mapping via web.xml resource-ref
           makes problems, as pu is created before the web.xml resource-ref mapping

@@ -111,10 +111,14 @@ public class CustomerCommands {
         List<CustomerData> readCustomersUsingForLoop() {
             String en = CustomerEntity.class.getSimpleName();
             final String ql = "from " + en;
-            final List<CustomerEntity> resultList = persistenceModel.findResultList(ql, CustomerEntity.class, QueryConsumers.noop());
+            final List<CustomerEntity> resultList = persistenceModel.findResultList(
+                    ql,
+                    CustomerEntity.class,
+                    QueryConsumers.noop());
             final List<CustomerData> l = new ArrayList<>();
             resultList.forEach((CustomerEntity ce) -> {
-                final CustomerData cd = transformers.transformTo(ce, CustomerTransforming.transformCustomerEntityToNewCustomer());
+                final CustomerData cd = transformers.transformTo(ce,
+                        CustomerTransforming.transformCustomerEntityToNewCustomer());
                 l.add(cd);
             });
             return l;
@@ -124,7 +128,10 @@ public class CustomerCommands {
             String en = CustomerEntity.class.getSimpleName();
             final String ql = "from " + en;
             final TransformCustomerEntityToNewCustomer f = CustomerTransforming.transformCustomerEntityToNewCustomer();
-            final List<CustomerEntity> resultList = persistenceModel.findResultList(ql, CustomerEntity.class, QueryConsumers.noop());
+            final List<CustomerEntity> resultList = persistenceModel.findResultList(
+                    ql,
+                    CustomerEntity.class,
+                    QueryConsumers.noop());
 
             final List<CustomerData> l = resultList.stream()
                     .map(e -> f.apply(e))
@@ -152,7 +159,8 @@ public class CustomerCommands {
 
             persistenceModel.create(ce);
 
-            CustomerData createdCustomerData = transformers.transformTo(ce, CustomerTransforming.transformCustomerEntityToNewCustomer());
+            CustomerData createdCustomerData = transformers.transformTo(ce,
+                    CustomerTransforming.transformCustomerEntityToNewCustomer());
             return createdCustomerData;
         }
 
@@ -187,7 +195,8 @@ public class CustomerCommands {
 
             persistenceModel.update(ce);
 
-            CustomerData createdCustomerData = transformers.transformTo(ce, CustomerTransforming.transformCustomerEntityToNewCustomer());
+            CustomerData createdCustomerData = transformers.transformTo(ce,
+                    CustomerTransforming.transformCustomerEntityToNewCustomer());
             return createdCustomerData;
         }
 

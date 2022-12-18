@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author berni3
  */
-public class MailTest {
+public class MailsFTest {
 
     Session session;
 

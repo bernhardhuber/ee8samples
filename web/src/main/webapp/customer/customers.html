@@ -75,11 +75,11 @@ limitations under the License.
                  * @returns {undefined}
                  */
                 this.loadData = function () {
-                    $.getJSON(resturl, function (items) {
-                        console.log("json items " + items);
+                    $.getJSON(resturl, function (data) {
+                        console.log("json items " + JSON.stringify(data, null, 2));
                         // setup property self.customers from json-data
                         self.customers.removeAll();
-                        for (const item of items) {
+                        for (const item of data) {
                             self.customers.push(item);
                         }
                     });

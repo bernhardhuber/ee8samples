@@ -38,61 +38,81 @@ limitations under the License.
                 const resturlCreate = "/ko_pure_web/resources/customer/create";
 
                 // @data
-                // @data
-                const data = {
-                    customerID: "customerID " + -1,
-                    companyName: "companyName " + 0,
-                    contactName: "contactName " + 0,
-                    contactTitle: "contactTitle " + 0,
-                    fax: "1234 567 " + 0,
-                    phone: "987 543 " + 0,
-                    fullAddress: ''
+                const emptyData = {
+                    customerID: '',
+                    companyName: '',
+                    contactName: '',
+                    contactTitle: '',
+                    fax: '',
+                    phone: '',
+                    fullAddress: {}
                 };
-
+                self.jsonData = null;
                 // @properties
-                self.customerID = ko.observable(data.customerID);
-                self.companyName = ko.observable(data.companyName);
-                self.contactName = ko.observable(data.contactName);
-                self.contactTitle = ko.observable(data.contactTitle);
-                self.fax = ko.observable(data.fax);
-                self.phone = ko.observable(data.phone);
-                self.fullAddress = '-';
+                self.customerID = ko.observable();
+                self.companyName = ko.observable();
+                self.contactName = ko.observable();
+                self.contactTitle = ko.observable();
+                self.fax = ko.observable();
+                self.phone = ko.observable();
+                self.fullAddress = {};
 
                 // @function computing
-                self.fullAddressInline = ko.pureComputed(function () {
-                    return self.contactTitle + " " + self.contanctName;
+                self.fullName = ko.pureComputed(function () {
+                    return self.contactTitle() + " " + self.contactName();
                 }, self);
 
-                /**
-                 * Load data via json.
-                 *
-                 * @returns {undefined}
-                 */
-                this.loadData = function () {
+                ko.computed(function () {
+                    $.ajax(resturl, {
+                        data: {},
+                        success: function (data) {
+                            console.log("read default " + JSON.stringify(data, null, 2));
+                            self.jsonData = data;
 
-                    $.getJSON(resturl, function (item) {
-                        console.log("json item " + item);
-                        // setup property self.customers from json-data
-                        // TODO fix me implement correctly
-                        self.customerID(item.customerID);
-                        self.companyName(item.companyName);
-                        self.contactName(item.contactName);
-                        self.contactTitle(item.contactTitle);
-                        self.fax(item.fax);
-                        self.phone(item.phone);
-                        // TODO add more
+                            self.customerID(data.customerID);
+                            self.companyName(data.companyName);
+                            self.contactName(data.contactName);
+                            self.contactTitle(data.contactTitle);
+                            self.fax(data.fax);
+                            self.phone(data.phone);
+                            // TODO add more
+                        }
                     });
-                }
-                this.saveData = function () {
-                    alert("TODO post data to " + resturlCreate);
-                }
+                }, self);
+                
+                this.createData = function () {
+                    var reqData = ko.toJSON(self);
+                    console.log("post to " + resturlCreate + "\n"
+                            + "reqData " + reqData);
+                    //return ;
+                    $.ajax(resturlCreate, {
+                        data: reqData,
+                        method: 'POST',
+                        contentType: 'application/json',
+                        datatype: 'json',
+                        success: function (data) {
+                            alert('Success ' + data);
+                        }
+                    });
+                };
+                
+                this.resetData = function () {
+                    const item = self.jsonData;
+                    self.customerID(item.customerID);
+                    self.companyName(item.companyName);
+                    self.contactName(item.contactName);
+                    self.contactTitle(item.contactTitle);
+                    self.fax(item.fax);
+                    self.phone(item.phone);
+                    // TODO add more
+                };
             }
 
             // setup AppViewModel
             $(document).ready(function () {
                 // Run code
                 var appViewModel = new AppViewModel();
-                appViewModel.loadData();
+                //appViewModel.loadData();
                 ko.applyBindings(appViewModel);
             });
         </script>
@@ -113,11 +133,11 @@ limitations under the License.
                         <li><span data-bind="text: phone"></span></li>
                         <li><span data-bind="text: fax"></span></li>
 
-                        <li><span data-bind="text: fullAddress"></span></li>
+                        <li><span data-bind="text: fullName"></span></li>
                     </ul>
                 </div>
             </div>
-            <form class="row">
+            <form class="row" >
                 <div class="col">
                     <h2>Input Form 1</h2>
 
@@ -163,14 +183,15 @@ limitations under the License.
                     </fieldset>
                     <p></p>
                     <div class="btn-group" role="group" aria-label="...">
-                        <button class="btn btn-primary"
-                                onclick="alert('TODO implement me!');">Submit</button>
-                        <button class="btn btn-primary"
-                                onclick="alert('TODO implement me!');">Reset</button>
+                        <button type="button" class="btn btn-primary"
+                                data-bind="click: createData"
+                                >Save</button>
+                        <button type="button" class="btn btn-primary"
+                                data-bind="click: resetData"
+                                >Reset</button>
                     </div>
                 </div>
             </form>
         </div>
-    </form>
-</body>
+    </body>
 </html>

@@ -15,7 +15,6 @@
  */
 package org.huberb.pureko.resources;
 
-import java.util.function.Supplier;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -54,11 +53,10 @@ public class CustomerResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response customer() {
-        final Supplier<CustomerData> customerDataSupplier = () -> createDefaultCustomerCommand.createDefaultCustomerData();
-        final CustomerData customer = customerDataSupplier.get();
-        final String s2 = customerJsonConverter.createJsonObjectFrom(customer);
+        final CustomerData customer = createDefaultCustomerCommand.createDefaultCustomerData();
+        final String s = customerJsonConverter.createJsonObjectFrom(customer);
         return Response
-                .ok(s2)
+                .ok(s)
                 .build();
     }
 
@@ -73,9 +71,9 @@ public class CustomerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(CustomerData customer) {
         final CustomerData createdCustomerData = createCustomer(customer);
-        final String s2 = customerJsonConverter.createJsonObjectFrom(createdCustomerData);
+        final String s = customerJsonConverter.createJsonObjectFrom(createdCustomerData);
         return Response
-                .ok(s2)
+                .ok(s)
                 .build();
     }
 

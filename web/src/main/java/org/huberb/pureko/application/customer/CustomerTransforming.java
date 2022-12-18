@@ -70,7 +70,7 @@ public class CustomerTransforming {
                     .companyName(from.getCompanyName())
                     .contactName(from.getContactName())
                     .contactTitle(from.getContactTitle())
-                    .customerID(from.getContactTitle())
+                    .customerID(from.getCustomerID())
                     .fax(from.getFax())
                     .phone(from.getPhone())
                     .fullAddress(FullAddressEmbeddable.builder()

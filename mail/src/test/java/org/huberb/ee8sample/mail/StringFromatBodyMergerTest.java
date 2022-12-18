@@ -83,19 +83,19 @@ public class StringFromatBodyMergerTest {
         assertEquals("me@localhost", m.getFrom()[0].toString());
         assertEquals("me@localhost", m.getRecipients(RecipientType.TO)[0].toString());
 
-        Consumer<MimeMessage> c1 = BodyMergers.StringFromatBodyMerger.c1("Hello,%n"
-                + "body text.%n");
+        Consumer<MimeMessage> c1 = BodyMergers.StringFormatBodyMerger.assignBodyText("Hello,%n"
+                + "body text.%n", null);
         c1.accept((MimeMessage) m);
-        assertNormalized("Hello, body text. ", (String)m.getContent());
+        assertNormalized("Hello, body text. ", (String) m.getContent());
     }
 
     void assertNormalized(String exp, String res) {
-        String expNorm = normalie(exp);
-        String resNorm = normalie(res);
+        String expNorm = normalize(exp);
+        String resNorm = normalize(res);
         assertEquals(expNorm, resNorm);
     }
 
-    String normalie(String s) {
+    String normalize(String s) {
         String result = s.replace("\r\n", " ")
                 .replace('\r', ' ')
                 .replace('\n', ' ');

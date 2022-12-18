@@ -15,9 +15,8 @@
  */
 package org.huberb.ee8sample.mail;
 
-import java.util.Optional;
 import java.util.function.Consumer;
-import javax.mail.Message.RecipientType;
+import java.util.function.Supplier;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -27,15 +26,15 @@ import javax.mail.internet.MimeMessage;
  */
 public class BodyMergers {
 
-    static class StringFromatBodyMerger {
+    static class StringFormatBodyMerger {
 
-        private StringFromatBodyMerger() {
+        private StringFormatBodyMerger() {
         }
 
-        static Consumer<MimeMessage> c1(String template) {
+        static Consumer<MimeMessage> assignBodyText(String template, Object[] args) {
             return (mm) -> {
                 try {
-                    String bodyText = merge(mm, template);
+                    String bodyText = merge(template, args).get();
                     mm.setText(bodyText);
                 } catch (MessagingException ex) {
                     throw new RuntimeException("merge", ex);
@@ -43,41 +42,13 @@ public class BodyMergers {
             };
         }
 
-        static String merge(MimeMessage mm, String template) throws MessagingException {
-            final String subject = Optional.ofNullable(mm).map(e -> {
-                try {
-                    return e.getSubject();
-                } catch (MessagingException ex) {
-                    throw new RuntimeException("subject", ex);
-                }
-            }).orElse("");
-            final String from = Optional.ofNullable(mm).map(e -> {
-                try {
-                    return e.getFrom();
-                } catch (MessagingException ex) {
-                    throw new RuntimeException("from", ex);
-                }
-            })
-                    .map(e -> e[0])
-                    .map(e -> e.toString())
-                    .orElse("");
-            final String to = Optional.ofNullable(mm).map(e -> {
-                try {
-                    return e.getRecipients(RecipientType.TO);
-                } catch (MessagingException ex) {
-                    throw new RuntimeException("from", ex);
-                }
-            })
-                    .map(e -> e[0])
-                    .map(e -> e.toString())
-                    .orElse("");
-
-            final String result = String.format(template,
-                    subject,
-                    from,
-                    to
-            );
-            return result;
+        static Supplier<String> merge(String template, Object[] args) {
+            return () -> {
+                // TODO how to handle IllegalArgumentException?
+                // maybe thrown by String#format
+                final String result = String.format(template, args);
+                return result;
+            };
         }
     }
 }

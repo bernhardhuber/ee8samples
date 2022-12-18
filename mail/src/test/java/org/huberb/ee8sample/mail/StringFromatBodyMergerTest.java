@@ -16,16 +16,20 @@
 package org.huberb.ee8sample.mail;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.function.Consumer;
-import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+import org.huberb.ee8sample.mail.BodyTextMergers.SimpleSubstitutionBodyMerger;
+import org.huberb.ee8sample.mail.BodyTextMergers.StringFormatBodyMerger;
 import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,9 +49,7 @@ public class StringFromatBodyMergerTest {
         assertNotNull(session);
     }
 
-    @Test
-    public void hello1() throws MessagingException {
-        assertNotNull(session);
+    MimeMessage createAMimeMessage() throws MessagingException, IOException {
 
         MimeMessageF messageF = new MimeMessageF(session);
         Consumer<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
@@ -56,37 +58,43 @@ public class StringFromatBodyMergerTest {
                 .andThen(MimeMessageF.Consumers.text("text"));
 
         messageF.consume(c);
-        Message m = messageF.getMimeMessage();
-        assertNotNull(m);
-
-        assertEquals("subject", m.getSubject());
-        assertEquals("me@localhost", m.getFrom()[0].toString());
-        assertEquals("me@localhost", m.getRecipients(RecipientType.TO)[0].toString());
-    }
-
-    @Test
-    public void hello2() throws MessagingException, IOException {
-        assertNotNull(session);
-
-        MimeMessageF messageF = new MimeMessageF(session);
-        Consumer<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
-                .andThen(MimeMessageF.Consumers.recipient(RecipientType.TO, "me@localhost"))
-                .andThen(MimeMessageF.Consumers.subject("subject"))
-                .andThen(MimeMessageF.Consumers.text("text"));
-
-        messageF.consume(c);
-        Message m = messageF.getMimeMessage();
+        MimeMessage m = messageF.getMimeMessage();
         assertNotNull(m);
 
         assertEquals("subject", m.getSubject());
         assertEquals("text", m.getContent());
         assertEquals("me@localhost", m.getFrom()[0].toString());
         assertEquals("me@localhost", m.getRecipients(RecipientType.TO)[0].toString());
+        return m;
+    }
 
-        Consumer<MimeMessage> c1 = BodyMergers.StringFormatBodyMerger.assignBodyText("Hello,%n"
-                + "body text.%n", null);
-        c1.accept((MimeMessage) m);
-        assertNormalized("Hello, body text. ", (String) m.getContent());
+    @Test
+    public void testStringFormatBodyMergerAssignBodyText() throws MessagingException, IOException {
+        final MimeMessage m = createAMimeMessage();
+        //---
+        final String template = "Hello %s,%n"
+                + "body text.%n";
+        final Consumer<MimeMessage> assignBodyTextConsumer = StringFormatBodyMerger.assignBodyText(
+                template, new Object[]{"world"});
+        assignBodyTextConsumer.accept((MimeMessage) m);
+        assertNormalized("Hello world, body text. ", (String) m.getContent());
+    }
+
+    @Test
+    public void testSimpleSubstitutionBodyMergerAssignBodyText() throws MessagingException, IOException {
+        final MimeMessage m = createAMimeMessage();
+        //---
+        Map<String, Object> map = new HashMap<>() {
+            {
+                put("name", "world");
+            }
+        };
+        final String template = "Hello @name@,\r\n"
+                + "body text.\r\n";
+        final Consumer<MimeMessage> assignBodyTextConsumer = SimpleSubstitutionBodyMerger.assignBodyText(
+                template, map);
+        assignBodyTextConsumer.accept((MimeMessage) m);
+        assertNormalized("Hello world, body text. ", (String) m.getContent());
     }
 
     void assertNormalized(String exp, String res) {
@@ -99,6 +107,7 @@ public class StringFromatBodyMergerTest {
         String result = s.replace("\r\n", " ")
                 .replace('\r', ' ')
                 .replace('\n', ' ');
+        assertTrue(result.length() <= s.length());
         return result;
     }
 }

@@ -18,6 +18,7 @@ package org.huberb.pureko.application.customer;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import javax.enterprise.context.ApplicationScoped;
 import org.huberb.pureko.application.customer.CustomerData.FullAddress;
 import org.huberb.pureko.application.customer.CustomerEntity.FullAddressEmbeddable;
 
@@ -25,91 +26,79 @@ import org.huberb.pureko.application.customer.CustomerEntity.FullAddressEmbeddab
  *
  * @author berni3
  */
+@ApplicationScoped
 public class CustomerTransforming {
 
-    public static BiFunction<CustomerData, CustomerEntity, CustomerEntity> transformCustomerToExistingCustomerEntity() {
-        return new TransformCustomerToExistingCustomerEntity();
+    public BiFunction<CustomerData, CustomerEntity, CustomerEntity> transformCustomerToExistingCustomerEntity() {
+        return (cd, ce) -> new CustomerTransforming().transformCustomerToExistingCustomerEntity(cd, ce);
     }
 
-    public static Function<CustomerData, CustomerEntity> transformCustomerToNewCustomerEntity() {
-        return new TransformCustomerToNewCustomerEntity();
+    public CustomerEntity transformCustomerToExistingCustomerEntity(CustomerData from, CustomerEntity to) {
+        to.setCompanyName(from.getCompanyName());
+        to.setContactName(from.getContactName());
+        to.setContactTitle(from.getContactTitle());
+        to.setCustomerID(from.getCustomerID());
+        to.setFax(from.getFax());
+        to.setPhone(from.getPhone());
+        FullAddress fromFullAddress = Optional.ofNullable(from.getFullAddress()).orElse(new FullAddress());
+        FullAddressEmbeddable toFullAddressEmbeddable = Optional.ofNullable(to.getFullAddress()).orElse(new FullAddressEmbeddable());
+        toFullAddressEmbeddable.setAddress(fromFullAddress.getAddress());
+        toFullAddressEmbeddable.setPostalcode(fromFullAddress.getPostalcode());
+        toFullAddressEmbeddable.setCity(fromFullAddress.getCity());
+        toFullAddressEmbeddable.setRegion(fromFullAddress.getRegion());
+        toFullAddressEmbeddable.setCountry(fromFullAddress.getCountry());
+        return to;
     }
 
-    public static TransformCustomerEntityToNewCustomer transformCustomerEntityToNewCustomer() {
-        return new TransformCustomerEntityToNewCustomer();
+    public Function<CustomerData, CustomerEntity> transformCustomerToNewCustomerEntity() {
+        return (cd) -> transformCustomerToNewCustomerEntity(cd);
     }
 
-    public static class TransformCustomerToExistingCustomerEntity implements BiFunction<CustomerData, CustomerEntity, CustomerEntity> {
-
-        @Override
-        public CustomerEntity apply(CustomerData from, CustomerEntity to) {
-            to.setCompanyName(from.getCompanyName());
-            to.setContactName(from.getCompanyName());
-            to.setContactTitle(from.getContactTitle());
-            to.setCustomerID(from.getCustomerID());
-            to.setFax(from.getFax());
-            to.setPhone(from.getPhone());
-            FullAddress fromFullAddress = Optional.ofNullable(from.getFullAddress()).orElse(new FullAddress());
-            FullAddressEmbeddable toFullAddressEmbeddable = Optional.ofNullable(to.getFullAddress()).orElse(new FullAddressEmbeddable());
-            toFullAddressEmbeddable.setAddress(fromFullAddress.getAddress());
-            toFullAddressEmbeddable.setPostalcode(fromFullAddress.getPostalcode());
-            toFullAddressEmbeddable.setCity(fromFullAddress.getCity());
-            toFullAddressEmbeddable.setRegion(fromFullAddress.getRegion());
-            toFullAddressEmbeddable.setCountry(fromFullAddress.getCountry());
-            return to;
-        }
+    public CustomerEntity transformCustomerToNewCustomerEntity(CustomerData from) {
+        final FullAddress fullAddress = Optional.ofNullable(from.getFullAddress())
+                .orElse(new FullAddress());
+        final CustomerEntity to = CustomerEntity.builder()
+                .companyName(from.getCompanyName())
+                .contactName(from.getContactName())
+                .contactTitle(from.getContactTitle())
+                .customerID(from.getCustomerID())
+                .fax(from.getFax())
+                .phone(from.getPhone())
+                .fullAddress(FullAddressEmbeddable.builder()
+                        .address(fullAddress.getAddress())
+                        .postalcode(fullAddress.getPostalcode())
+                        .city(fullAddress.getCity())
+                        .region(fullAddress.getRegion())
+                        .country(fullAddress.getCountry())
+                        .build())
+                .build();
+        return to;
     }
 
-    public static class TransformCustomerToNewCustomerEntity implements Function<CustomerData, CustomerEntity> {
-
-        @Override
-        public CustomerEntity apply(CustomerData from) {
-            final FullAddress fullAddress = Optional.ofNullable(from.getFullAddress())
-                    .orElse(new FullAddress());
-            final CustomerEntity to = CustomerEntity.builder()
-                    .companyName(from.getCompanyName())
-                    .contactName(from.getContactName())
-                    .contactTitle(from.getContactTitle())
-                    .customerID(from.getCustomerID())
-                    .fax(from.getFax())
-                    .phone(from.getPhone())
-                    .fullAddress(FullAddressEmbeddable.builder()
-                            .address(fullAddress.getAddress())
-                            .postalcode(fullAddress.getPostalcode())
-                            .city(fullAddress.getCity())
-                            .region(fullAddress.getRegion())
-                            .country(fullAddress.getCountry())
-                            .build())
-                    .build();
-            return to;
-        }
+    public Function<CustomerEntity, CustomerData> transformCustomerEntityToNewCustomer() {
+        return (ce) -> transformCustomerEntityToNewCustomer(ce);
     }
 
-    public static class TransformCustomerEntityToNewCustomer implements Function<CustomerEntity, CustomerData> {
+    public CustomerData transformCustomerEntityToNewCustomer(CustomerEntity from) {
 
-        @Override
-        public CustomerData apply(CustomerEntity from) {
+        final FullAddressEmbeddable fullAddress = Optional.ofNullable(from.getFullAddress())
+                .orElse(new FullAddressEmbeddable());
 
-            final FullAddressEmbeddable fullAddress = Optional.ofNullable(from.getFullAddress())
-                    .orElse(new FullAddressEmbeddable());
-
-            final CustomerData to = CustomerData.builder()
-                    .companyName(from.getCompanyName())
-                    .contactName(from.getContactName())
-                    .contactTitle(from.getContactTitle())
-                    .customerID(from.getCustomerID())
-                    .fax(from.getFax())
-                    .phone(from.getPhone())
-                    .fullAddress(FullAddress.builder()
-                            .address(fullAddress.getAddress())
-                            .postalcode(fullAddress.getPostalcode())
-                            .city(fullAddress.getCity())
-                            .region(fullAddress.getRegion())
-                            .country(fullAddress.getCountry())
-                            .build())
-                    .build();
-            return to;
-        }
+        final CustomerData to = CustomerData.builder()
+                .companyName(from.getCompanyName())
+                .contactName(from.getContactName())
+                .contactTitle(from.getContactTitle())
+                .customerID(from.getCustomerID())
+                .fax(from.getFax())
+                .phone(from.getPhone())
+                .fullAddress(FullAddress.builder()
+                        .address(fullAddress.getAddress())
+                        .postalcode(fullAddress.getPostalcode())
+                        .city(fullAddress.getCity())
+                        .region(fullAddress.getRegion())
+                        .country(fullAddress.getCountry())
+                        .build())
+                .build();
+        return to;
     }
-
 }

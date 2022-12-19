@@ -68,6 +68,8 @@ public class SeedCustomersCommandIT {
     private CustomerDataFactory customerDataFactory;
     @Spy
     private Transformers transformers;
+    @Spy
+    private CustomerTransforming customerTransforming;
 
     @InjectMocks
     SeedCustomersCommand instance;

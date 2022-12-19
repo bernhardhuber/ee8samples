@@ -26,8 +26,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
-import org.huberb.pureko.application.customer.CustomerTransforming.TransformCustomerEntityToNewCustomer;
-import org.huberb.pureko.application.customer.CustomerTransforming.TransformCustomerToNewCustomerEntity;
 import org.huberb.pureko.application.support.PersistenceModel;
 import org.huberb.pureko.application.support.PersistenceModel.QueryConsumers;
 import org.huberb.pureko.application.support.Transformers;
@@ -74,6 +72,8 @@ public class CustomerCommands {
         private CustomerDataFactory customerDataFactory;
         @Inject
         private Transformers transformers;
+        @Inject
+        private CustomerTransforming customerTransforming;
 
         @Transactional
         public int seedDataBase(int maxSeeded) {
@@ -85,7 +85,7 @@ public class CustomerCommands {
             if (n.intValue() == 0 && maxSeeded > 0) {
                 final List<CustomerData> customerDataList = customerDataFactory.createDataFakerCustomerList(maxSeeded);
                 for (final CustomerData cd : customerDataList) {
-                    final CustomerEntity ce = transformers.transformTo(cd, new TransformCustomerToNewCustomerEntity());
+                    final CustomerEntity ce = transformers.transformTo(cd, customerTransforming.transformCustomerToNewCustomerEntity());
                     persistenceModel.create(ce);
                     countOfSeeded += 1;
                 }
@@ -101,6 +101,8 @@ public class CustomerCommands {
         private PersistenceModel persistenceModel;
         @Inject
         private Transformers transformers;
+        @Inject
+        private CustomerTransforming customerTransforming;
 
         @Transactional
         public List<CustomerData> readCustomers() {
@@ -118,7 +120,7 @@ public class CustomerCommands {
             final List<CustomerData> l = new ArrayList<>();
             resultList.forEach((CustomerEntity ce) -> {
                 final CustomerData cd = transformers.transformTo(ce,
-                        CustomerTransforming.transformCustomerEntityToNewCustomer());
+                        customerTransforming.transformCustomerEntityToNewCustomer());
                 l.add(cd);
             });
             return l;
@@ -127,7 +129,7 @@ public class CustomerCommands {
         List<CustomerData> readCustomersStreamCollectorsToList() {
             String en = CustomerEntity.class.getSimpleName();
             final String ql = "from " + en;
-            final TransformCustomerEntityToNewCustomer f = CustomerTransforming.transformCustomerEntityToNewCustomer();
+            final Function<CustomerEntity, CustomerData> f = customerTransforming.transformCustomerEntityToNewCustomer();
             final List<CustomerEntity> resultList = persistenceModel.findResultList(
                     ql,
                     CustomerEntity.class,
@@ -147,12 +149,14 @@ public class CustomerCommands {
         private PersistenceModel persistenceModel;
         @Inject
         private Transformers transformers;
+        @Inject
+        private CustomerTransforming customerTransforming;
 
         @Transactional
         public CustomerData createCustomer(CustomerData customerData) {
             validateCustomerData(customerData);
 
-            final Function<CustomerData, CustomerEntity> func = CustomerTransforming.transformCustomerToNewCustomerEntity();
+            final Function<CustomerData, CustomerEntity> func = customerTransforming.transformCustomerToNewCustomerEntity();
             final CustomerEntity ce = transformers.transformTo(customerData, func);
             validateCustomerEntity(ce);
             String cID = customerData.getCustomerID();
@@ -160,7 +164,7 @@ public class CustomerCommands {
             persistenceModel.create(ce);
 
             CustomerData createdCustomerData = transformers.transformTo(ce,
-                    CustomerTransforming.transformCustomerEntityToNewCustomer());
+                    customerTransforming.transformCustomerEntityToNewCustomer());
             return createdCustomerData;
         }
 
@@ -184,19 +188,21 @@ public class CustomerCommands {
         private PersistenceModel persistenceModel;
         @Inject
         private Transformers transformers;
+        @Inject
+        private CustomerTransforming customerTransforming;
 
         @Transactional
         public CustomerData updateCustomer(CustomerData customerData) {
             validateCustomerData(customerData);
 
-            final Function<CustomerData, CustomerEntity> func = CustomerTransforming.transformCustomerToNewCustomerEntity();
+            final Function<CustomerData, CustomerEntity> func = customerTransforming.transformCustomerToNewCustomerEntity();
             final CustomerEntity ce = transformers.transformTo(customerData, func);
             validateCustomerEntity(ce);
 
             persistenceModel.update(ce);
 
             CustomerData createdCustomerData = transformers.transformTo(ce,
-                    CustomerTransforming.transformCustomerEntityToNewCustomer());
+                    customerTransforming.transformCustomerEntityToNewCustomer());
             return createdCustomerData;
         }
 
@@ -219,11 +225,13 @@ public class CustomerCommands {
         private PersistenceModel persistenceModel;
         @Inject
         private Transformers transformers;
+        @Inject
+        private CustomerTransforming customerTransforming;
 
         @Transactional
         public void deleteCustomer(CustomerData customerData) {
             String cID = customerData.getCustomerID();
-            final Function<CustomerData, CustomerEntity> func = CustomerTransforming.transformCustomerToNewCustomerEntity();
+            final Function<CustomerData, CustomerEntity> func = customerTransforming.transformCustomerToNewCustomerEntity();
             final CustomerEntity ce = transformers.transformTo(customerData, func);
 
             persistenceModel.remove(ce);

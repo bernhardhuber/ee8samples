@@ -32,6 +32,15 @@ limitations under the License.
         <script type="text/javascript">
             // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
 
+            function FullAddress() {
+                var self = this;
+                self.address = ko.observable();
+                self.city = ko.observable();
+                self.country = ko.observable();
+                self.postalcode = ko.observable();
+                self.region = ko.observable();
+            }
+            var self = this;
             function AppViewModel() {
                 var self = this;
                 const resturl = "/ko_pure_web/resources/customer";
@@ -55,7 +64,7 @@ limitations under the License.
                 self.contactTitle = ko.observable();
                 self.fax = ko.observable();
                 self.phone = ko.observable();
-                self.fullAddress = {};
+                self.fullAddress = new FullAddress();
 
                 // @function computing
                 self.fullName = ko.pureComputed(function () {
@@ -76,10 +85,15 @@ limitations under the License.
                             self.fax(data.fax);
                             self.phone(data.phone);
                             // TODO add more
+                            self.fullAddress.address(data.fullAddress.address);
+                            self.fullAddress.city(data.fullAddress.city);
+                            self.fullAddress.country(data.fullAddress.country);
+                            self.fullAddress.postalcode(data.fullAddress.postalcode);
+                            self.fullAddress.region(data.fullAddress.region);
                         }
                     });
                 }, self);
-                
+
                 this.createData = function () {
                     var reqData = ko.toJSON(self);
                     console.log("post to " + resturlCreate + "\n"
@@ -95,15 +109,20 @@ limitations under the License.
                         }
                     });
                 };
-                
+
                 this.resetData = function () {
-                    const item = self.jsonData;
-                    self.customerID(item.customerID);
-                    self.companyName(item.companyName);
-                    self.contactName(item.contactName);
-                    self.contactTitle(item.contactTitle);
-                    self.fax(item.fax);
-                    self.phone(item.phone);
+                    const data = self.jsonData;
+                    self.customerID(data.customerID);
+                    self.companyName(data.companyName);
+                    self.contactName(data.contactName);
+                    self.contactTitle(data.contactTitle);
+                    self.fax(data.fax);
+                    self.phone(data.phone);
+                    self.fullAddress.address(data.fullAddress.address);
+                    self.fullAddress.city(data.fullAddress.cityy);
+                    self.fullAddress.country(data.fullAddress.country);
+                    self.fullAddress.postalcode(data.fullAddress.postalcode);
+                    self.fullAddress.region(data.fullAddress.region);
                     // TODO add more
                 };
             }
@@ -112,7 +131,6 @@ limitations under the License.
             $(document).ready(function () {
                 // Run code
                 var appViewModel = new AppViewModel();
-                //appViewModel.loadData();
                 ko.applyBindings(appViewModel);
             });
         </script>
@@ -120,6 +138,12 @@ limitations under the License.
 
     <body>
         <div class="container">
+            <div class="row" >
+                <div class="col">
+                    <a class="btn btn-primary" href="customers.html" role="button">Customers</a>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col">
                     <h2>Customer</h2>
@@ -179,6 +203,34 @@ limitations under the License.
                             <label for="fax_1" class="form-label">Fax</label>
                             <input id="fax_1" type="text" class="form-control"
                                    data-bind="value: fax" title="Fax"/>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Full Address</legend>
+                        <div class="control-group">
+                            <label for="address_1" class="form-label">Address</label>
+                            <input id="address_1" type="text" class="form-control"
+                                   data-bind="value: fullAddress.address" title="Address"/>
+                        </div>
+                        <div class="control-group">
+                            <label for="city_1" class="form-label">City</label>
+                            <input id="city_1" type="text" class="form-control"
+                                   data-bind="value: fullAddress.city" title="City"/>
+                        </div>
+                        <div class="control-group">
+                            <label for="country_1" class="form-label">Country</label>
+                            <input id="country_1" type="text" class="form-control"
+                                   data-bind="value: fullAddress.country" title="Country"/>
+                        </div>
+                        <div class="control-group">
+                            <label for="postalcode_1" class="form-label">Postal Code</label>
+                            <input id="postalcode_1" type="text" class="form-control"
+                                   data-bind="value: fullAddress.postalcode" title="Postal Code"/>
+                        </div>
+                        <div class="control-group">
+                            <label for="region_1" class="form-label">Region</label>
+                            <input id="region_1" type="text" class="form-control"
+                                   data-bind="value: fullAddress.region" title="Region"/>
                         </div>
                     </fieldset>
                     <p></p>

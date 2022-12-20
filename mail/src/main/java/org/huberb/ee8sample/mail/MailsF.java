@@ -419,7 +419,13 @@ public class MailsF {
 
             Recipient recipient = new Recipient();
 
-            RecipientBuilder rt(RecipientType rt) {
+            RecipientBuilder addAddress(RecipientType rt, List<InternetAddress> ia) {
+                this.recipient.rt = rt;
+                this.recipient.iaList.addAll(ia);
+                return this;
+            }
+
+            RecipientBuilder recipientType(RecipientType rt) {
                 this.recipient.rt = rt;
                 return this;
             }

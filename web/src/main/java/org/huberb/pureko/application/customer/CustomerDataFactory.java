@@ -53,12 +53,12 @@ public class CustomerDataFactory {
      * @return
      */
     public List<CustomerData> createDataFakerCustomerList(int nMax, Function<Integer, CustomerData> f) {
-        final List<CustomerData> customerList = new ArrayList<>();
+        final List<CustomerData> customerDataList = new ArrayList<>();
         for (int i = 0; i < nMax; i += 1) {
-            final CustomerData customer = f.apply(i);
-            customerList.add(customer);
+            final CustomerData customerData = f.apply(i);
+            customerDataList.add(customerData);
         }
-        return customerList;
+        return customerDataList;
     }
 
     public static Function<Integer, CustomerData> createNthDataFakerCustomerData(Faker faker) {
@@ -70,7 +70,7 @@ public class CustomerDataFactory {
                     .postalcode(faker.address().postcode())
                     .region(faker.address().state())
                     .build();
-            final CustomerData customer = CustomerData.builder()
+            final CustomerData customerData = CustomerData.builder()
                     .customerID("customerID-" + i)
                     .companyName(faker.company().name())
                     .contactName(faker.name().fullName())
@@ -79,7 +79,7 @@ public class CustomerDataFactory {
                     .phone(faker.phoneNumber().cellPhone())
                     .fullAddress(fullAddress)
                     .build();
-            return customer;
+            return customerData;
         };
     }
 
@@ -92,7 +92,7 @@ public class CustomerDataFactory {
                     .postalcode("postalcode-")
                     .region("region-" + i)
                     .build();
-            final CustomerData customer = CustomerData.builder()
+            final CustomerData customerData = CustomerData.builder()
                     .customerID("customerID-" + i)
                     .companyName("companyName-" + i)
                     .contactName("contactName-" + i)
@@ -101,7 +101,7 @@ public class CustomerDataFactory {
                     .phone("phone-" + i)
                     .fullAddress(fullAddress)
                     .build();
-            return customer;
+            return customerData;
         };
     }
 }

@@ -18,9 +18,9 @@ package org.huberb.ee8sample.mail;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -30,15 +30,27 @@ import javax.mail.internet.MimeMessage;
  */
 public class BodyTextMergers {
 
-    static class StringFormatBodyMerger {
+    /**
+     * Merger using {@link String#format(java.lang.String, java.lang.Object...)
+     * } internally for merging.
+     */
+    public static class StringFormatBodyMerger {
 
-        private StringFormatBodyMerger() {
+        private final Locale locale;
+
+        public StringFormatBodyMerger() {
+            this(Locale.getDefault());
         }
 
-        static Consumer<MimeMessage> assignBodyText(String template, Object[] args) {
+        public StringFormatBodyMerger(Locale l) {
+            this.locale = l;
+        }
+
+        public static Consumer<MimeMessage> assignBodyText(String template, Object[] args) {
             return (mm) -> {
                 try {
-                    String bodyText = merge(template, args).get();
+                    StringFormatBodyMerger merger = new StringFormatBodyMerger();
+                    String bodyText = merger.merge(template, args);
                     mm.setText(bodyText);
                 } catch (MessagingException ex) {
                     throw new RuntimeException("merge", ex);
@@ -46,25 +58,24 @@ public class BodyTextMergers {
             };
         }
 
-        static Supplier<String> merge(String template, Object[] args) {
-            return () -> {
-                // TODO how to handle IllegalArgumentException?
-                // maybe thrown by String#format
-                final String result = String.format(template, args);
-                return result;
-            };
+        public String merge(String template, Object[] args) {
+            // TODO how to handle IllegalArgumentException?
+            // maybe thrown by String#format
+            final String result = String.format(locale, template, args);
+            return result;
         }
     }
 
-    static class SimpleSubstitutionBodyMerger {
+    /**
+     * Merger using pattern "@var@", and providing values of "var" as a Map.
+     */
+    public static class SimpleSubstitutionBodyMerger {
 
-        protected SimpleSubstitutionBodyMerger() {
-        }
-
-        static Consumer<MimeMessage> assignBodyText(String template, Map<String, Object> m) {
+        public static Consumer<MimeMessage> assignBodyText(String template, Map<String, Object> m) {
             return (mm) -> {
                 try {
-                    String bodyText = merge(template, m).get();
+                    SimpleSubstitutionBodyMerger merger = new SimpleSubstitutionBodyMerger();
+                    String bodyText = merger.merge(template, m);
                     mm.setText(bodyText);
                 } catch (MessagingException ex) {
                     throw new RuntimeException("merge", ex);
@@ -72,31 +83,40 @@ public class BodyTextMergers {
             };
         }
 
-        static Supplier<String> merge(String template, Map<String, Object> m) {
-            return () -> {
-                try {
-                    return new SimpleSubstitutionBodyMerger().process(template, m);
-                } catch (IOException ex) {
-                    throw new RuntimeException("merge", ex);
-                }
-            };
+        private final int EOF = -1;
+        private final char varDelimStart;
+        private final char varDelimEnd;
+
+        public SimpleSubstitutionBodyMerger() {
+            this('@', '@');
         }
 
-        final char varDelimStart = '@';
-        final char varDelimEnd = '@';
+        public SimpleSubstitutionBodyMerger(char varDelimStart, char varDelimEnd) {
+            this.varDelimStart = varDelimStart;
+            this.varDelimEnd = varDelimEnd;
+
+        }
+
+        public String merge(String template, Map<String, Object> m) {
+            try {
+                return process(template, m);
+            } catch (IOException ex) {
+                throw new RuntimeException("merge", ex);
+            }
+        }
 
         String process(String template, Map<String, Object> m) throws IOException {
             final StringBuilder sb = new StringBuilder();
 
             // This can be easiliy FileReader or any Reader
             try (final Reader sr = new StringReader(template)) {
-                for (int c; (c = sr.read()) != -1;) {
+                for (int c; (c = sr.read()) != EOF;) {
                     if (c == varDelimStart) {
                         final String var = readVariable(sr);
                         final String val = getValue(m, var);
                         sb.append(val);
                     } else {
-                        sb.append((char)c);
+                        sb.append((char) c);
                     }
                 }
             }
@@ -105,7 +125,7 @@ public class BodyTextMergers {
 
         private String readVariable(Reader sr) throws IOException {
             final StringBuilder nameSB = new StringBuilder();
-            for (int c; (c = sr.read()) != -1;) {
+            for (int c; (c = sr.read()) != EOF;) {
                 if (c == varDelimEnd) {
                     break;
                 }

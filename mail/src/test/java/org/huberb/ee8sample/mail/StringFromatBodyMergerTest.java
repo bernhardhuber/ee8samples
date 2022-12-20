@@ -75,7 +75,9 @@ public class StringFromatBodyMergerTest {
         final String template = "Hello %s,%n"
                 + "body text.%n";
         final Consumer<MimeMessage> assignBodyTextConsumer = StringFormatBodyMerger.assignBodyText(
-                template, new Object[]{"world"});
+                template,
+                new Object[]{"world"}
+        );
         assignBodyTextConsumer.accept((MimeMessage) m);
         assertNormalized("Hello world, body text. ", (String) m.getContent());
     }
@@ -92,7 +94,9 @@ public class StringFromatBodyMergerTest {
         final String template = "Hello @name@,\r\n"
                 + "body text.\r\n";
         final Consumer<MimeMessage> assignBodyTextConsumer = SimpleSubstitutionBodyMerger.assignBodyText(
-                template, map);
+                template,
+                map
+        );
         assignBodyTextConsumer.accept((MimeMessage) m);
         assertNormalized("Hello world, body text. ", (String) m.getContent());
     }

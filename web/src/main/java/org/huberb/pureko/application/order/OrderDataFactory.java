@@ -32,34 +32,34 @@ import org.huberb.pureko.application.order.OrderData.ShipInfo;
 public class OrderDataFactory {
 
     /**
-     * Create list of customer using {link Faker} data values.
+     * Create list of order using {link Faker} data values.
      *
      * @param nMax
      * @return
      */
-    public List<OrderData> createDataFakerCustomerList(int nMax) {
+    public List<OrderData> createDataFakerOrderList(int nMax) {
         final Faker faker = Faker.instance(Locale.forLanguageTag("de-AT"));
-        return createDataFakerCustomerList(nMax, createNthDataFakerOrderData(faker));
+        return createDataFakerOrderList(nMax, createNthDataFakerOrderData(faker));
     }
 
-    public List<OrderData> createNaiveFakeCustomerList(int nMax) {
-        return createDataFakerCustomerList(nMax, createNthNaiveOrderData());
+    public List<OrderData> createNaiveFakeOrderList(int nMax) {
+        return createDataFakerOrderList(nMax, createNthNaiveOrderData());
     }
 
     /**
-     * Create list of customer using {link Faker} data values.
+     * Create list of order using {link Faker} data values.
      *
      * @param nMax
      * @param f
      * @return
      */
-    public List<OrderData> createDataFakerCustomerList(int nMax, Function<Integer, OrderData> f) {
-        final List<OrderData> customerList = new ArrayList<>();
+    public List<OrderData> createDataFakerOrderList(int nMax, Function<Integer, OrderData> f) {
+        final List<OrderData> orderDataList = new ArrayList<>();
         for (int i = 0; i < nMax; i += 1) {
-            final OrderData customer = f.apply(i);
-            customerList.add(customer);
+            final OrderData orderData = f.apply(i);
+            orderDataList.add(orderData);
         }
-        return customerList;
+        return orderDataList;
     }
 
     public static Function<Integer, OrderData> createNthDataFakerOrderData(Faker faker) {
@@ -78,14 +78,14 @@ public class OrderDataFactory {
                     .shipVia("X")
                     .shippedDate(shippedDate)
                     .build();
-            final OrderData customer = OrderData.builder()
+            final OrderData orderData = OrderData.builder()
                     .customerID("customerID-" + i)
                     .employeeID("employeeID-" + i)
                     .orderDate(orderDate)
                     .requiredDate(requiredDate)
                     .shipInfo(shipInfo)
                     .build();
-            return customer;
+            return orderData;
         };
     }
 
@@ -101,14 +101,14 @@ public class OrderDataFactory {
                     .shipVia("shipVia-" + i)
                     .shippedDate("2022-02-01")
                     .build();
-            final OrderData customer = OrderData.builder()
+            final OrderData orderData = OrderData.builder()
                     .customerID("customerID-" + i)
                     .employeeID("employeeID-" + i)
                     .orderDate("2022-01-01")
                     .requiredDate("2022-03-01")
                     .shipInfo(shipInfo)
                     .build();
-            return customer;
+            return orderData;
         };
     }
 }

@@ -39,7 +39,7 @@ import org.huberb.pureko.application.support.Transformers;
 public class OrderCommands {
 
     @RequestScoped
-    public static class ReadDefaultCustomerCommand {
+    public static class ReadDefaultOrderCommand {
 
         @Inject
         private OrderDataFactory orderDataFactory;
@@ -58,7 +58,7 @@ public class OrderCommands {
 
         private List<OrderData> createDefaultOrder(int count) {
             final List<OrderData> orderList = orderDataFactory
-                    .createDataFakerCustomerList(count);
+                    .createDataFakerOrderList(count);
             return orderList;
         }
     }
@@ -83,7 +83,7 @@ public class OrderCommands {
 
             int countOfSeeded = 0;
             if (n.intValue() == 0 && maxSeeded > 0) {
-                final List<OrderData> orderDataList = orderDataFactory.createDataFakerCustomerList(maxSeeded);
+                final List<OrderData> orderDataList = orderDataFactory.createDataFakerOrderList(maxSeeded);
                 for (final OrderData cd : orderDataList) {
                     final OrderEntity ce = transformers.transformTo(cd, orderTransforming.transformOrderToNewOrderEntity());
                     persistenceModel.create(ce);
@@ -95,7 +95,7 @@ public class OrderCommands {
     }
 
     @RequestScoped
-    public static class ReadSingleCustomersCommand {
+    public static class ReadSingleOrdersCommand {
 
         @Inject
         private PersistenceModel persistenceModel;
@@ -105,12 +105,12 @@ public class OrderCommands {
         private OrderTransforming orderTransforming;
 
         @Transactional
-        public OrderData readCustomerById(Long id) {
-            return findCustomerById(id);
+        public OrderData readOrderById(Long id) {
+            return findOrderById(id);
         }
 
         //---
-        OrderData findCustomerById(Long id) {
+        OrderData findOrderById(Long id) {
             OrderEntity orderEntity = persistenceModel.findById(id, OrderEntity.class);
             final OrderData cd = transformers.transformTo(orderEntity,
                     orderTransforming.transformOrderEntityToNewOrder());
@@ -118,22 +118,22 @@ public class OrderCommands {
         }
 
         @Transactional
-        public OrderData readCustomerByCustomerId(String orderId) {
-            return findCustomerByCustomerId(orderId);
+        public OrderData readOrderByOrderId(String orderId) {
+            return findOrderByOrderId(orderId);
         }
 
-        OrderData findCustomerByCustomerId(String customerID) {
+        OrderData findOrderByOrderId(String customerID) {
             final OrderData cd;
             int chooseImpl = new Random().nextInt(99) % 2;
             if (chooseImpl == 1) {
-                cd = findCustomerByCustomerId_1(customerID);
+                cd = findOrderByOrderId_1(customerID);
             } else {
-                cd = findCustomerByCustomerId_2(customerID);
+                cd = findOrderByOrderId_2(customerID);
             }
             return cd;
         }
 
-        OrderData findCustomerByCustomerId_1(String customerID) {
+        OrderData findOrderByOrderId_1(String customerID) {
             String ce = OrderEntity.class.getSimpleName();
             final String ql = "from " + ce + " as ce where ce.customerID = :customerID";
             Consumer<Query> c = (q) -> q.setParameter("customerID", customerID);
@@ -143,17 +143,17 @@ public class OrderCommands {
             return cd;
         }
 
-        OrderData findCustomerByCustomerId_2(String customerID) {
+        OrderData findOrderByOrderId_2(String customerID) {
             Consumer<Query> c = (q) -> q.setParameter("customerID", customerID);
-            OrderEntity customerEntity = persistenceModel.findNamedSingleResult("findByCustomerID", OrderEntity.class, c);
-            final OrderData cd = transformers.transformTo(customerEntity,
+            OrderEntity orderEntity = persistenceModel.findNamedSingleResult("findByOrderID", OrderEntity.class, c);
+            final OrderData cd = transformers.transformTo(orderEntity,
                     orderTransforming.transformOrderEntityToNewOrder());
             return cd;
         }
     }
 
     @RequestScoped
-    public static class ReadAllCustomersCommand {
+    public static class ReadAllOrdersCommand {
 
         @Inject
         private PersistenceModel persistenceModel;
@@ -163,12 +163,12 @@ public class OrderCommands {
         private OrderTransforming orderTransforming;
 
         @Transactional
-        public List<OrderData> readCustomers() {
-            return readCustomersUsingForLoop();
+        public List<OrderData> readOrders() {
+            return readOrdersUsingForLoop();
         }
 
         //---
-        List<OrderData> readCustomersUsingForLoop() {
+        List<OrderData> readOrdersUsingForLoop() {
             String oe = OrderEntity.class.getSimpleName();
             final String ql = "from " + oe;
             final List<OrderEntity> resultList = persistenceModel.findResultList(
@@ -184,7 +184,7 @@ public class OrderCommands {
             return l;
         }
 
-        List<OrderData> readCustomersStreamCollectorsToList() {
+        List<OrderData> readOrdersStreamCollectorsToList() {
             String oe = OrderEntity.class.getSimpleName();
             final String ql = "from " + oe;
             final Function<OrderEntity, OrderData> f = orderTransforming.transformOrderEntityToNewOrder();

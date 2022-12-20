@@ -21,6 +21,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -39,6 +40,8 @@ public class CustomerResource {
     @Inject
     private CustomerCommands.ReadDefaultCustomerCommand createDefaultCustomerCommand;
     @Inject
+    private CustomerCommands.ReadSingleCustomersCommand readSingleCustomersCommand;
+    @Inject
     private CustomerCommands.CreateNewCustomerCommand createNewCustomerCommand;
     @Inject
     private CustomerCommands.UpdateCustomerCommand updateCustomerCommand;
@@ -54,6 +57,35 @@ public class CustomerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response customer() {
         final CustomerData customer = createDefaultCustomerCommand.createDefaultCustomerData();
+        final String s = customerJsonConverter.createJsonObjectFrom(customer);
+        return Response
+                .ok(s)
+                .build();
+    }
+
+    @GET
+    @Path("read/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response read(@PathParam("id") Long id) {
+        return readById(id);
+    }
+
+    @GET
+    @Path("read/id/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response readById(@PathParam("id") Long id) {
+        final CustomerData customer = readSingleCustomersCommand.readCustomerById(id);
+        final String s = customerJsonConverter.createJsonObjectFrom(customer);
+        return Response
+                .ok(s)
+                .build();
+    }
+
+    @GET
+    @Path("read/customerid/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response readByCustomerId(@PathParam("id") String customerId) {
+        final CustomerData customer = readSingleCustomersCommand.readCustomerByCustomerId(customerId);
         final String s = customerJsonConverter.createJsonObjectFrom(customer);
         return Response
                 .ok(s)

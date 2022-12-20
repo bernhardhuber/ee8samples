@@ -19,11 +19,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
 import org.huberb.pureko.application.support.PersistenceModel;
@@ -92,6 +95,66 @@ public class CustomerCommands {
             }
             return countOfSeeded;
         }
+    }
+
+    @RequestScoped
+    public static class ReadSingleCustomersCommand {
+
+        @Inject
+        private PersistenceModel persistenceModel;
+        @Inject
+        private Transformers transformers;
+        @Inject
+        private CustomerTransforming customerTransforming;
+
+        @Transactional
+        public CustomerData readCustomerById(Long id) {
+            return findCustomerById(id);
+        }
+
+        //---
+        CustomerData findCustomerById(Long id) {
+            CustomerEntity customerEntity = persistenceModel.findById(id, CustomerEntity.class);
+            final CustomerData cd = transformers.transformTo(customerEntity,
+                    customerTransforming.transformCustomerEntityToNewCustomer());
+            return cd;
+        }
+
+        @Transactional
+        public CustomerData readCustomerByCustomerId(String customerId) {
+            return findCustomerByCustomerId(customerId);
+        }
+
+        CustomerData findCustomerByCustomerId(String customerID) {
+            final CustomerData cd;
+            int chooseImpl = new Random().nextInt(99) % 2;
+            if (chooseImpl == 1) {
+                cd = findCustomerByCustomerId_1(customerID);
+            } else {
+                cd = findCustomerByCustomerId_2(customerID);
+            }
+            return cd;
+        }
+
+        CustomerData findCustomerByCustomerId_1(String customerID) {
+            String ce = CustomerEntity.class.getSimpleName();
+            final String ql = "from " + ce + " as ce where ce.customerID = :customerID";
+            Consumer<Query> c = (q) -> q.setParameter("customerID", customerID);
+            CustomerEntity customerEntity = persistenceModel.findSingleResult(ql, CustomerEntity.class, c);
+            final CustomerData cd = transformers.transformTo(customerEntity,
+                    customerTransforming.transformCustomerEntityToNewCustomer());
+            return cd;
+        }
+
+        CustomerData findCustomerByCustomerId_2(String customerID) {
+            Consumer<Query> c = (q) -> q.setParameter("customerID", customerID);
+            CustomerEntity customerEntity = persistenceModel.findNamedSingleResult("findByCustomerID", CustomerEntity.class, c);
+            final CustomerData cd = transformers.transformTo(customerEntity,
+                    customerTransforming.transformCustomerEntityToNewCustomer());
+            return cd;
+        }
+// 
+
     }
 
     @RequestScoped

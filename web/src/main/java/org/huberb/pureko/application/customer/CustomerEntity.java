@@ -42,7 +42,8 @@ import org.huberb.pureko.application.support.ValidationContentCheckGroup;
 @NoArgsConstructor
 @AllArgsConstructor
 @NamedQueries({
-    @NamedQuery(name = "countOfCustomerEntity", query = "SELECT COUNT(c) FROM CustomerEntity c")
+    @NamedQuery(name = "countOfCustomerEntity", query = "SELECT COUNT(ce) FROM CustomerEntity as ce "),
+    @NamedQuery(name = "findByCustomerID", query = "from CustomerEntity as ce where ce.customerID = :customerID")
 })
 public class CustomerEntity implements Serializable {
 

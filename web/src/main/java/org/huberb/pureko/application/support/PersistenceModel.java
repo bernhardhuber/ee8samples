@@ -39,18 +39,18 @@ import org.huberb.pureko.application.support.PuName.PuType;
  */
 @RequestScoped
 public class PersistenceModel {
-
+    
     @PuName(puType = PuType.ee8samplePu, managedType = ManagedType.containerManaged)
     @Inject
     private EntityManager em;
-
+    
     protected PersistenceModel() {
     }
-
+    
     public PersistenceModel(EntityManager em) {
         this.em = em;
     }
-
+    
     public EntityManager getEntityManager() {
         return this.em;
     }
@@ -59,19 +59,19 @@ public class PersistenceModel {
      * Create a {@link Query}.
      */
     public static class QueryCreatorFunctions {
-
+        
         public static <T> Function<EntityManager, Query> createByNativeString(String sqlString) {
             return (EntityManager _em) -> {
                 return _em.createNativeQuery(sqlString);
             };
         }
-
+        
         public static <T> Function<EntityManager, Query> createByNativeString(String sqlString, Class<T> resultClass) {
             return (EntityManager _em) -> {
                 return _em.createNativeQuery(sqlString, resultClass);
             };
         }
-
+        
     }
 
     /**
@@ -118,18 +118,18 @@ public class PersistenceModel {
      * Define consumers for setting up a query.
      */
     public static class QueryConsumers {
-
+        
         public static Consumer<Query> noop() {
             return (Query q) -> {
             };
         }
-
+        
         public static Consumer<Query> parameterByName(String name, Object value) {
             return (Query tq) -> {
                 tq.setParameter(name, value);
             };
         }
-
+        
         public static Consumer<Query> parametersByName(Object[][] parameters) {
             return (Query tq) -> {
                 for (int i = 0; i < parameters.length; i += 1) {
@@ -140,7 +140,7 @@ public class PersistenceModel {
                 }
             };
         }
-
+        
         public static Consumer<Query> parametersByName(Map<String, Object> kvMap) {
             return (Query tq) -> {
                 kvMap.entrySet().forEach(e -> {
@@ -148,53 +148,53 @@ public class PersistenceModel {
                 });
             };
         }
-
+        
         public static Consumer<Query> parameter(int position, Object value) {
             return (Query tq) -> {
                 tq.setParameter(position, value);
             };
         }
-
+        
         public static Consumer<Query> startPositionMaxResult(int startPosition, int maxResult) {
             return (Query tq) -> {
                 tq.setFirstResult(startPosition);
                 tq.setMaxResults(maxResult);
             };
         }
-
+        
         public static Consumer<Query> startPosition(int startPosition) {
             return (Query tq) -> {
                 tq.setFirstResult(startPosition);
             };
         }
-
+        
         public static Consumer<Query> maxResult(int maxResult) {
             return (Query tq) -> {
                 tq.setMaxResults(maxResult);
             };
         }
-
+        
         public static Consumer<Query> flushMode(FlushModeType flushModeType) {
             return (Query tq) -> {
                 tq.setFlushMode(flushModeType);
             };
         }
-
+        
         public static Consumer<Query> lockMode(LockModeType lockModeType) {
             return (Query tq) -> {
                 tq.setLockMode(lockModeType);
             };
         }
-
+        
         public static Consumer<Query> hint(String hintName, Object value) {
             return (Query tq) -> {
                 tq.setHint(hintName, value);
             };
         }
-
+        
         public static Consumer<Query> consumers(Consumer<Query>[] consumers) {
             Consumer<Query> c;
-
+            
             if (consumers != null && consumers.length >= 0) {
                 c = consumers[0];
                 for (int i = 1; i < consumers.length; i += 1) {
@@ -205,7 +205,7 @@ public class PersistenceModel {
             }
             return c;
         }
-
+        
         public static Consumer<Query> consumers(List<Consumer<Query>> consumers) {
             Consumer<Query> c;
             if (consumers != null && consumers.size() >= 0) {
@@ -218,7 +218,7 @@ public class PersistenceModel {
             }
             return c;
         }
-
+        
     }
 
 //    public static class TypedQueryConsumers {
@@ -327,34 +327,34 @@ public class PersistenceModel {
      * Provide query result(s).
      */
     public static class QueryResultFunctions {
-
+        
         public static Function<Query, Object> singleResult() {
             return (tq) -> tq.getSingleResult();
         }
-
+        
         public static Function<Query, List> resultList() {
             return (tq) -> tq.getResultList();
         }
-
+        
         public static Function<Query, Stream> resultStream() {
             return (tq) -> tq.getResultStream();
         }
-
+        
     }
 
     /**
      * Provide type query result(s).
      */
     public static class TypedQueryResultFunctions {
-
+        
         public static <T> Function<TypedQuery<T>, T> singleResult() {
             return (tq) -> tq.getSingleResult();
         }
-
+        
         public static <T> Function<TypedQuery<T>, List<T>> resultList() {
             return (tq) -> tq.getResultList();
         }
-
+        
         public static <T> Function<TypedQuery<T>, Stream<T>> resultStream() {
             return (tq) -> tq.getResultStream();
         }
@@ -367,6 +367,7 @@ public class PersistenceModel {
             Function<Query, V> f2) {
         EntityManager em = getEntityManager();
         final Query tq = f.apply(em);
+        c.accept(tq);
         final V v = f2.apply(tq);
         return v;
     }
@@ -379,6 +380,7 @@ public class PersistenceModel {
             Function<TypedQuery<T>, V> f2) {
         EntityManager em = getEntityManager();
         final TypedQuery<T> tq = f.apply(em);
+        c.accept(tq);
         final V v = f2.apply(tq);
         return v;
     }
@@ -394,7 +396,7 @@ public class PersistenceModel {
         );
         return t;
     }
-
+    
     @Transactional(TxType.MANDATORY)
     public <T> List<T> findResultList(String qlString, Class<T> resultClass, Consumer<Query> c) {
         final List<T> lt = findResultUsingQuery(
@@ -404,7 +406,7 @@ public class PersistenceModel {
         );
         return lt;
     }
-
+    
     @Transactional(TxType.MANDATORY)
     public <T> Stream<T> findResultStream(String qlString, Class<T> resultClass, Consumer<Query> c) {
         final Stream<T> st = findResultUsingQuery(
@@ -425,7 +427,7 @@ public class PersistenceModel {
         );
         return t;
     }
-
+    
     @Transactional(TxType.MANDATORY)
     public <T> List<T> findNamedResultList(String name, Class<T> resultClass, Consumer<Query> c) {
         final List<T> lt = findResultUsingQuery(
@@ -435,7 +437,7 @@ public class PersistenceModel {
         );
         return lt;
     }
-
+    
     @Transactional(TxType.MANDATORY)
     public <T> Stream<T> findNamedResultStream(String name, Class<T> resultClass, Consumer<Query> c) {
         final Stream<T> st = findResultUsingQuery(
@@ -461,7 +463,7 @@ public class PersistenceModel {
         em.persist(entity);
         return entity;
     }
-
+    
     @Transactional(TxType.MANDATORY)
     public <T> T update(T entity) {
         EntityManager em = getEntityManager();
@@ -474,11 +476,11 @@ public class PersistenceModel {
         }
         return result;
     }
-
+    
     @Transactional(TxType.MANDATORY)
     public <T> void remove(T entity) {
         EntityManager em = getEntityManager();
         em.remove(entity);
     }
-
+    
 }

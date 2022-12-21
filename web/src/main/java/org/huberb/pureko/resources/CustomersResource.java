@@ -18,6 +18,7 @@ package org.huberb.pureko.resources;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -25,7 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import org.huberb.pureko.application.customer.CustomerCommands;
 import org.huberb.pureko.application.customer.CustomerData;
-import org.huberb.pureko.application.customer.CustomerJsonConverter;
+import org.huberb.pureko.application.support.JsonConvertersF;
 
 /**
  *
@@ -57,13 +58,13 @@ application/javascript
     @Inject
     private CustomerCommands.SeedCustomersCommand seedCustomersCommand;
     @Inject
-    private CustomerJsonConverter customerJsonConverter;
+    private JsonConvertersF jsonConvertersF;
 
     @GET
     @Produces("application/json")
     public Response createSampleCustomers() {
         final List<CustomerData> customerList = readDefaultCustomerCommand.createDefaultCustomerData(10);
-        final String s = customerJsonConverter.createJsonArrayFrom(customerList);
+        final String s = jsonConvertersF.convertToString(customerList, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
 
         return Response
                 .ok(s)
@@ -75,7 +76,7 @@ application/javascript
     @Produces("application/json")
     public Response customers() {
         final List<CustomerData> customerList = readAllCustomersCommand.readCustomers();
-        final String s = customerJsonConverter.createJsonArrayFrom(customerList);
+        final String s = jsonConvertersF.convertToString(customerList, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
 
         return Response
                 .ok(s)
@@ -88,7 +89,7 @@ application/javascript
     public Response seedDataBase() {
         int createdCount = seedCustomersCommand.seedDataBase(5);
         final List<CustomerData> customerList = readAllCustomersCommand.readCustomers();
-        final String s = customerJsonConverter.createJsonArrayFrom(customerList);
+        final String s = jsonConvertersF.convertToString(customerList, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
 
         return Response
                 .ok(s)

@@ -18,6 +18,7 @@ package org.huberb.pureko.resources;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -25,7 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import org.huberb.pureko.application.order.OrderCommands;
 import org.huberb.pureko.application.order.OrderData;
-import org.huberb.pureko.application.order.OrderJsonConverter;
+import org.huberb.pureko.application.support.JsonConvertersF;
 
 /**
  *
@@ -57,13 +58,13 @@ application/javascript
     @Inject
     private OrderCommands.SeedOrdersCommand seedOrdersCommand;
     @Inject
-    private OrderJsonConverter orderJsonConverter;
+    private JsonConvertersF jsonConvertersF;
 
     @GET
     @Produces("application/json")
     public Response createSampleOrders() {
         final List<OrderData> orderDataList = readDefaultOrderCommand.createDefaultOrderData(10);
-        final String s = orderJsonConverter.createJsonArrayFrom(orderDataList);
+        final String s = jsonConvertersF.convertToString(orderDataList, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
 
         return Response
                 .ok(s)
@@ -75,7 +76,7 @@ application/javascript
     @Produces("application/json")
     public Response orders() {
         final List<OrderData> orderDataList = readAllOrdersCommand.readOrders();
-        final String s = orderJsonConverter.createJsonArrayFrom(orderDataList);
+        final String s = jsonConvertersF.convertToString(orderDataList, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
 
         return Response
                 .ok(s)
@@ -88,7 +89,7 @@ application/javascript
     public Response seedDataBase() {
         int createdCount = seedOrdersCommand.seedDataBase(5);
         final List<OrderData> orderDataList = readAllOrdersCommand.readOrders();
-        final String s = orderJsonConverter.createJsonArrayFrom(orderDataList);
+        final String s = jsonConvertersF.convertToString(orderDataList, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
 
         return Response
                 .ok(s)

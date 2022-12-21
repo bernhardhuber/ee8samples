@@ -17,6 +17,7 @@ package org.huberb.pureko.resources;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -27,7 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.huberb.pureko.application.customer.CustomerCommands;
 import org.huberb.pureko.application.customer.CustomerData;
-import org.huberb.pureko.application.customer.CustomerJsonConverter;
+import org.huberb.pureko.application.support.JsonConvertersF;
 
 /**
  *
@@ -47,7 +48,7 @@ public class CustomerResource {
     private CustomerCommands.UpdateCustomerCommand updateCustomerCommand;
 
     @Inject
-    private CustomerJsonConverter customerJsonConverter;
+    private JsonConvertersF jsonConvertersF;
 
     /**
      *
@@ -56,8 +57,8 @@ public class CustomerResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response customer() {
-        final CustomerData customer = createDefaultCustomerCommand.createDefaultCustomerData();
-        final String s = customerJsonConverter.createJsonObjectFrom(customer);
+        final CustomerData customerData = createDefaultCustomerCommand.createDefaultCustomerData();
+        final String s = jsonConvertersF.convertToString(customerData, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
         return Response
                 .ok(s)
                 .build();
@@ -74,8 +75,8 @@ public class CustomerResource {
     @Path("read/id/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response readById(@PathParam("id") Long id) {
-        final CustomerData customer = readSingleCustomersCommand.readCustomerById(id);
-        final String s = customerJsonConverter.createJsonObjectFrom(customer);
+        final CustomerData customerData = readSingleCustomersCommand.readCustomerById(id);
+        final String s = jsonConvertersF.convertToString(customerData, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
         return Response
                 .ok(s)
                 .build();
@@ -85,8 +86,8 @@ public class CustomerResource {
     @Path("read/customerid/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response readByCustomerId(@PathParam("id") String customerId) {
-        final CustomerData customer = readSingleCustomersCommand.readCustomerByCustomerId(customerId);
-        final String s = customerJsonConverter.createJsonObjectFrom(customer);
+        final CustomerData customerData = readSingleCustomersCommand.readCustomerByCustomerId(customerId);
+        final String s = jsonConvertersF.convertToString(customerData, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
         return Response
                 .ok(s)
                 .build();
@@ -102,8 +103,8 @@ public class CustomerResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(CustomerData customer) {
-        final CustomerData createdCustomerData = createCustomer(customer);
-        final String s = customerJsonConverter.createJsonObjectFrom(createdCustomerData);
+        final CustomerData customerData = createCustomer(customer);
+        final String s = jsonConvertersF.convertToString(customerData, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
         return Response
                 .ok(s)
                 .build();
@@ -124,10 +125,10 @@ public class CustomerResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response update(CustomerData customer) {
-        final CustomerData createdCustomerData = updateCustomer(customer);
-        final String s2 = customerJsonConverter.createJsonObjectFrom(createdCustomerData);
+        final CustomerData customerData = updateCustomer(customer);
+        final String s = jsonConvertersF.convertToString(customerData, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
         return Response
-                .ok(s2)
+                .ok(s)
                 .build();
     }
 

@@ -15,11 +15,11 @@
  */
 package org.huberb.pureko.application.customer;
 
-import org.huberb.pureko.application.customer.CustomerJsonConverter;
-import org.huberb.pureko.application.customer.CustomerData;
 import java.util.Arrays;
 import java.util.List;
 import javax.json.JsonObject;
+import javax.json.bind.JsonbBuilder;
+import org.huberb.pureko.application.support.JsonConvertersF;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,13 +30,13 @@ import org.junit.jupiter.api.Test;
  *
  * @author berni3
  */
-public class CustomerJsonConverterTest {
+public class JsonConvertersFCustomerTest {
 
-    CustomerJsonConverter instance;
+    JsonConvertersF jsonConvertersF;
 
     @BeforeEach
     public void setUp() {
-        instance = new CustomerJsonConverter();
+        jsonConvertersF = new JsonConvertersF();
     }
 
     /**
@@ -48,7 +48,7 @@ public class CustomerJsonConverterTest {
                 .customerID("customerID_1")
                 .companyName("companyName_1")
                 .build();
-        final String s = instance.createJsonObjectFrom(customer);
+        final String s = jsonConvertersF.convertToString(customer, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
         assertEquals("{"
                 + "\"companyName\":\"companyName_1\","
                 + "\"customerID\":\"customerID_1\""
@@ -63,7 +63,7 @@ public class CustomerJsonConverterTest {
         final List<CustomerData> customerList = Arrays.asList(CustomerData.builder().customerID("customerID_1").companyName("companyName_1").build(),
                 CustomerData.builder().customerID("customerID_2").companyName("companyName_2").build()
         );
-        final String s = instance.createJsonArrayFrom(customerList);
+        final String s = jsonConvertersF.convertToString(customerList, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
         assertEquals("["
                 + "{\"companyName\":\"companyName_1\",\"customerID\":\"customerID_1\"},"
                 + "{\"companyName\":\"companyName_2\",\"customerID\":\"customerID_2\"}"
@@ -79,9 +79,10 @@ public class CustomerJsonConverterTest {
                 .customerID("customerID_1")
                 .companyName("companyName_1")
                 .build();
-        final String s = instance.createJsonObjectFrom(customer);
+
+        final String s = jsonConvertersF.convertToString(customer, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
         assertEquals("{\"companyName\":\"companyName_1\",\"customerID\":\"customerID_1\"}", s);
-        CustomerData customerFromJson = instance.createCustomerFromJson(s);
+        CustomerData customerFromJson = jsonConvertersF.convertToInstance(s, JsonConvertersF.fromStringToInstance(JsonbBuilder.create(), CustomerData.class));
 
         assertAll(
                 () -> customer.equals(customerFromJson),
@@ -96,7 +97,8 @@ public class CustomerJsonConverterTest {
     @Test
     public void testCreateJsonObjectFromJson() {
         final String s = "{\"companyName\":\"companyName_1\",\"customerID\":\"customerID_1\"}";
-        final JsonObject jsonObject = instance.createJsonObjectFromJson(s);
+        final JsonObject jsonObject = JsonConvertersF.createJsonObjectFromJson().apply(s);
+
         assertTrue(jsonObject.containsKey("companyName"), s);
         assertTrue(jsonObject.containsKey("customerID"), s);
 

@@ -17,6 +17,7 @@ package org.huberb.pureko.resources;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -25,7 +26,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.huberb.pureko.application.order.OrderCommands;
 import org.huberb.pureko.application.order.OrderData;
-import org.huberb.pureko.application.order.OrderJsonConverter;
+import org.huberb.pureko.application.support.JsonConvertersF;
 
 /**
  *
@@ -39,13 +40,14 @@ public class OrderResource {
     private OrderCommands.ReadDefaultOrderCommand createDefaultOrderCommand;
     @Inject
     private OrderCommands.ReadSingleOrdersCommand readSingleOrdersCommand;
+// TODO implement me
 //    @Inject
 //    private OrderCommands.CreateNewOrderCommand createNewOrderCommand;
 //    @Inject
 //    private OrderCommands.UpdateOrderCommand updateOrderCommand;
 
     @Inject
-    private OrderJsonConverter orderJsonConverter;
+    private JsonConvertersF jsonConvertsF;
 
     /**
      *
@@ -54,8 +56,11 @@ public class OrderResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response order() {
-        final OrderData order = createDefaultOrderCommand.createDefaultOrderData();
-        final String s = orderJsonConverter.createJsonObjectFrom(order);
+        final OrderData orderData = createDefaultOrderCommand.createDefaultOrderData();
+        final String s = jsonConvertsF.convertToString(
+                orderData,
+                JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create())
+        );
         return Response
                 .ok(s)
                 .build();
@@ -72,8 +77,11 @@ public class OrderResource {
     @Path("read/id/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response readById(@PathParam("id") Long id) {
-        final OrderData order = readSingleOrdersCommand.readOrderById(id);
-        final String s = orderJsonConverter.createJsonObjectFrom(order);
+        final OrderData orderData = readSingleOrdersCommand.readOrderById(id);
+        final String s = jsonConvertsF.convertToString(
+                orderData,
+                JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create())
+        );
         return Response
                 .ok(s)
                 .build();
@@ -84,7 +92,10 @@ public class OrderResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response readByOrderId(@PathParam("id") String customerId) {
         final OrderData orderData = readSingleOrdersCommand.readOrderByOrderId(customerId);
-        final String s = orderJsonConverter.createJsonObjectFrom(orderData);
+        final String s = jsonConvertsF.convertToString(
+                orderData,
+                JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create())
+        );
         return Response
                 .ok(s)
                 .build();

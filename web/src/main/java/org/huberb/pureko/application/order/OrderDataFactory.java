@@ -15,10 +15,12 @@
  */
 package org.huberb.pureko.application.order;
 
-import java.time.temporal.ChronoUnit;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import net.datafaker.Faker;
@@ -63,11 +65,22 @@ public class OrderDataFactory {
     }
 
     public static Function<Integer, OrderData> createNthDataFakerOrderData(Faker faker) {
+        final Function<Integer, String> f = (days) -> {
+            java.sql.Timestamp ts = faker.date().past(days, TimeUnit.DAYS);
+            String s = java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                    .withZone(ZoneId.systemDefault())
+                    .format(Instant.ofEpochMilli(ts.getTime()));
+            return s;
+        };
         return (Integer i) -> {
-            final String pattern = "yyyy-MM-dd";
-            final String shippedDate = faker.time().past(10, ChronoUnit.YEARS, pattern);
-            final String orderDate = faker.time().past(10, ChronoUnit.YEARS, pattern);
-            final String requiredDate = faker.time().past(10, ChronoUnit.YEARS, pattern);
+
+//            final String pattern = "yyyy-MM-dd";
+//            final String shippedDate = faker.time().past(2 * 360, ChronoUnit.HALF_DAYS, pattern);
+//            final String orderDate = faker.time().past(2 * 360, ChronoUnit.HALF_DAYS, pattern);
+//            final String requiredDate = faker.time().past(2 * 360, ChronoUnit.HALF_DAYS, pattern);
+            final String shippedDate = f.apply(360);
+            final String orderDate = f.apply(360);
+            final String requiredDate = f.apply(360);
             final ShipInfo shipInfo = ShipInfo.builder()
                     .freight("1")
                     .shipAddress(faker.address().streetAddress())

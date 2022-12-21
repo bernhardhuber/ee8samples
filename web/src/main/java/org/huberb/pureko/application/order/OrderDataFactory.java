@@ -82,13 +82,14 @@ public class OrderDataFactory {
             final String orderDate = f.apply(360);
             final String requiredDate = f.apply(360);
             final ShipInfo shipInfo = ShipInfo.builder()
-                    .freight("1")
+                    .freight(faker.numerify("###"))
+                    .shipName(faker.funnyName().name())
                     .shipAddress(faker.address().streetAddress())
                     .shipCity(faker.address().city())
                     .shipCountry(faker.address().country())
                     .shipPostalcode(faker.address().postcode())
                     .shipRegion(faker.address().state())
-                    .shipVia("X")
+                    .shipVia(faker.numerify("##"))
                     .shippedDate(shippedDate)
                     .build();
             final OrderData orderData = OrderData.builder()
@@ -106,6 +107,7 @@ public class OrderDataFactory {
         return (Integer i) -> {
             final ShipInfo shipInfo = ShipInfo.builder()
                     .freight("10" + i)
+                    .shipName("shipName-" + i)
                     .shipAddress("shipAddress-" + i)
                     .shipCity("shipCity-" + i)
                     .shipCountry("shipCountry-" + i)

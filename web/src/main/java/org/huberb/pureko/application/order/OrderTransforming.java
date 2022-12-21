@@ -42,14 +42,14 @@ public class OrderTransforming {
         ShipInfo fromShipInfo = Optional.ofNullable(from.getShipInfo()).orElse(new ShipInfo());
         ShipInfoEmbeddable toFullAddressEmbeddable = Optional.ofNullable(to.getShipInfo()).orElse(new ShipInfoEmbeddable());
         toFullAddressEmbeddable.setFreight(fromShipInfo.getFreight());
-        toFullAddressEmbeddable.setShipAddress(fromShipInfo.getFreight());
-        toFullAddressEmbeddable.setShipCity(fromShipInfo.getFreight());
-        toFullAddressEmbeddable.setShipCountry(fromShipInfo.getFreight());
-        toFullAddressEmbeddable.setShipName(fromShipInfo.getFreight());
-        toFullAddressEmbeddable.setShipPostalcode(fromShipInfo.getFreight());
-        toFullAddressEmbeddable.setShipRegion(fromShipInfo.getFreight());
-        toFullAddressEmbeddable.setShipVia(fromShipInfo.getFreight());
-        toFullAddressEmbeddable.setShippedDate(fromShipInfo.getFreight());
+        toFullAddressEmbeddable.setShipAddress(fromShipInfo.getShipAddress());
+        toFullAddressEmbeddable.setShipCity(fromShipInfo.getShipCity());
+        toFullAddressEmbeddable.setShipCountry(fromShipInfo.getShipCountry());
+        toFullAddressEmbeddable.setShipName(fromShipInfo.getShipName());
+        toFullAddressEmbeddable.setShipPostalcode(fromShipInfo.getShipPostalcode());
+        toFullAddressEmbeddable.setShipRegion(fromShipInfo.getShipRegion());
+        toFullAddressEmbeddable.setShipVia(fromShipInfo.getShipVia());
+        toFullAddressEmbeddable.setShippedDate(fromShipInfo.getShippedDate());
 
         return to;
     }
@@ -68,14 +68,14 @@ public class OrderTransforming {
                 .requiredDate(from.getRequiredDate())
                 .shipInfo(ShipInfoEmbeddable.builder()
                         .freight(shipInfo.getFreight())
-                        .shipAddress(shipInfo.getFreight())
-                        .shipCity(shipInfo.getFreight())
-                        .shipCountry(shipInfo.getFreight())
-                        .shipName(shipInfo.getFreight())
-                        .shipPostalcode(shipInfo.getFreight())
-                        .shipRegion(shipInfo.getFreight())
-                        .shipVia(shipInfo.getFreight())
-                        .shippedDate(shipInfo.getFreight())
+                        .shipAddress(shipInfo.getShipAddress())
+                        .shipCity(shipInfo.getShipCity())
+                        .shipCountry(shipInfo.getShipCountry())
+                        .shipName(shipInfo.getShipName())
+                        .shipPostalcode(shipInfo.getShipPostalcode())
+                        .shipRegion(shipInfo.getShipRegion())
+                        .shipVia(shipInfo.getShipVia())
+                        .shippedDate(shipInfo.getShippedDate())
                         .build())
                 .build();
         return to;
@@ -97,14 +97,14 @@ public class OrderTransforming {
                 .requiredDate(from.getRequiredDate())
                 .shipInfo(ShipInfo.builder()
                         .freight(shipInfo.getFreight())
-                        .shipAddress(shipInfo.getFreight())
-                        .shipCity(shipInfo.getFreight())
-                        .shipCountry(shipInfo.getFreight())
-                        .shipName(shipInfo.getFreight())
-                        .shipPostalcode(shipInfo.getFreight())
-                        .shipRegion(shipInfo.getFreight())
-                        .shipVia(shipInfo.getFreight())
-                        .shippedDate(shipInfo.getFreight())
+                        .shipAddress(shipInfo.getShipAddress())
+                        .shipCity(shipInfo.getShipCity())
+                        .shipCountry(shipInfo.getShipCountry())
+                        .shipName(shipInfo.getShipName())
+                        .shipPostalcode(shipInfo.getShipPostalcode())
+                        .shipRegion(shipInfo.getShipRegion())
+                        .shipVia(shipInfo.getShipVia())
+                        .shippedDate(shipInfo.getShippedDate())
                         .build())
                 .build();
         return to;

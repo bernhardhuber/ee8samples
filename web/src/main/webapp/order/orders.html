@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<!--
+Copyright 2022 berni3.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+    <head>
+        <title>Customers</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="../webjars/bootstrap/5.2.3/dist/css/bootstrap.min.css" />
+
+        <script type="text/javascript" src="../webjars/knockout/3.5.1/build/output/knockout-latest.js"></script>
+        <script type="text/javascript" src="../webjars/jquery/3.6.1/dist/jquery.min.js"></script>
+
+        <script type="text/javascript" src="../webjars/popperjs__core/2.11.6/dist/umd/popper.min.js"></script>
+        <script type="text/javascript" src="../webjars/bootstrap/5.2.3/dist/js/bootstrap.min.js"></script>
+
+        <script type="text/javascript">
+            // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
+            function AppViewModel() {
+                var self = this;
+                //const resturl = "/ko_pure_web/resources/customers";
+                const resturl = "/ko_pure_web/resources/orders/read";
+
+                // @data
+                const emptydata = [];
+                const sampledata = [
+                    {
+                        "customerID": "customerID-2",
+                        "employeeID": "employeeID-2",
+                        "orderDate": "2022-10-19T06:26:09.492",
+                        "requiredDate": "2022-05-23T14:54:10.751",
+                        "shipInfo": {
+                            "freight": "1",
+                            "shipAddress": "1",
+                            "shipCity": "1",
+                            "shipCountry": "1",
+                            "shipName": "1",
+                            "shipPostalcode": "1",
+                            "shipRegion": "1",
+                            "shipVia": "1",
+                            "shippedDate": "1"
+                        }
+                    },
+                    {
+                        "customerID": "customerID-3",
+                        "employeeID": "employeeID-3",
+                        "orderDate": "2022-12-11T08:44:56.128",
+                        "requiredDate": "2022-02-20T23:43:23.854",
+                        "shipInfo": {
+                            "freight": "1",
+                            "shipAddress": "1",
+                            "shipCity": "1",
+                            "shipCountry": "1",
+                            "shipName": "1",
+                            "shipPostalcode": "1",
+                            "shipRegion": "1",
+                            "shipVia": "1",
+                            "shippedDate": "1"
+                        }
+                    },
+                ];
+
+                // @properties
+                self.orders = ko.observableArray(emptydata);
+
+                // @function computing
+                self.shipInfoAddressInline = function (shipInfo) {
+                    return shipInfo.shipAddress + " " + shipInfo.shipPostalcode + " " + shipInfo.shipCity;
+                };
+
+                /**
+                 * POST REST seeding database if it is still empty.
+                 *
+                 * @returns {undefined}
+                 */
+                this.seedDatabase = function () {
+                    const resturlSeeddatabase = '/ko_pure_web/resources/orders/seed';
+                    $.post(resturlSeeddatabase, '', function (items) {
+                        console.log("json items " + items);
+                        // setup property self.customers from json-data
+                        self.orders.removeAll();
+                        for (const item of items) {
+                            self.orders.push(item);
+                        }
+                    });
+                };
+
+                /**
+                 * POST GET read all customers.
+                 *
+                 * @returns {undefined}
+                 */
+                this.loadData = function () {
+                    $.getJSON(resturl, function (data) {
+                        console.log("json items " + JSON.stringify(data, null, 2));
+                        // setup property self.customers from json-data
+                        self.orders.removeAll();
+                        for (const item of data) {
+                            self.orders.push(item);
+                        }
+                    });
+                }
+            }
+
+            // setup AppViewModel
+            $(document).ready(function () {
+                // Run code
+                var appViewModel = new AppViewModel();
+                appViewModel.loadData();
+                ko.applyBindings(appViewModel);
+            });
+        </script>
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row" >
+                <div class="col">
+                    <button class="btn btn-primary"
+                            data-bind='click: seedDatabase'>
+                        Seed Sample Data
+                    </button>
+
+                    <a class="btn btn-primary" href="customer.html" role="button">New Customer</a>                    
+                </div>
+            </div>
+            <div class="row" >
+                <div class="col">
+                    <h2>Customers</h2>
+                    <table class="table table-horizontal table-striped">
+                        <thead><tr>
+                                <th>Customer ID</th><th>Employee ID</th>
+                                <th>Order Date</th><th>Required Date</th>
+                                <th>Ship Info Name</th>
+                                <th>Ship Info Freight</th>
+                                <th>Ship Info Via</th>
+                                <th>Ship Info Date</th>
+                                
+                                <th>Ship Info Address</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: orders">
+                            <tr>
+                                <td><span data-bind="text: customerID"></span></td>
+                                <td><span data-bind="text: employeeID"></span></td>
+                                <td><span data-bind="text: orderDate"></span></td>
+                                <td><span data-bind="text: requiredDate"></span></td>
+                                
+                                <td><span data-bind="text: shipInfo.shipName"></span></td>
+                                <td><span data-bind="text: shipInfo.freight"></span></td>
+                                <td><span data-bind="text: shipInfo.shipVia"></span></td>
+                                <td><span data-bind="text: shipInfo.shippedDate"></span></td>
+
+                                <td><span data-bind="text: $parent.shipInfoAddressInline($data.shipInfo)"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -38,6 +38,7 @@ public class JsonConvertersF {
         return f.apply(s);
     }
 
+    //---
     public static <T> Function<T, String> fromInstanceToJsonString(Jsonb jsonb) {
         return t -> {
             final String s = jsonb.toJson(t);

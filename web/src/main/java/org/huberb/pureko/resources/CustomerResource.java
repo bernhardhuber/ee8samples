@@ -46,7 +46,6 @@ public class CustomerResource {
     private CustomerCommands.CreateNewCustomerCommand createNewCustomerCommand;
     @Inject
     private CustomerCommands.UpdateCustomerCommand updateCustomerCommand;
-
     @Inject
     private JsonConvertersF jsonConvertersF;
 
@@ -95,16 +94,16 @@ public class CustomerResource {
 
     /**
      *
-     * @param customer
+     * @param customerData
      * @return
      */
     @POST
     @Path("create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(CustomerData customer) {
-        final CustomerData customerData = createCustomer(customer);
-        final String s = jsonConvertersF.convertToString(customerData, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
+    public Response create(CustomerData customerData) {
+        final CustomerData createdCustomerData = createCustomer(customerData);
+        final String s = jsonConvertersF.convertToString(createdCustomerData, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
         return Response
                 .ok(s)
                 .build();
@@ -117,23 +116,23 @@ public class CustomerResource {
 
     /**
      *
-     * @param customer
+     * @param customerData
      * @return
      */
     @POST
     @Path("update")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(CustomerData customer) {
-        final CustomerData customerData = updateCustomer(customer);
-        final String s = jsonConvertersF.convertToString(customerData, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
+    public Response update(CustomerData customerData) {
+        final CustomerData updatedCustomerData = updateCustomer(customerData);
+        final String s = jsonConvertersF.convertToString(updatedCustomerData, JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create()));
         return Response
                 .ok(s)
                 .build();
     }
 
-    private CustomerData updateCustomer(CustomerData customer) {
-        CustomerData createdCustomerData = updateCustomerCommand.updateCustomer(customer);
+    private CustomerData updateCustomer(CustomerData customerData) {
+        CustomerData createdCustomerData = updateCustomerCommand.updateCustomer(customerData);
         return createdCustomerData;
     }
 

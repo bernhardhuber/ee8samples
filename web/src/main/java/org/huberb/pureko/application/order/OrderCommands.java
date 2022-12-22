@@ -16,16 +16,20 @@
 package org.huberb.pureko.application.order;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolationException;
 import org.huberb.pureko.application.support.PersistenceModel;
 import org.huberb.pureko.application.support.PersistenceModel.QueryConsumers;
 import org.huberb.pureko.application.support.Transformers;
@@ -124,18 +128,18 @@ public class OrderCommands {
 
         OrderData findOrderByOrderId(String customerID) {
             final OrderData cd;
-            int chooseImpl = new Random().nextInt(99) % 2;
+            final int chooseImpl = randomlyChoose(2).get();
             if (chooseImpl == 1) {
-                cd = findOrderByOrderId_1(customerID);
+                cd = findOrderByCustomerId_1(customerID);
             } else {
-                cd = findOrderByOrderId_2(customerID);
+                cd = findOrderByCustomerId_2(customerID);
             }
             return cd;
         }
 
-        OrderData findOrderByOrderId_1(String customerID) {
-            String ce = OrderEntity.class.getSimpleName();
-            final String ql = "from " + ce + " as ce where ce.customerID = :customerID";
+        OrderData findOrderByCustomerId_1(String customerID) {
+            String oe = OrderEntity.class.getSimpleName();
+            final String ql = "from " + oe + " as oe where oe.customerID = :customerID";
             Consumer<Query> c = (q) -> q.setParameter("customerID", customerID);
             OrderEntity customerEntity = persistenceModel.findSingleResult(ql, OrderEntity.class, c);
             final OrderData cd = transformers.transformTo(customerEntity,
@@ -143,9 +147,9 @@ public class OrderCommands {
             return cd;
         }
 
-        OrderData findOrderByOrderId_2(String customerID) {
+        OrderData findOrderByCustomerId_2(String customerID) {
             Consumer<Query> c = (q) -> q.setParameter("customerID", customerID);
-            OrderEntity orderEntity = persistenceModel.findNamedSingleResult("findByOrderID", OrderEntity.class, c);
+            OrderEntity orderEntity = persistenceModel.findNamedSingleResult("findByCustomerID", OrderEntity.class, c);
             final OrderData cd = transformers.transformTo(orderEntity,
                     orderTransforming.transformOrderEntityToNewOrder());
             return cd;
@@ -164,7 +168,14 @@ public class OrderCommands {
 
         @Transactional
         public List<OrderData> readOrders() {
-            return readOrdersUsingForLoop();
+            final List<OrderData> odList;
+            int choosen = randomlyChoose(2).get();
+            if (choosen == 1) {
+                odList = readOrdersUsingForLoop();
+            } else {
+                odList = readOrdersStreamCollectorsToList();
+            }
+            return odList;
         }
 
         //---
@@ -197,6 +208,137 @@ public class OrderCommands {
                     .map(e -> f.apply(e))
                     .collect(Collectors.toList());
             return l;
+        }
+    }
+
+    public static Supplier<Integer> randomlyChoose(int numberOfOptions) {
+        return () -> {
+            final int randRange;
+            if (numberOfOptions < 100) {
+                randRange = 100;
+            } else {
+                randRange = numberOfOptions;
+            }
+            int choosen = new Random().nextInt(randRange) % numberOfOptions;
+            return choosen;
+        };
+    }
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    @RequestScoped
+    public static class CreateNewOrderCommand {
+
+        @Inject
+        private PersistenceModel persistenceModel;
+        @Inject
+        private Transformers transformers;
+        @Inject
+        private OrderTransforming orderTransforming;
+
+        @Transactional
+        public OrderData createOrder(OrderData orderData) {
+            validateCustomerData(orderData);
+
+            final Function<OrderData, OrderEntity> func = orderTransforming.transformOrderToNewOrderEntity();
+            final OrderEntity oe = transformers.transformTo(orderData, func);
+            validateOrderEntity(oe);
+            String cID = orderData.getCustomerID();
+
+            persistenceModel.create(oe);
+
+            OrderData createdCustomerData = transformers.transformTo(oe,
+                    orderTransforming.transformOrderEntityToNewOrder());
+            return createdCustomerData;
+        }
+
+        void validateCustomerData(OrderData od) {
+            Objects.nonNull(od.getCustomerID());
+        }
+
+        void validateOrderEntity(OrderEntity oe) {
+            Objects.nonNull(oe.getCustomerID());
+            if (oe.getId() != null || oe.getVersion() != null) {
+                throw new RuntimeException("Invalid customerEntity for create");
+            }
+        }
+
+    }
+
+    @RequestScoped
+    public static class UpdateOrderCommand {
+
+        @Inject
+        private PersistenceModel persistenceModel;
+        @Inject
+        private Transformers transformers;
+        @Inject
+        private OrderTransforming orderTransforming;
+
+        @Transactional
+        public OrderData updateOrder(OrderData orderData) {
+            validateOrderData(orderData);
+
+            final Function<OrderData, OrderEntity> func = orderTransforming.transformOrderToNewOrderEntity();
+            final OrderEntity ce = transformers.transformTo(orderData, func);
+            validateOrderEntity(ce);
+
+            persistenceModel.update(ce);
+
+            OrderData createdOrderData = transformers.transformTo(ce,
+                    orderTransforming.transformOrderEntityToNewOrder());
+            return createdOrderData;
+        }
+
+        void validateOrderData(OrderData od) {
+            Objects.nonNull(od.getCustomerID());
+        }
+
+        void validateOrderEntity(OrderEntity oe) {
+            Objects.nonNull(oe.getId());
+            Objects.nonNull(oe.getVersion());
+            Objects.nonNull(oe.getCustomerID());
+        }
+
+    }
+
+    @RequestScoped
+    public static class DeleteOrderCommand {
+
+        @Inject
+        private PersistenceModel persistenceModel;
+        @Inject
+        private Transformers transformers;
+        @Inject
+        private OrderTransforming customerTransforming;
+
+        @Transactional
+        public void deleteOrder(OrderData orderData) {
+            String cID = orderData.getCustomerID();
+            final Function<OrderData, OrderEntity> func = customerTransforming.transformOrderToNewOrderEntity();
+            final OrderEntity ce = transformers.transformTo(orderData, func);
+
+            persistenceModel.remove(ce);
+        }
+
+        void validateConstraints(OrderEntity oe) {
+
+            List<String> ml = new ArrayList<>();
+            if (oe.getId() == null) {
+                ml.add("CustomerEntity id may not be null");
+            }
+            if (oe.getVersion() == null) {
+                ml.add("CustomerEntity version may not be null");
+            }
+            if (oe.getCustomerID() == null) {
+                ml.add("CustomerEntity customerID may not be null");
+            }
+            if (!ml.isEmpty()) {
+                ConstraintViolationException cvex = new javax.validation.ConstraintViolationException(
+                        "not valid",
+                        Collections.emptySet());
+                throw cvex;
+            }
         }
     }
 }

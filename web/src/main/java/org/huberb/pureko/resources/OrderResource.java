@@ -18,7 +18,9 @@ package org.huberb.pureko.resources;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.bind.JsonbBuilder;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -40,12 +42,10 @@ public class OrderResource {
     private OrderCommands.ReadDefaultOrderCommand createDefaultOrderCommand;
     @Inject
     private OrderCommands.ReadSingleOrdersCommand readSingleOrdersCommand;
-// TODO implement me
-//    @Inject
-//    private OrderCommands.CreateNewOrderCommand createNewOrderCommand;
-//    @Inject
-//    private OrderCommands.UpdateOrderCommand updateOrderCommand;
-
+    @Inject
+    private OrderCommands.CreateNewOrderCommand createNewOrderCommand;
+    @Inject
+    private OrderCommands.UpdateOrderCommand updateOrderCommand;
     @Inject
     private JsonConvertersF jsonConvertsF;
 
@@ -101,46 +101,53 @@ public class OrderResource {
                 .build();
     }
 
-//    /**
-//     *
-//     * @param customer
-//     * @return
-//     */
-//    @POST
-//    @Path("create")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response create(OrderData customer) {
-//        final OrderData createdOrderData = createOrder(customer);
-//        final String s = customerJsonConverter.createJsonObjectFrom(createdOrderData);
-//        return Response
-//                .ok(s)
-//                .build();
-//    }
-//
-//    private OrderData createOrder(OrderData customer) {
-//        OrderData createdOrderData = createNewOrderCommand.createOrder(customer);
-//        return createdOrderData;
-//    }
-//    /**
-//     *
-//     * @param customer
-//     * @return
-//     */
-//    @POST
-//    @Path("update")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response update(OrderData customer) {
-//        final OrderData createdOrderData = updateOrder(customer);
-//        final String s2 = customerJsonConverter.createJsonObjectFrom(createdOrderData);
-//        return Response
-//                .ok(s2)
-//                .build();
-//    }
-//
-//    private OrderData updateOrder(OrderData customer) {
-//        OrderData createdOrderData = updateOrderCommand.updateOrder(customer);
-//        return createdOrderData;
-//    }
+    /**
+     *
+     * @param customer
+     * @return
+     */
+    @POST
+    @Path("create")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response create(OrderData orderData) {
+        final OrderData createdOrderData = createOrder(orderData);
+        final String s = jsonConvertsF.convertToString(
+                createdOrderData,
+                JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create())
+        );
+        return Response
+                .ok(s)
+                .build();
+    }
+
+    private OrderData createOrder(OrderData customer) {
+        OrderData createdOrderData = createNewOrderCommand.createOrder(customer);
+        return createdOrderData;
+    }
+
+    /**
+     *
+     * @param orderData
+     * @return
+     */
+    @POST
+    @Path("update")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response update(OrderData orderData) {
+        final OrderData updatedOrderData = updateOrder(orderData);
+        final String s = jsonConvertsF.convertToString(
+                updatedOrderData,
+                JsonConvertersF.fromInstanceToJsonString(JsonbBuilder.create())
+        );
+        return Response
+                .ok(s)
+                .build();
+    }
+
+    private OrderData updateOrder(OrderData orderData) {
+        OrderData createdOrderData = updateOrderCommand.updateOrder(orderData);
+        return createdOrderData;
+    }
 }

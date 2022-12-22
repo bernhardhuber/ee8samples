@@ -41,7 +41,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @NamedQueries({
-    @NamedQuery(name = "countOfOrderEntity", query = "SELECT COUNT(o) FROM OrderEntity o")
+    @NamedQuery(name = "countOfOrderEntity", query = "select count(oe) from OrderEntity as oe"),
+    @NamedQuery(name = "findByOrderID", query = "from OrderEntity as oe where oe.customerID = :customerID")
 })
 
 public class OrderEntity implements Serializable {

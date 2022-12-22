@@ -15,6 +15,7 @@
  */
 package org.huberb.pureko.application.order;
 
+import org.huberb.pureko.application.support.RandomChoosing;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -128,7 +129,7 @@ public class OrderCommands {
 
         OrderData findOrderByOrderId(String customerID) {
             final OrderData cd;
-            final int chooseImpl = randomlyChoose(2).get();
+            final int chooseImpl = RandomChoosing.randomlyChoose(2).get();
             if (chooseImpl == 1) {
                 cd = findOrderByCustomerId_1(customerID);
             } else {
@@ -169,7 +170,7 @@ public class OrderCommands {
         @Transactional
         public List<OrderData> readOrders() {
             final List<OrderData> odList;
-            int choosen = randomlyChoose(2).get();
+            int choosen = RandomChoosing.randomlyChoose(2).get();
             if (choosen == 1) {
                 odList = readOrdersUsingForLoop();
             } else {
@@ -211,21 +212,7 @@ public class OrderCommands {
         }
     }
 
-    public static Supplier<Integer> randomlyChoose(int numberOfOptions) {
-        return () -> {
-            final int randRange;
-            if (numberOfOptions < 100) {
-                randRange = 100;
-            } else {
-                randRange = numberOfOptions;
-            }
-            int choosen = new Random().nextInt(randRange) % numberOfOptions;
-            return choosen;
-        };
-    }
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
     @RequestScoped
     public static class CreateNewOrderCommand {
 

@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
-import static org.huberb.pureko.application.order.OrderCommands.randomlyChoose;
+import org.huberb.pureko.application.support.RandomChoosing;
 import org.huberb.pureko.application.support.PersistenceModel;
 import org.huberb.pureko.application.support.PersistenceModel.QueryConsumers;
 import org.huberb.pureko.application.support.Transformers;
@@ -127,7 +127,7 @@ public class CustomerCommands {
 
         CustomerData findCustomerByCustomerId(String customerID) {
             final CustomerData cd;
-            int choosen = randomlyChoose(2).get();
+            int choosen = RandomChoosing.randomlyChoose(2).get();
             if (choosen == 1) {
                 cd = findCustomerByCustomerId_1(customerID);
             } else {
@@ -170,7 +170,7 @@ public class CustomerCommands {
         @Transactional
         public List<CustomerData> readCustomers() {
             final List<CustomerData> cdList;
-            int choosen = randomlyChoose(2).get();
+            int choosen = RandomChoosing.randomlyChoose(2).get();
             if (choosen == 1) {
                 cdList = readCustomersUsingForLoop();
             } else {

@@ -15,15 +15,12 @@
  */
 package org.huberb.pureko.application.order;
 
-import org.huberb.pureko.application.support.RandomChoosing;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -31,8 +28,9 @@ import javax.inject.Inject;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
+import org.huberb.pureko.application.support.AbstractPersistenceModel.QueryConsumers;
 import org.huberb.pureko.application.support.PersistenceModel;
-import org.huberb.pureko.application.support.PersistenceModel.QueryConsumers;
+import org.huberb.pureko.application.support.RandomChoosing;
 import org.huberb.pureko.application.support.Transformers;
 
 /**
@@ -211,7 +209,6 @@ public class OrderCommands {
             return l;
         }
     }
-
 
     @RequestScoped
     public static class CreateNewOrderCommand {

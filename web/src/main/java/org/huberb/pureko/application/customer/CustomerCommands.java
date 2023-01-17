@@ -28,9 +28,9 @@ import javax.inject.Inject;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
-import org.huberb.pureko.application.support.RandomChoosing;
+import org.huberb.pureko.application.support.AbstractPersistenceModel.QueryConsumers;
 import org.huberb.pureko.application.support.PersistenceModel;
-import org.huberb.pureko.application.support.PersistenceModel.QueryConsumers;
+import org.huberb.pureko.application.support.RandomChoosing;
 import org.huberb.pureko.application.support.Transformers;
 
 /**

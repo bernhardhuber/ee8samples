@@ -20,6 +20,7 @@
         <module>web</module>
         <module>wildfly</module>
         <module>mail</module>
+        <module>genericdata</module>
     </modules>
     <dependencyManagement>
         <dependencies>

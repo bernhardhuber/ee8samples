@@ -35,8 +35,8 @@ import org.huberb.pureko.application.customer.CustomerCommands.SeedCustomersComm
 import org.huberb.pureko.application.persistence.EntityManagerIT.CustomizableEntityManagerFactory;
 import org.huberb.pureko.application.persistence.EntityManagerIT.CustomizableEntityManagerFactory.DefaultPersistenceUnitInfo;
 import org.huberb.pureko.application.persistence.EntityManagerIT.ImmutableMap;
-import org.huberb.pureko.application.support.AbstractPersistenceModel.QueryConsumers;
-import org.huberb.pureko.application.support.PersistenceModel;
+import org.huberb.pureko.application.support.persistence.AbstractPersistenceModel.QueryConsumers;
+import org.huberb.pureko.application.support.persistence.PersistenceModel;
 import org.huberb.pureko.application.support.Transformers;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;

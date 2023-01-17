@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.application.support;
+package org.huberb.pureko.application.support.json;
 
 import java.util.Arrays;
 import java.util.List;

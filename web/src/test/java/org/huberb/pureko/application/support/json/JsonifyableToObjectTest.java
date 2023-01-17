@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.application.support;
+package org.huberb.pureko.application.support.json;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import org.huberb.pureko.application.support.JsonValues.JsonifyableToObject;
+import org.huberb.pureko.application.support.json.JsonValues.JsonifyableToObject;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

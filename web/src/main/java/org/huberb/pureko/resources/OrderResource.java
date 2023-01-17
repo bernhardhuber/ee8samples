@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.huberb.pureko.application.order.OrderCommands;
 import org.huberb.pureko.application.order.OrderData;
-import org.huberb.pureko.application.support.JsonConvertersF;
+import org.huberb.pureko.application.support.json.JsonConvertersF;
 
 /**
  *

@@ -32,9 +32,10 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.persistence.EntityManager;
-import org.huberb.pureko.application.support.JsonValues.JsonifyableToJsonValue;
-import org.huberb.pureko.application.support.JsonValues.JsonifyableToObject;
-import org.huberb.pureko.application.support.PuName.PuType;
+import org.huberb.pureko.application.support.json.JsonValues.JsonifyableToJsonValue;
+import org.huberb.pureko.application.support.json.JsonValues.JsonifyableToObject;
+import org.huberb.pureko.application.support.persistence.PuName;
+import org.huberb.pureko.application.support.persistence.PuName.PuType;
 
 /**
  *

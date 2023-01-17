@@ -23,7 +23,7 @@ import java.util.function.Supplier;
  * @author berni3
  */
 public class RandomChoosing {
-    
+
     public static Supplier<Integer> randomlyChoose(int numberOfOptions) {
         return () -> {
             final int randRange;
@@ -32,9 +32,9 @@ public class RandomChoosing {
             } else {
                 randRange = numberOfOptions;
             }
-            int choosen = new Random().nextInt(randRange) % numberOfOptions;
+            final int choosen = new Random().nextInt(randRange) % numberOfOptions;
             return choosen;
         };
     }
-    
+
 }

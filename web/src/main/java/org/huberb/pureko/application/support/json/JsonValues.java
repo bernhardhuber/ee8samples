@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.application.support;
+package org.huberb.pureko.application.support.json;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -41,7 +41,7 @@ public class JsonValues {
     /**
      * Convert to {@link JsonValue}.
      */
-    static class JsonifyableToJsonValue {
+    public static class JsonifyableToJsonValue {
         //---
 
         private static final JsonifyableToJsonValue INSTANCE = new JsonifyableToJsonValue();
@@ -167,7 +167,7 @@ public class JsonValues {
     /**
      * Convert to {@link Object} which shall be compatible to {@link JsonValue}.
      */
-    static class JsonifyableToObject {
+    public static class JsonifyableToObject {
         //---
 
         private static final JsonifyableToObject INSTANCE = new JsonifyableToObject();

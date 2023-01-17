@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.application.support;
+package org.huberb.pureko.application.support.persistence;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import org.huberb.pureko.application.support.PuName.ManagedType;
-import org.huberb.pureko.application.support.PuName.PuType;
+import org.huberb.pureko.application.support.persistence.PuName.ManagedType;
+import org.huberb.pureko.application.support.persistence.PuName.PuType;
 
 /**
  *

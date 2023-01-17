@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.pureko.application.support;
+package org.huberb.pureko.application.support.persistence;
 
 import java.util.Collections;
 import java.util.Map;
@@ -26,7 +26,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
-import org.huberb.pureko.application.support.PuName.PuType;
+import org.huberb.pureko.application.support.persistence.PuName.PuType;
 
 /**
  *

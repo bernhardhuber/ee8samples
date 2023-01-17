@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.json.JsonObject;
 import javax.json.bind.JsonbBuilder;
-import org.huberb.pureko.application.support.JsonConvertersF;
+import org.huberb.pureko.application.support.json.JsonConvertersF;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

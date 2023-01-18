@@ -72,8 +72,10 @@ public class Shoppings {
 
         @Column(name = "ITEM_IDENTIF", unique = true)
         private String itemIdentif;
-        @Column(name = "NAME", length = 100, nullable = false)
-        private String name;
+        @Column(name = "ITEM_NAME", length = 100, nullable = false)
+        private String itemName;
+        @Column(name = "AVAILABLE_COUNT", nullable = false)
+        private Long availableCount;
     }
 
     @Data
@@ -173,7 +175,7 @@ public class Shoppings {
         private String orderIdentif;
 
         enum Status {
-            preparing, packaging, shipping, delivered
+            preparing, packaging, shipping, delivered, lost
         }
         @Column(name = "STATUS", length = 50, nullable = false)
         @Enumerated(EnumType.STRING)

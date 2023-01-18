@@ -343,26 +343,26 @@ public abstract class AbstractPersistenceModel {
 
     //----
     @Transactional(TxType.MANDATORY)
-    public <T, V> V findResultUsingTypedQuery(Function<EntityManager, Query> f,
+    public <T, V> V findResultUsingTypedQuery(Function<EntityManager, Query> queryCreatorFunction,
             Consumer<Query> c,
-            Function<Query, V> f2) {
+            Function<Query, V> queryResultFunction) {
         EntityManager _em = getEntityManager();
-        final Query tq = f.apply(_em);
+        final Query tq = queryCreatorFunction.apply(_em);
         c.accept(tq);
-        final V v = f2.apply(tq);
+        final V v = queryResultFunction.apply(tq);
         return v;
     }
 
     //----
     // ql queries full functional
     @Transactional(TxType.MANDATORY)
-    public <T, V> V findResultUsingQuery(Function<EntityManager, TypedQuery<T>> f,
+    public <T, V> V findResultUsingQuery(Function<EntityManager, TypedQuery<T>> typedQueryCreatorFunction,
             Consumer<Query> c,
-            Function<TypedQuery<T>, V> f2) {
+            Function<TypedQuery<T>, V> typedQueryResultFunction) {
         EntityManager _em = getEntityManager();
-        final TypedQuery<T> tq = f.apply(_em);
+        final TypedQuery<T> tq = typedQueryCreatorFunction.apply(_em);
         c.accept(tq);
-        final V v = f2.apply(tq);
+        final V v = typedQueryResultFunction.apply(tq);
         return v;
     }
 

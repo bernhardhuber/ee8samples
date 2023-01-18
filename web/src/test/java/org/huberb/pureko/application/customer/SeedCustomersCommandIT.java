@@ -16,25 +16,9 @@
 package org.huberb.pureko.application.customer;
 
 import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManagerFactory;
-import static org.hibernate.cfg.AvailableSettings.DIALECT;
-import static org.hibernate.cfg.AvailableSettings.FORMAT_SQL;
-import static org.hibernate.cfg.AvailableSettings.GENERATE_STATISTICS;
-import static org.hibernate.cfg.AvailableSettings.HBM2DDL_AUTO;
-import static org.hibernate.cfg.AvailableSettings.JPA_JDBC_URL;
-import static org.hibernate.cfg.AvailableSettings.QUERY_STARTUP_CHECKING;
-import static org.hibernate.cfg.AvailableSettings.SHOW_SQL;
-import static org.hibernate.cfg.AvailableSettings.STATEMENT_BATCH_SIZE;
-import static org.hibernate.cfg.AvailableSettings.USE_QUERY_CACHE;
-import static org.hibernate.cfg.AvailableSettings.USE_REFLECTION_OPTIMIZER;
-import static org.hibernate.cfg.AvailableSettings.USE_SECOND_LEVEL_CACHE;
-import static org.hibernate.cfg.AvailableSettings.USE_STRUCTURED_CACHE;
-import org.hibernate.dialect.H2Dialect;
 import org.huberb.pureko.application.customer.CustomerCommands.SeedCustomersCommand;
-import org.huberb.pureko.application.persistence.EntityManagerIT.CustomizableEntityManagerFactory;
-import org.huberb.pureko.application.persistence.EntityManagerIT.CustomizableEntityManagerFactory.DefaultPersistenceUnitInfo;
-import org.huberb.pureko.application.persistence.EntityManagerIT.ImmutableMap;
+import org.huberb.pureko.application.persistence.CustomizableEntityManagerFactory;
 import org.huberb.pureko.application.support.persistence.AbstractPersistenceModel.QueryConsumers;
 import org.huberb.pureko.application.support.persistence.PersistenceModel;
 import org.huberb.pureko.application.support.Transformers;
@@ -77,32 +61,7 @@ public class SeedCustomersCommandIT {
     @BeforeAll
     public static void setUpAll() {
         String h2JdbcUrl = "jdbc:h2:mem:testCustomerSeedCommandTest";
-        final Map<String, Object> props = ImmutableMap.<String, Object>builder()
-                //.put(JPA_JDBC_DRIVER, JDBC_DRIVER)
-                .put(JPA_JDBC_URL, h2JdbcUrl)
-                .put(DIALECT, H2Dialect.class)
-                .put(HBM2DDL_AUTO, org.hibernate.tool.schema.Action.CREATE_ONLY)
-                .put(SHOW_SQL, true)
-                .put(FORMAT_SQL, true)
-                .put(QUERY_STARTUP_CHECKING, false)
-                .put(GENERATE_STATISTICS, false)
-                .put(USE_REFLECTION_OPTIMIZER, false)
-                .put(USE_SECOND_LEVEL_CACHE, false)
-                .put(USE_QUERY_CACHE, false)
-                .put(USE_STRUCTURED_CACHE, false)
-                .put(STATEMENT_BATCH_SIZE, 20)
-                .build();
-        final DefaultPersistenceUnitInfo pui = new DefaultPersistenceUnitInfo();
-        entityManagerFactory = CustomizableEntityManagerFactory.builder()
-                .putProps(JPA_JDBC_URL, h2JdbcUrl)
-                .putProps(DIALECT, H2Dialect.class)
-                .putProps(HBM2DDL_AUTO, org.hibernate.tool.schema.Action.CREATE_ONLY)
-                .putAllProps(props)
-                .assignPersistenceUnit(pui)
-                .assignPersistenceUnit(DefaultPersistenceUnitInfo.builder()
-                        .excludeUnlistedClasses(true)
-                        .build())
-                .build();
+        entityManagerFactory = CustomizableEntityManagerFactory.createH2EntityManagerFactory(h2JdbcUrl);
     }
 
     @AfterAll

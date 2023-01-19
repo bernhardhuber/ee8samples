@@ -30,12 +30,27 @@ import javax.mail.internet.MimeMessage;
  */
 public class BodyTextMergers {
 
+    public static Consumer<MimeMessage> assignBodyText(String bodyText) {
+        return (mm) -> {
+            try {
+                mm.setText(bodyText);
+            } catch (MessagingException ex) {
+                throw new RuntimeException("assignBodyText", ex);
+            }
+        };
+    }
+
     /**
      * Merger using {@link String#format(java.lang.String, java.lang.Object...)
      * } internally for merging.
      */
     public static class StringFormatBodyMerger {
 
+        public static Consumer<MimeMessage> assignBodyText(String template, Object[] args) {
+            final StringFormatBodyMerger merger = new StringFormatBodyMerger();
+            final String bodyText = merger.merge(template, args);
+            return BodyTextMergers.assignBodyText(bodyText);
+        }
         private final Locale locale;
 
         public StringFormatBodyMerger() {
@@ -44,18 +59,6 @@ public class BodyTextMergers {
 
         public StringFormatBodyMerger(Locale l) {
             this.locale = l;
-        }
-
-        public static Consumer<MimeMessage> assignBodyText(String template, Object[] args) {
-            return (mm) -> {
-                try {
-                    StringFormatBodyMerger merger = new StringFormatBodyMerger();
-                    String bodyText = merger.merge(template, args);
-                    mm.setText(bodyText);
-                } catch (MessagingException ex) {
-                    throw new RuntimeException("merge", ex);
-                }
-            };
         }
 
         public String merge(String template, Object[] args) {
@@ -72,15 +75,9 @@ public class BodyTextMergers {
     public static class SimpleSubstitutionBodyMerger {
 
         public static Consumer<MimeMessage> assignBodyText(String template, Map<String, Object> m) {
-            return (mm) -> {
-                try {
-                    SimpleSubstitutionBodyMerger merger = new SimpleSubstitutionBodyMerger();
-                    String bodyText = merger.merge(template, m);
-                    mm.setText(bodyText);
-                } catch (MessagingException ex) {
-                    throw new RuntimeException("merge", ex);
-                }
-            };
+            final SimpleSubstitutionBodyMerger merger = new SimpleSubstitutionBodyMerger();
+            final String bodyText = merger.merge(template, m);
+            return BodyTextMergers.assignBodyText(bodyText);
         }
 
         private final int EOF = -1;

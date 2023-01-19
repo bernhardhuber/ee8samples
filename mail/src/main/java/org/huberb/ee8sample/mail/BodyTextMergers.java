@@ -47,6 +47,10 @@ public class BodyTextMergers {
     public static class StringFormatBodyMerger {
 
         public static Consumer<MimeMessage> assignBodyText(String template, Object[] args) {
+            return StringFormatBodyMerger.assignBodyText(Locale.getDefault(), template, args);
+        }
+
+        public static Consumer<MimeMessage> assignBodyText(Locale locale, String template, Object[] args) {
             final StringFormatBodyMerger merger = new StringFormatBodyMerger();
             final String bodyText = merger.merge(template, args);
             return BodyTextMergers.assignBodyText(bodyText);

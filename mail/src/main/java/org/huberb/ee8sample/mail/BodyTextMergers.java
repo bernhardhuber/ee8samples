@@ -30,6 +30,12 @@ import javax.mail.internet.MimeMessage;
  */
 public class BodyTextMergers {
 
+    /**
+     * Create a consumer for setting mime-message text.
+     *
+     * @param bodyText
+     * @return
+     */
     public static Consumer<MimeMessage> assignBodyText(String bodyText) {
         return (mm) -> {
             try {
@@ -46,10 +52,25 @@ public class BodyTextMergers {
      */
     public static class StringFormatBodyMerger {
 
+        /**
+         * Create a consumer for setting mime-message text.
+         *
+         * @param template
+         * @param args
+         * @return
+         */
         public static Consumer<MimeMessage> assignBodyText(String template, Object[] args) {
             return StringFormatBodyMerger.assignBodyText(Locale.getDefault(), template, args);
         }
 
+        /**
+         * Create a consumer for setting mime-message text.
+         *
+         * @param locale
+         * @param template
+         * @param args
+         * @return
+         */
         public static Consumer<MimeMessage> assignBodyText(Locale locale, String template, Object[] args) {
             final StringFormatBodyMerger merger = new StringFormatBodyMerger();
             final String bodyText = merger.merge(template, args);
@@ -78,6 +99,13 @@ public class BodyTextMergers {
      */
     public static class SimpleSubstitutionBodyMerger {
 
+        /**
+         * Create a consumer for setting mime-message text.
+         *
+         * @param template
+         * @param m
+         * @return
+         */
         public static Consumer<MimeMessage> assignBodyText(String template, Map<String, Object> m) {
             final SimpleSubstitutionBodyMerger merger = new SimpleSubstitutionBodyMerger();
             final String bodyText = merger.merge(template, m);
@@ -109,7 +137,6 @@ public class BodyTextMergers {
         String process(String template, Map<String, Object> m) throws IOException {
             final StringBuilder sb = new StringBuilder();
 
-            // This can be easiliy FileReader or any Reader
             try (final Reader sr = new StringReader(template)) {
                 for (int c; (c = sr.read()) != EOF;) {
                     if (c == varDelimStart) {

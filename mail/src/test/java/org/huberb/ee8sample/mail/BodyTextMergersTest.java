@@ -17,9 +17,11 @@ package org.huberb.ee8sample.mail;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -32,12 +34,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
  * @author berni3
  */
-public class StringFromatBodyMergerTest {
+public class BodyTextMergersTest {
 
     Session session;
 
@@ -70,7 +74,7 @@ public class StringFromatBodyMergerTest {
 
     @Test
     public void testStringFormatBodyMergerAssignBodyText() throws MessagingException, IOException {
-        final MimeMessage m = createAMimeMessage();
+        final MimeMessage mimeMessage = createAMimeMessage();
         //---
         final String template = "Hello %s,%n"
                 + "body text.%n";
@@ -78,13 +82,33 @@ public class StringFromatBodyMergerTest {
                 template,
                 new Object[]{"world"}
         );
-        assignBodyTextConsumer.accept((MimeMessage) m);
-        assertNormalized("Hello world, body text. ", (String) m.getContent());
+        assignBodyTextConsumer.accept((MimeMessage) mimeMessage);
+        assertNormalized("Hello world, body text. ", (String) mimeMessage.getContent());
+    }
+
+    @ParameterizedTest
+    @MethodSource("localeProvider")
+    public void testStringFormatBodyMergerAssignBodyText_vary_locale(Locale locale) throws MessagingException, IOException {
+        final MimeMessage mimeMessage = createAMimeMessage();
+        //---
+        final String template = "Hello %s,%n"
+                + "body text.%n";
+        final Consumer<MimeMessage> assignBodyTextConsumer = StringFormatBodyMerger.assignBodyText(
+                locale,
+                template,
+                new Object[]{"world"}
+        );
+        assignBodyTextConsumer.accept((MimeMessage) mimeMessage);
+        assertNormalized("Hello world, body text. ", (String) mimeMessage.getContent());
+    }
+
+    public static Stream<Locale> localeProvider() {
+        return Stream.of(Locale.getDefault(), Locale.GERMAN, Locale.ENGLISH);
     }
 
     @Test
     public void testSimpleSubstitutionBodyMergerAssignBodyText() throws MessagingException, IOException {
-        final MimeMessage m = createAMimeMessage();
+        final MimeMessage mimeMessage = createAMimeMessage();
         //---
         Map<String, Object> map = new HashMap<>() {
             {
@@ -97,8 +121,8 @@ public class StringFromatBodyMergerTest {
                 template,
                 map
         );
-        assignBodyTextConsumer.accept((MimeMessage) m);
-        assertNormalized("Hello world, body text. ", (String) m.getContent());
+        assignBodyTextConsumer.accept((MimeMessage) mimeMessage);
+        assertNormalized("Hello world, body text. ", (String) mimeMessage.getContent());
     }
 
     void assertNormalized(String exp, String res) {

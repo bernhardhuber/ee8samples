@@ -15,6 +15,7 @@
  */
 package org.huberb.ee8sample.genericdata;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +38,10 @@ import org.huberb.ee8sample.genericdata.Shoppings.StockItem;
  */
 public class ShoppingsSeeds {
 
-    Map<String, Object> seedItems(int itemCount) {
+    Map<String, Object> seedItems(int stockItemCount, int shoppingCardCount) {
         final Faker faker = Faker.instance(Locale.forLanguageTag("de-AT"));
 
-        List<StockItem> itemList = Stream.iterate(0, i -> i < itemCount, i -> i + 1)
+        final List<StockItem> stockItemList = Stream.iterate(0, i -> i < stockItemCount, i -> i + 1)
                 .map(i -> {
                     Shoppings.StockItem item = Shoppings.StockItem.builder()
                             .availableCount(faker.number().numberBetween(0L, 100L))
@@ -52,50 +53,60 @@ public class ShoppingsSeeds {
                     return item;
                 }).collect(Collectors.toList());
 
-        List<Shoppings.ShoppingItem> shoppingItemList = Arrays.asList(
-                Shoppings.ShoppingItem.builder()
-                        //.itemIdentif("itemIdentif")
-                        .build()
-        );
+        final List<Shoppings.ShoppingCard> shoppingCardList = new ArrayList<>();
+        {
+            for (int i = 0; i < shoppingCardCount; i++) {
+                final int stockItemsCount = faker.number().numberBetween(0, 10);
+                final List<Shoppings.ShoppingItem> shoppingItemList = new ArrayList<>();
+                for (int j = 0; j < stockItemsCount; j += 1) {
+                    final int stockItemIndex = faker.number().numberBetween(0, stockItemList.size());
+                    final Shoppings.ShoppingItem shoppingItem = Shoppings.ShoppingItem.builder()
+                            .item(stockItemList.get(stockItemIndex).getItem())
+                            .quantity(faker.number().numberBetween(1L, 3L))
+                            .build();
+                    shoppingItemList.add(shoppingItem);
+                }
 
-        Shoppings.ShoppingCard.builder()
-                .loginUser(LoginUser.builder()
-                        .person(Person.builder()
-                                .personName(Name.builder()
-                                        .firstName(faker.name().firstName())
-                                        .lastName(faker.name().lastName())
-                                        .middleName("")
-                                        .title("")
-                                        .build()).build())
-                        .userName(faker.name().username())
-                        .build())
-                .build();
-
-        List<Shoppings.Delivery> deliveryList = Arrays.asList(
+                final Shoppings.ShoppingCard shoppingCard = Shoppings.ShoppingCard.builder()
+                        .shoppingItemList(shoppingItemList)
+                        .loginUser(LoginUser.builder()
+                                .person(Person.builder()
+                                        .personName(Name.builder()
+                                                .firstName(faker.name().firstName())
+                                                .lastName(faker.name().lastName())
+                                                .middleName("")
+                                                .title("")
+                                                .build()).build())
+                                .userName(faker.name().username())
+                                .build())
+                        .build();
+                shoppingCardList.add(shoppingCard);
+            }
+        }
+        final List<Shoppings.Delivery> deliveryList = Arrays.asList(
                 Shoppings.Delivery.builder()
                         .deliverIdentif("deliverIdentif")
                         .orderIdentif("orderIdentif")
                         .status(Status.preparing)
                         .build());
-        List<Shoppings.Invoice> invoiceList = Arrays.asList(
+        final List<Shoppings.Invoice> invoiceList = Arrays.asList(
                 Shoppings.Invoice.builder()
-                        //.itemIdentif("itemIdentif")
+                        .shoppingItemList(shoppingCardList.get(0).getShoppingItemList())
                         .orgAddress(Address.builder().build())
                         .organisation(Organisation.builder().build())
                         .person(Person.builder().build())
                         .personAddress(Address.builder().build())
-                        //.quantity(faker.number().numberBetween(1L, 20L))
                         .build());
-        List<Shoppings.Order> orderList = Arrays.asList(
+        final List<Shoppings.Order> orderList = Arrays.asList(
                 Shoppings.Order.builder()
-                        //.customerIdentif("customerIdentif")
+                        .shoppingItemList(shoppingCardList.get(0).getShoppingItemList())
                         .orderIdentif("orderIdentif")
                         .build());
 
         Map<String, Object> m = new HashMap<>() {
             {
-                put("itemList", itemList);
-                put("shoppingItemList", shoppingItemList);
+                put("stockItemList", stockItemList);
+                put("shoppingCardList", shoppingCardList);
                 put("orderList", orderList);
                 put("invoiceList", invoiceList);
                 put("deliveryList", deliveryList);

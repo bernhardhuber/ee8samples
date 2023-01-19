@@ -36,7 +36,7 @@ import org.huberb.ee8sample.genericdata.Shoppings.StockItem;
  *
  * @author berni3
  */
-public class ShoppingsSeeds {
+public class ShoppingsSeedings {
 
     Map<String, Object> seedItems(int stockItemCount, int shoppingCardCount) {
         final Faker faker = Faker.instance(Locale.forLanguageTag("de-AT"));

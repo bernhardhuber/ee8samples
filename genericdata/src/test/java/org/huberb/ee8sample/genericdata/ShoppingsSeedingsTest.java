@@ -27,17 +27,17 @@ import org.junit.jupiter.api.Test;
  *
  * @author berni3
  */
-public class ShoppingsSeedsTest {
+public class ShoppingsSeedingsTest {
 
-    ShoppingsSeeds instance;
+    ShoppingsSeedings instance;
 
     @BeforeEach
     public void setUp() {
-        this.instance = new ShoppingsSeeds();
+        this.instance = new ShoppingsSeedings();
     }
 
     /**
-     * Test of seedItems method, of class ShoppingsSeeds.
+     * Test of seedItems method, of class ShoppingsSeedings.
      */
     @Test
     public void testSeedItems() {

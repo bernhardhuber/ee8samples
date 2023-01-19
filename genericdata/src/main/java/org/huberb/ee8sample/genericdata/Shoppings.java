@@ -16,9 +16,13 @@
 package org.huberb.ee8sample.genericdata;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -26,7 +30,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Table;
 import javax.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +41,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.huberb.ee8sample.genericdata.Basics.Address;
+import org.huberb.ee8sample.genericdata.Basics.Item;
 import org.huberb.ee8sample.genericdata.Basics.LoginUser;
 import org.huberb.ee8sample.genericdata.Basics.Organisation;
 import org.huberb.ee8sample.genericdata.Basics.Person;
@@ -66,16 +73,35 @@ public class Shoppings {
     @NoArgsConstructor
     @AllArgsConstructor
     @Entity
-    public static class Item extends AbstractEntityIdVersion implements Serializable {
+    @Table(name = "STOCK_ITEM")
+    public static class StockItem extends AbstractEntityIdVersion implements Serializable {
 
         public static final long serialVersionUID = 20230115L;
 
-        @Column(name = "ITEM_IDENTIF", unique = true)
-        private String itemIdentif;
-        @Column(name = "ITEM_NAME", length = 100, nullable = false)
-        private String itemName;
+        @Embedded
+        private Item item;
+
         @Column(name = "AVAILABLE_COUNT", nullable = false)
         private Long availableCount;
+    }
+
+    @Data
+    @Builder
+    @EqualsAndHashCode
+    @ToString(callSuper = true)
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Embeddable
+    public static class ShoppingItem implements Serializable {
+
+        public static final long serialVersionUID = 20230115L;
+
+        @Embedded
+        private Item item;
+
+        @Column(name = "QUANTITY", nullable = false)
+        private Long quantity;
+
     }
 
     @Data
@@ -85,13 +111,16 @@ public class Shoppings {
     @NoArgsConstructor
     @AllArgsConstructor
     @Entity
-    public static class ShoppingItem extends AbstractEntityIdVersion implements Serializable {
+    @Table(name = "SHOPPING_CARD")
+    public static class ShoppingCard extends AbstractEntityIdVersion implements Serializable {
 
-        public static final long serialVersionUID = 20230115L;
-        @Column(name = "QUANTITY", nullable = false)
-        private Long quantity;
-        @Column(name = "ITEM_IDENTIF")
-        private String itemIdentif;
+        @ElementCollection
+        @CollectionTable(
+                name = "SHOPPING_ITEM",
+                joinColumns = @JoinColumn(name = "SHOPPING_ITEM_ID")
+        )
+        private List<ShoppingItem> shoppingItemList;
+
         @Embedded
         private LoginUser loginUser;
 
@@ -104,6 +133,7 @@ public class Shoppings {
     @NoArgsConstructor
     @AllArgsConstructor
     @Entity
+    @Table(name = "INVOICE")
     public static class Invoice extends AbstractEntityIdVersion implements Serializable {
 
         public static final long serialVersionUID = 20230115L;
@@ -120,10 +150,12 @@ public class Shoppings {
         })
         private Address orgAddress;
         //---
-        @Column(name = "QUANTITY", nullable = false)
-        private Long quantity;
-        @Column(name = "ITEM_IDENTIF")
-        private String itemIdentif;
+        @ElementCollection
+        @CollectionTable(
+                name = "SHOPPING_ITEM",
+                joinColumns = @JoinColumn(name = "SHOPPING_ITEM_ID")
+        )
+        private List<ShoppingItem> shoppingItemList;
         //---
         @Embedded
         private Person person;
@@ -146,6 +178,7 @@ public class Shoppings {
     @NoArgsConstructor
     @AllArgsConstructor
     @Entity
+    @Table(name = "SHOPPING_ORDER")
     public static class Order extends AbstractEntityIdVersion implements Serializable {
 
         public static final long serialVersionUID = 20230115L;
@@ -153,8 +186,13 @@ public class Shoppings {
         @Column(name = "ORDER_IDENTIF", unique = true)
         private String orderIdentif;
 
-        @Column(name = "CUSTOMER_IDENTIF")
-        private String customerIdentif;
+        //---
+        @ElementCollection
+        @CollectionTable(
+                name = "SHOPPING_ITEM",
+                joinColumns = @JoinColumn(name = "SHOPPING_ITEM_ID")
+        )
+        private List<ShoppingItem> shoppingItemList;
 
     }
 
@@ -165,6 +203,7 @@ public class Shoppings {
     @NoArgsConstructor
     @AllArgsConstructor
     @Entity
+    @Table(name = "SHOPPING_DELIVERY")
     public static class Delivery extends AbstractEntityIdVersion implements Serializable {
 
         public static final long serialVersionUID = 20230115L;

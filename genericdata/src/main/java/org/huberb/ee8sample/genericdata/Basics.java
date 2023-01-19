@@ -34,9 +34,26 @@ public class Basics {
     @NoArgsConstructor
     @AllArgsConstructor
     @Embeddable
+    public static class Item implements Serializable {
+
+        public static final long serialVersionUID = 20230115L;
+
+        @Column(name = "ITEM_NAME", length = 100, nullable = false)
+        private String itemName;
+
+        @Column(name = "ITEM_CODE", length = 100, nullable = false)
+        private String itemCode;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Embeddable
     public static class Address implements Serializable {
 
         public static final long serialVersionUID = 20230115L;
+
         @Column(name = "ADDRESS", length = 100, nullable = false)
         private String address;
         @Column(name = "CITY", length = 100, nullable = false)
@@ -57,6 +74,7 @@ public class Basics {
     public static class BankAccount implements Serializable {
 
         public static final long serialVersionUID = 20230115L;
+
         @Column(name = "NAME", length = 100, nullable = false)
         private String name;
         @Column(name = "IBAN", length = 100, nullable = false)
@@ -73,6 +91,7 @@ public class Basics {
     public static class Name implements Serializable {
 
         public static final long serialVersionUID = 20230115L;
+
         @Column(name = "TITLE", length = 100, nullable = true)
         private String title;
         @Column(name = "FIRST_NAME", length = 100, nullable = false)
@@ -91,7 +110,8 @@ public class Basics {
     public static class Person implements Serializable {
 
         public static final long serialVersionUID = 20230115L;
-        private Name name;
+
+        private Name personName;
     }
 
     @Data
@@ -102,8 +122,9 @@ public class Basics {
     public static class Organisation implements Serializable {
 
         public static final long serialVersionUID = 20230115L;
-        @Column(name = "NAME", length = 100, nullable = false)
-        private String name;
+
+        @Column(name = "ORGANISATION_NAME", length = 100, nullable = false)
+        private String organisationName;
     }
 
     @Data

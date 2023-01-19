@@ -29,7 +29,7 @@ import org.huberb.ee8sample.genericdata.Basics.Name;
 import org.huberb.ee8sample.genericdata.Basics.Organisation;
 import org.huberb.ee8sample.genericdata.Basics.Person;
 import org.huberb.ee8sample.genericdata.Shoppings.Delivery.Status;
-import org.huberb.ee8sample.genericdata.Shoppings.Item;
+import org.huberb.ee8sample.genericdata.Shoppings.StockItem;
 
 /**
  *
@@ -40,32 +40,36 @@ public class ShoppingsSeeds {
     Map<String, Object> seedItems(int itemCount) {
         final Faker faker = Faker.instance(Locale.forLanguageTag("de-AT"));
 
-        List<Item> itemList = Stream.iterate(0, i -> i < itemCount, i -> i + 1)
+        List<StockItem> itemList = Stream.iterate(0, i -> i < itemCount, i -> i + 1)
                 .map(i -> {
-                    Shoppings.Item item = Shoppings.Item.builder()
+                    Shoppings.StockItem item = Shoppings.StockItem.builder()
                             .availableCount(faker.number().numberBetween(0L, 100L))
-                            .itemIdentif(faker.numerify("ITEM-#####"))
-                            .itemName(faker.book().title())
+                            .item(Basics.Item.builder()
+                                    .itemCode(faker.numerify("ITEM-#####"))
+                                    .itemName(faker.book().title())
+                                    .build())
                             .build();
                     return item;
                 }).collect(Collectors.toList());
 
         List<Shoppings.ShoppingItem> shoppingItemList = Arrays.asList(
                 Shoppings.ShoppingItem.builder()
-                        .itemIdentif("itemIdentif")
-                        .loginUser(LoginUser.builder()
-                                .person(Person.builder()
-                                        .name(Name.builder()
-                                                .firstName(faker.name().firstName())
-                                                .lastName(faker.name().lastName())
-                                                .middleName("")
-                                                .title("")
-                                                .build())
-                                        .build())
-                                .userName(faker.name().username())
-                                .build())
+                        //.itemIdentif("itemIdentif")
                         .build()
         );
+
+        Shoppings.ShoppingCard.builder()
+                .loginUser(LoginUser.builder()
+                        .person(Person.builder()
+                                .personName(Name.builder()
+                                        .firstName(faker.name().firstName())
+                                        .lastName(faker.name().lastName())
+                                        .middleName("")
+                                        .title("")
+                                        .build()).build())
+                        .userName(faker.name().username())
+                        .build())
+                .build();
 
         List<Shoppings.Delivery> deliveryList = Arrays.asList(
                 Shoppings.Delivery.builder()
@@ -75,16 +79,16 @@ public class ShoppingsSeeds {
                         .build());
         List<Shoppings.Invoice> invoiceList = Arrays.asList(
                 Shoppings.Invoice.builder()
-                        .itemIdentif("itemIdentif")
+                        //.itemIdentif("itemIdentif")
                         .orgAddress(Address.builder().build())
                         .organisation(Organisation.builder().build())
                         .person(Person.builder().build())
                         .personAddress(Address.builder().build())
-                        .quantity(faker.number().numberBetween(1L, 20L))
+                        //.quantity(faker.number().numberBetween(1L, 20L))
                         .build());
         List<Shoppings.Order> orderList = Arrays.asList(
                 Shoppings.Order.builder()
-                        .customerIdentif("customerIdentif")
+                        //.customerIdentif("customerIdentif")
                         .orderIdentif("orderIdentif")
                         .build());
 

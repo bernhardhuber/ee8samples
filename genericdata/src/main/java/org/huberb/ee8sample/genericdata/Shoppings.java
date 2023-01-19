@@ -116,7 +116,7 @@ public class Shoppings {
 
         @ElementCollection
         @CollectionTable(
-                name = "SHOPPING_ITEM",
+                name = "SHOPPING_CARD_ITEM",
                 joinColumns = @JoinColumn(name = "SHOPPING_ITEM_ID")
         )
         private List<ShoppingItem> shoppingItemList;
@@ -152,7 +152,7 @@ public class Shoppings {
         //---
         @ElementCollection
         @CollectionTable(
-                name = "SHOPPING_ITEM",
+                name = "INVOICE_SHOPPING_ITEM",
                 joinColumns = @JoinColumn(name = "SHOPPING_ITEM_ID")
         )
         private List<ShoppingItem> shoppingItemList;
@@ -189,7 +189,7 @@ public class Shoppings {
         //---
         @ElementCollection
         @CollectionTable(
-                name = "SHOPPING_ITEM",
+                name = "ORDER_SHOPPING_ITEM",
                 joinColumns = @JoinColumn(name = "SHOPPING_ITEM_ID")
         )
         private List<ShoppingItem> shoppingItemList;

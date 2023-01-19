@@ -15,8 +15,13 @@
  */
 package org.huberb.ee8sample.genericdata.persistence;
 
+import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import org.huberb.ee8sample.genericdata.Shoppings.ShoppingCard;
+import org.huberb.ee8sample.genericdata.Shoppings.StockItem;
+import org.huberb.ee8sample.genericdata.ShoppingsSeedings;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,52 +66,49 @@ public class EntityManagerTest {
     }
 
     @Test
-    public void testPersistCustomerEntity() {
+    public void testJpaBasics() {
         assertNotNull(this.entityManager);
         assertTrue(this.entityManager.isOpen());
         assertEquals(5, this.entityManager.getMetamodel().getEntities().size());
 
         this.entityManager.getTransaction().begin();
-
-//        final CustomerEntity c1 = CustomerEntity.builder()
-//                .customerID("customerID1FromC11")
-//                .companyName("companyName1FromC1")
-//                .build();
-//        this.entityManager.persist(c1);
-//        this.entityManager.flush();
-//        assertTrue(this.entityManager.contains(c1));
-//        final CustomerEntity c2 = this.entityManager.createQuery("from CustomerEntity", CustomerEntity.class).getSingleResult();
-//        assertNotNull(c2.getId());
-//        assertEquals(0, c2.getVersion());
-//        assertEquals("customerID1FromC11", c2.getCustomerID());
-//        assertEquals("companyName1FromC1", c2.getCompanyName());
-        this.entityManager.getTransaction().commit();
+        //---
+        this.entityManager.getTransaction().rollback();
     }
 
     @Test
-    public void testPersistOrderEntity() {
+    public void testShoppingSeedings() {
         assertNotNull(this.entityManager);
         assertTrue(this.entityManager.isOpen());
         assertEquals(5, this.entityManager.getMetamodel().getEntities().size());
 
         this.entityManager.getTransaction().begin();
-//        final OrderEntity o1 = OrderEntity.builder()
-//                .customerID("customerID1FromC1")
-//                .employeeID("employeeID1FromC1")
-//                .shipInfo(ShipInfoEmbeddable.builder()
-//                        .shipName("shipName1FromC1")
-//                        .build())
-//                .build();
-//        this.entityManager.persist(o1);
-//        this.entityManager.flush();
-//        assertTrue(this.entityManager.contains(o1));
-//        final OrderEntity c2 = this.entityManager.createQuery("from OrderEntity", OrderEntity.class).getSingleResult();
-//        assertNotNull(c2.getId());
-//        assertEquals(0, c2.getVersion());
-//        assertEquals("customerID1FromC1", c2.getCustomerID());
-//        assertEquals("employeeID1FromC1", c2.getEmployeeID());
-//        assertEquals("shipName1FromC1", c2.getShipInfo().getShipName());
-
+        //---
+        final ShoppingsSeedings shoppingsSeedings = new ShoppingsSeedings();
+        final Map<String, Object> map = shoppingsSeedings.seedItems(20, 5);
+        {
+            final List<StockItem> stockItemList = (List<StockItem>) map.get("stockItemList");
+            assertEquals(20, stockItemList.size());
+            for (int i = 0; i < stockItemList.size(); i += 1) {
+                StockItem stockItem = stockItemList.get(i);
+                this.entityManager.persist(stockItem);
+            }
+            final Number count = this.entityManager.createQuery("select count(e) from Shoppings$StockItem as e", Number.class)
+                    .getSingleResult();
+            assertEquals(stockItemList.size(), count.intValue());
+        }
+        {
+            final List<ShoppingCard> shoppingCardList = (List<ShoppingCard>) map.get("shoppingCardList");
+            assertEquals(5, shoppingCardList.size());
+            for (int i = 0; i < shoppingCardList.size(); i += 1) {
+                ShoppingCard shoppingCard = shoppingCardList.get(i);
+                this.entityManager.persist(shoppingCard);
+            }
+            final Number count = this.entityManager.createQuery("select count(e) from Shoppings$ShoppingCard as e", Number.class)
+                    .getSingleResult();
+            assertEquals(shoppingCardList.size(), count.intValue());
+        }
+        //---
         this.entityManager.getTransaction().rollback();
     }
 

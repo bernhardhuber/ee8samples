@@ -38,7 +38,7 @@ import org.huberb.ee8sample.genericdata.Shoppings.StockItem;
  */
 public class ShoppingsSeedings {
 
-    Map<String, Object> seedItems(int stockItemCount, int shoppingCardCount) {
+    public Map<String, Object> seedItems(int stockItemCount, int shoppingCardCount) {
         final Faker faker = Faker.instance(Locale.forLanguageTag("de-AT"));
 
         final List<StockItem> stockItemList = Stream.iterate(0, i -> i < stockItemCount, i -> i + 1)

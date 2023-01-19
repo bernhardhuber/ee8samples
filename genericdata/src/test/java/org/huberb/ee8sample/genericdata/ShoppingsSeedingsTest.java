@@ -42,7 +42,7 @@ public class ShoppingsSeedingsTest {
     @Test
     public void testSeedItems() {
         final Map<String, Object> map = instance.seedItems(20, 5);
-        System.out.printf("seedItems: %s%n", map);
+        //System.out.printf("seedItems: %s%n", map);
 
         assertNotNull(map);
         map.entrySet().forEach(e -> {

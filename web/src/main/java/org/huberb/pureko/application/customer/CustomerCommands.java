@@ -28,10 +28,10 @@ import javax.inject.Inject;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
-import org.huberb.pureko.application.support.persistence.AbstractPersistenceModel.QueryConsumers;
-import org.huberb.pureko.application.support.persistence.PersistenceModel;
 import org.huberb.pureko.application.support.RandomChoosing;
 import org.huberb.pureko.application.support.Transformers;
+import org.huberb.pureko.application.support.persistence.AbstractPersistenceModel.QueryConsumers;
+import org.huberb.pureko.application.support.persistence.PersistenceModel;
 
 /**
  * Customer CRUD Commands.
@@ -153,7 +153,6 @@ public class CustomerCommands {
                     customerTransforming.transformCustomerEntityToNewCustomer());
             return cd;
         }
-// 
 
     }
 

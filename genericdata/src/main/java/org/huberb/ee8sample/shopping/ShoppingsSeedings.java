@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.genericdata;
+package org.huberb.ee8sample.shopping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,13 +24,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
+import org.huberb.ee8sample.genericdata.Basics;
 import org.huberb.ee8sample.genericdata.Basics.Address;
 import org.huberb.ee8sample.genericdata.Basics.LoginUser;
 import org.huberb.ee8sample.genericdata.Basics.Name;
 import org.huberb.ee8sample.genericdata.Basics.Organisation;
 import org.huberb.ee8sample.genericdata.Basics.Person;
-import org.huberb.ee8sample.genericdata.Shoppings.Delivery.Status;
-import org.huberb.ee8sample.genericdata.Shoppings.StockItem;
+import org.huberb.ee8sample.shopping.Shoppings.Delivery.Status;
+import org.huberb.ee8sample.shopping.Shoppings.StockItem;
 
 /**
  *

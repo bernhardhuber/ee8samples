@@ -129,23 +129,17 @@ public class Filesystem {
         @EqualsAndHashCode(callSuper = true)
         public static class Directory extends AbstractFile {
 
-            public static Directory ROOT_DIRECTORY = new Directory("/", null);
+            public static String ROOT_DIRECTORY_NAME = "/";
+            public static Directory ROOT_DIRECTORY = null;
 
             private String name;
             private Directory parent;
             private List<AbstractFile> files;
 
             public Directory(String name) {
-                this(name, ROOT_DIRECTORY);
-            }
-
-            public Directory(String name, Directory parent) {
                 this.name = name;
-                this.parent = parent;
+                this.parent = null;
                 this.files = new ArrayList<>();
-                if (parent != null) {
-                    parent.add(this);
-                }
             }
 
             @Override

@@ -16,6 +16,7 @@
 package org.huberb.ee8sample.shopping;
 
 import java.util.Arrays;
+import org.huberb.ee8sample.fs.Filesystem.Files.Directory;
 import org.huberb.ee8sample.genericdata.Basics.Item;
 import org.huberb.ee8sample.genericdata.Basics.Name;
 import org.huberb.ee8sample.genericdata.Basics.Person;
@@ -37,8 +38,9 @@ public class ShoppingFilesystemTest {
     }
 
     @Test
-    public void hello() {
-        this.instance.addStockItems(instance.stockItemsDirectoriesRootDirectory,
+    public void helloStockItems() {
+        ShoppingFilesystem.StockItems xxx = new ShoppingFilesystem.StockItems();
+        xxx.addStockItems(instance.stockItemsDirectoriesRootDirectory,
                 Arrays.asList(
                         StockItem.builder()
                                 .item(Item.builder()
@@ -53,13 +55,31 @@ public class ShoppingFilesystemTest {
                                         .build())
                                 .build()
                 ));
-        this.instance.addPerson(Person.builder()
+
+        this.instance.dumpRootDirectory();
+    }
+
+    @Test
+    public void helloShoppingCard() {
+        ShoppingFilesystem.ShoppingCards xxx = new ShoppingFilesystem.ShoppingCards();
+        Directory shoppingCardDirectory_1 = xxx.createShoppingCardDirectory(instance.shoppingCardsRootDirectory, "Shopping_card_1");
+        Directory shoppingCardDirectory_2 = xxx.createShoppingCardDirectory(instance.shoppingCardsRootDirectory, "Shopping_card_2");
+        Directory shoppingCardDirectory = shoppingCardDirectory_1;
+        xxx.addPerson(shoppingCardDirectory, Person.builder()
                 .personName(Name.builder()
                         .firstName("firstName-1")
+                        .lastName("lastName-1")
+                        .build())
+                .build());
+        xxx.addPerson(shoppingCardDirectory, Person.builder()
+                .personName(Name.builder()
+                        .firstName("firstName-2")
+                        .lastName("lastName-2")
                         .build())
                 .build());
 
         this.instance.dumpRootDirectory();
+
     }
 
 }

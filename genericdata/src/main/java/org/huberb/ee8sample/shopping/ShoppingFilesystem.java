@@ -17,12 +17,16 @@ package org.huberb.ee8sample.shopping;
 
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.huberb.ee8sample.fs.Filesystem;
 import org.huberb.ee8sample.fs.Filesystem.Files.AbstractFile;
 import org.huberb.ee8sample.fs.Filesystem.Files.AbstractFile.FileType;
 import org.huberb.ee8sample.fs.Filesystem.Files.Directory;
 import org.huberb.ee8sample.fs.Filesystem.Files.RegularPayload;
+import org.huberb.ee8sample.genericdata.Basics.LoginUser;
 import org.huberb.ee8sample.genericdata.Basics.Person;
+import org.huberb.ee8sample.shopping.Shoppings.ShoppingItem;
 import org.huberb.ee8sample.shopping.Shoppings.StockItem;
 
 /**
@@ -31,36 +35,110 @@ import org.huberb.ee8sample.shopping.Shoppings.StockItem;
  */
 public class ShoppingFilesystem {
 
-    Directory rootDirectory = Filesystem.Files.Directory.ROOT_DIRECTORY;
-    Directory stockItemsDirectoriesRootDirectory = new Directory("StockItems", rootDirectory);
-    Directory personsRootDirectory = new Directory("Persons");
-    Directory loggedInUserRootDirectory = new Directory("LoggedInUsers");
+    Directory rootDirectory = new Directory(Filesystem.Files.Directory.ROOT_DIRECTORY_NAME);
+    Directory stockItemsDirectoriesRootDirectory = createDirectory(rootDirectory, "StockItems");
+    Directory shoppingCardsRootDirectory = createDirectory(rootDirectory, "ShoppingCards");
+    Directory loggedInUserRootDirectory = createDirectory(rootDirectory, "LoggedInUsers");
 
-    Directory createStockItemsDirectory(String n) {
-        final Directory d = new Directory(n, stockItemsDirectoriesRootDirectory);
-        stockItemsDirectoriesRootDirectory.add(d);
+    static Directory createDirectory(Directory baseDir, String dirName) {
+        final Directory d = new Directory(dirName);
+        baseDir.add(d);
         return d;
     }
 
-    Directory addStockItems(Directory stockItemsParent, List<StockItem> l) {
-        for (StockItem stockItem : l) {
-            RegularPayload<StockItem> rp = new RegularPayload<>(stockItem.getItem().getItemCode(), stockItemsParent, stockItem);
-            stockItemsParent.add(rp);
+    static <T> RegularPayload<T> createFile(Directory baseDir, String tname, T t) {
+        final RegularPayload<T> rp = new RegularPayload<>(tname, baseDir, t);
+        baseDir.add(rp);
+        return rp;
+    }
+
+    static class StockItems {
+
+        Directory createStockItemsDirectory(Directory baseDir, String dirName) {
+            final Directory d = createDirectory(baseDir, dirName);
+            return d;
         }
-        return stockItemsParent;
+
+        Directory addStockItems(Directory stockItemsParent, List<StockItem> l) {
+            for (StockItem stockItem : l) {
+                RegularPayload<StockItem> rp = createFile(stockItemsParent, stockItem.getItem().getItemCode(), stockItem);
+                stockItemsParent.add(rp);
+            }
+            return stockItemsParent;
+        }
     }
 
-    RegularPayload<Person> addPerson(Person person) {
-        RegularPayload<Person> f = new RegularPayload<>(person.getPersonName().toString(), personsRootDirectory, person);
-        personsRootDirectory.add(f);
-        return f;
+    static class ShoppingCards {
+
+        static Function<Directory, List<AbstractFile>> f(String prefix) {
+            return (baseDir) -> {
+                List<AbstractFile> afList = baseDir.getFiles().stream()
+                        .filter((f) -> f.getFileType() == FileType.regular)
+                        .filter((f) -> f.getName().startsWith(prefix))
+                        .collect(Collectors.toList());
+                return afList;
+            };
+        }
+
+        static Function<Directory, List<AbstractFile>> d(String prefix) {
+            return (baseDir) -> {
+                List<AbstractFile> afList = baseDir.getFiles().stream()
+                        .filter((f) -> f.getFileType() == FileType.directory)
+                        .filter((f) -> f.getName().startsWith(prefix))
+                        .collect(Collectors.toList());
+                return afList;
+            };
+        }
+
+        Directory createShoppingCardDirectory(Directory baseDir, String shoppingCardName) {
+            Directory shoppingCardDirectory = createDirectory(baseDir, shoppingCardName);
+            return shoppingCardDirectory;
+        }
+
+        RegularPayload<Person> addPerson(Directory baseDir, Person person) {
+            List<AbstractFile> afPersonList = f("person_").apply(baseDir);
+            for (AbstractFile af : afPersonList) {
+                baseDir.getFiles().remove(af);
+            }
+
+            String personFilename = "person_" + person.getPersonName().getFirstName() + "_" + person.getPersonName().getLastName();
+            RegularPayload<Person> f = createFile(baseDir, personFilename, person);
+            return f;
+        }
+
+        RegularPayload<LoginUser> addLoginUser(Directory baseDir, LoginUser lu) {
+            List<AbstractFile> afPersonList = f("loging_user_").apply(baseDir);
+            for (AbstractFile af : afPersonList) {
+                baseDir.getFiles().remove(af);
+            }
+            String loginUserFilename = "loging_user_" + lu.getUserName();
+            RegularPayload<LoginUser> f = createFile(baseDir, loginUserFilename, lu);
+            return f;
+        }
+
+        void addShoppingItems(Directory baseDir, List<ShoppingItem> shoppingItems) {
+            Directory shoppingItemsDir;
+            List<AbstractFile> afList = d("ShoppingItems").apply(baseDir);
+            if (afList.isEmpty()) {
+                shoppingItemsDir = createDirectory(baseDir, "ShoppingItems");
+            } else {
+                shoppingItemsDir = (Directory) afList.get(0);
+            }
+            for (ShoppingItem shoppingItem : shoppingItems) {
+                String shoppingItemFilename = "shoppingItem_" + shoppingItem.getItem().getItemCode();
+                createFile(baseDir, shoppingItemFilename, shoppingItem);
+            }
+        }
     }
 
-    void addLoggedInUser() {
+    static class LoggedInUsers {
 
-    }
+        void addLoggedInUser() {
 
-    void removeLoggedInUser() {
+        }
+
+        void removeLoggedInUser() {
+        }
     }
 
     void dumpRootDirectory() {

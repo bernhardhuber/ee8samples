@@ -19,6 +19,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -34,6 +35,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 /**
+ * Wrappers for sending emails using {@link javax.mail} API.
  *
  * @author berni3
  */
@@ -308,6 +310,17 @@ public class MailsF {
                 };
             }
 
+            static Consumer<MimeMessage> sentDate(Date d) {
+                return msg -> {
+                    try {
+                        msg.setSentDate(d);
+                    } catch (MessagingException ex) {
+                        String m = String.format("set sentDate [%tc]", d);
+                        throw new RuntimeException(m, ex);
+                    }
+                };
+            }
+
             static Consumer<MimeMessage> text(String text) {
                 return msg -> {
                     try {
@@ -398,45 +411,50 @@ public class MailsF {
         }
     }
 
+    /**
+     * Define a recipient by its {@link RecipientType} and list of
+     * {@link InternetAddress} sharing the same {@link RecipientType}.
+     *
+     */
     static class Recipient {
 
-        RecipientType rt;
-        final List<InternetAddress> iaList = new ArrayList<>();
+        private RecipientType rt;
+        private final List<InternetAddress> iaList = new ArrayList<>();
 
         public RecipientType getRt() {
             return rt;
         }
 
-        public InternetAddress[] getIaAsArray() {
+        public InternetAddress[] getInternetAddressAsArray() {
             return iaList.toArray(InternetAddress[]::new);
         }
 
-        public List<InternetAddress> getIa() {
+        public List<InternetAddress> getInternetAddress() {
             return iaList;
         }
 
-        static class RecipientBuilder {
+        public static class RecipientBuilder {
 
-            Recipient recipient = new Recipient();
+            private Recipient recipient = new Recipient();
 
-            RecipientBuilder addAddress(RecipientType rt, List<InternetAddress> ia) {
+            public RecipientBuilder addAddress(RecipientType rt, List<InternetAddress> ia) {
                 this.recipient.rt = rt;
                 this.recipient.iaList.addAll(ia);
                 return this;
             }
 
-            RecipientBuilder recipientType(RecipientType rt) {
+            public RecipientBuilder recipientType(RecipientType rt) {
                 this.recipient.rt = rt;
                 return this;
             }
 
-            RecipientBuilder addAddress(InternetAddress ia) {
+            public RecipientBuilder addAddress(InternetAddress ia) {
                 this.recipient.iaList.add(ia);
                 ;
                 return this;
             }
 
-            Recipient build() {
+            public Recipient build() {
                 return this.recipient;
             }
         }

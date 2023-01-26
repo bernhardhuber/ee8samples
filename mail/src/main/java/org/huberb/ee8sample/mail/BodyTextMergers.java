@@ -25,6 +25,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 /**
+ * Some very simple text template mergers.
  *
  * @author berni3
  */
@@ -72,24 +73,45 @@ public class BodyTextMergers {
          * @return
          */
         public static Consumer<MimeMessage> assignBodyText(Locale locale, String template, Object[] args) {
-            final StringFormatBodyMerger merger = new StringFormatBodyMerger();
+            final StringFormatBodyMerger merger = new StringFormatBodyMerger(locale);
             final String bodyText = merger.merge(template, args);
             return BodyTextMergers.assignBodyText(bodyText);
         }
         private final Locale locale;
 
+        /**
+         * Create instance with locale {@link Locale#getDefault()}.
+         */
         public StringFormatBodyMerger() {
             this(Locale.getDefault());
         }
 
+        /**
+         * Create instance with given {@link Locale} instance.
+         *
+         * @param l
+         */
         public StringFormatBodyMerger(Locale l) {
             this.locale = l;
         }
 
-        public String merge(String template, Object[] args) {
+        /**
+         * Merge template with given arguments.
+         *
+         * @param template the template
+         * @param arguments the arguments for the template
+         * @return formatted {@link String}
+         * @throws IllegalArgumentException if
+         * {@link String#format(java.util.Locale, java.lang.String, java.lang.Object...)}
+         * fails.
+         *
+         * @see String#format(java.util.Locale, java.lang.String,
+         * java.lang.Object...)
+         */
+        public String merge(String template, Object[] arguments) {
             // TODO how to handle IllegalArgumentException?
             // maybe thrown by String#format
-            final String result = String.format(locale, template, args);
+            final String result = String.format(locale, template, arguments);
             return result;
         }
     }
@@ -126,6 +148,15 @@ public class BodyTextMergers {
 
         }
 
+        /**
+         * Merge template with given arguments represented as {@link Map}.
+         *
+         * @param template
+         * @param m
+         * @return
+         *
+         * @throws RuntimeException if merge fails.
+         */
         public String merge(String template, Map<String, Object> m) {
             try {
                 return process(template, m);

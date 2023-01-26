@@ -104,7 +104,8 @@ public class ShoppingsSeedings {
                         .orderIdentif("orderIdentif")
                         .build());
 
-        Map<String, Object> m = new HashMap<>() {
+        // TODO replace by ShoppingFilesystem ???
+        final Map<String, Object> m = new HashMap<>() {
             {
                 put("stockItemList", stockItemList);
                 put("shoppingCardList", shoppingCardList);

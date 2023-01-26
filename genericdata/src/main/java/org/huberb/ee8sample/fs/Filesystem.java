@@ -19,10 +19,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.huberb.ee8sample.fs.Filesystem.Files.AbstractFile.FileType;
 
 /**
  *
@@ -139,7 +141,7 @@ public class Filesystem {
             public Directory(String name) {
                 this.name = name;
                 this.parent = null;
-                this.files = new ArrayList<>();
+                this.files = new ArrayList<>(5);
             }
 
             @Override
@@ -212,6 +214,37 @@ public class Filesystem {
 
             public T getPayload() {
                 return payload;
+            }
+        }
+
+        public static class Commands {
+
+            public static Directory createDirectory(Directory baseDir, String dirName) {
+                final Directory d = new Directory(dirName);
+                baseDir.add(d);
+                return d;
+            }
+
+            public static <T> RegularPayload<T> createFile(Directory baseDir, String tname, T t) {
+                final RegularPayload<T> rp = new RegularPayload<>(tname, baseDir, t);
+                baseDir.add(rp);
+                return rp;
+            }
+
+            public static List<AbstractFile> findRegularFilesByPrefix(Directory baseDir, String prefix) {
+                final List<AbstractFile> afList = baseDir.getFiles().stream()
+                        .filter((f) -> f.getFileType() == FileType.regular)
+                        .filter((f) -> f.getName().startsWith(prefix))
+                        .collect(Collectors.toList());
+                return afList;
+            }
+
+            public static List<AbstractFile> findDirsByPrefix(Directory baseDir, String prefix) {
+                final List<AbstractFile> afList = baseDir.getFiles().stream()
+                        .filter((f) -> f.getFileType() == FileType.directory)
+                        .filter((f) -> f.getName().startsWith(prefix))
+                        .collect(Collectors.toList());
+                return afList;
             }
         }
 

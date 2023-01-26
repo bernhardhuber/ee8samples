@@ -20,6 +20,7 @@ import org.huberb.ee8sample.fs.Filesystem.Files.Directory;
 import org.huberb.ee8sample.genericdata.Basics.Item;
 import org.huberb.ee8sample.genericdata.Basics.Name;
 import org.huberb.ee8sample.genericdata.Basics.Person;
+import org.huberb.ee8sample.shopping.ShoppingFilesystem.SupportCommands;
 import org.huberb.ee8sample.shopping.Shoppings.StockItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,7 @@ public class ShoppingFilesystemTest {
                                 .build()
                 ));
 
-        this.instance.dumpRootDirectory();
+        SupportCommands.dumpDirectory(instance.rootDirectory);
     }
 
     @Test
@@ -78,7 +79,7 @@ public class ShoppingFilesystemTest {
                         .build())
                 .build());
 
-        this.instance.dumpRootDirectory();
+        SupportCommands.dumpDirectory(instance.rootDirectory);
 
     }
 

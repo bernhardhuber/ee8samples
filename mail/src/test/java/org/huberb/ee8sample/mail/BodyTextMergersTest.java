@@ -29,6 +29,7 @@ import javax.mail.internet.MimeMessage;
 import org.huberb.ee8sample.mail.BodyTextMergers.SimpleSubstitutionBodyMerger;
 import org.huberb.ee8sample.mail.BodyTextMergers.StringFormatBodyMerger;
 import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
+import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -56,7 +57,7 @@ public class BodyTextMergersTest {
     MimeMessage createAMimeMessage() throws MessagingException, IOException {
 
         MimeMessageF messageF = new MimeMessageF(session);
-        Consumer<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
+        ConsumerThrowingMessagingException<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
                 .andThen(MimeMessageF.Consumers.recipient(RecipientType.TO, "me@localhost"))
                 .andThen(MimeMessageF.Consumers.subject("subject"))
                 .andThen(MimeMessageF.Consumers.text("text"));

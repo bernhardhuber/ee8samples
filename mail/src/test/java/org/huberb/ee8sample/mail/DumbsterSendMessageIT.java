@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Consumer;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
@@ -30,6 +29,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
+import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -116,7 +116,7 @@ public class DumbsterSendMessageIT {
             String subject,
             String body) throws MessagingException {
 
-        Consumer<MimeMessage> c = MimeMessageF.Consumers.from(from)
+        ConsumerThrowingMessagingException<MimeMessage> c = MimeMessageF.Consumers.from(from)
                 .andThen(MimeMessageF.Consumers.recipient(RecipientType.TO, to))
                 .andThen(MimeMessageF.Consumers.subject(subject))
                 .andThen(MimeMessageF.Consumers.sentDate(new Date()))
@@ -133,7 +133,7 @@ public class DumbsterSendMessageIT {
             String subject,
             String body) throws MessagingException {
 
-        Consumer<MimeMessage> c = (MimeMessage msg) -> {
+        ConsumerThrowingMessagingException<MimeMessage> c = (MimeMessage msg) -> {
             try {
                 msg.setFrom(new InternetAddress(from));
                 msg.setSubject(subject);

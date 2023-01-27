@@ -18,7 +18,6 @@ package org.huberb.ee8sample.mail;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
@@ -33,6 +32,7 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 
 /**
  * Wrappers for sending emails using {@link javax.mail} API.
@@ -184,54 +184,37 @@ public class MailsF {
             return transport -> transport.isConnected();
         }
 
-        void consume(Consumer<Transport> c) {
+        void consume(ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
             c.accept(this.transport);
         }
 
-        static class Cosumers {
+        static class Consumers {
 
-            static Consumer<Transport> connect() {
-                return transport -> {
-                    try {
-                        transport.connect();
-                    } catch (MessagingException ex) {
-                        String m = "connect";
-                        throw new RuntimeException(m, ex);
-                    }
-                };
+            static void whithConnected(Transport transport, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
+                try {
+                    transport.connect();
+                    c.accept(transport);
+                } finally {
+                    transport.close();
+                }
             }
 
-            static Consumer<Transport> connect(String u, String p) {
-                return transport -> {
-                    try {
-                        transport.connect(u, p);
-                    } catch (MessagingException ex) {
-                        String m = String.format("connect user [%s], urlname [%s]", u, transport.getURLName());
-                        throw new RuntimeException(m, ex);
-                    }
-                };
+            static void connect(Transport transport, String u, String p, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
+                try {
+                    transport.connect(u, p);
+                    c.accept(transport);
+                } finally {
+                    transport.close();
+                }
             }
 
-            static Consumer<Transport> connect(String host, String u, String p) {
-                return transport -> {
-                    try {
-                        transport.connect(host, u, p);
-                    } catch (MessagingException ex) {
-                        String m = String.format("connect host [%s], user [%s], urlname [%s]", host, u, transport.getURLName());
-                        throw new RuntimeException(m, ex);
-                    }
-                };
-            }
-
-            static Consumer<Transport> connect(String host, int port, String u, String p) {
-                return transport -> {
-                    try {
-                        transport.connect(host, port, u, p);
-                    } catch (MessagingException ex) {
-                        String m = String.format("connect host [%s], port [%d], user [%s], urlname [%s]", host, port, u, transport.getURLName());
-                        throw new RuntimeException(m, ex);
-                    }
-                };
+            static void connect(Transport transport, String host, int port, String u, String p, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
+                try {
+                    transport.connect(host, port, u, p);
+                    c.accept(transport);
+                } finally {
+                    transport.close();
+                }
             }
         }
     }
@@ -252,83 +235,53 @@ public class MailsF {
             return this.mimeMesssage;
         }
 
-        public void consume(Consumer<MimeMessage> c) {
+        public void consume(ConsumerThrowingMessagingException<MimeMessage> c) throws MessagingException {
             c.accept(this.mimeMesssage);
         }
 
         static class Consumers {
 
-            static Consumer<MimeMessage> from(String address) {
+            static ConsumerThrowingMessagingException<MimeMessage> from(String address) {
                 return msg -> {
-                    try {
-                        msg.setFrom(address);
-                    } catch (MessagingException ex) {
-                        String m = String.format("set from address [%s]", address);
-                        throw new RuntimeException(m, ex);
-                    }
+                    msg.setFrom(address);
                 };
             }
 
-            static Consumer<MimeMessage> recipient(RecipientType rt, String address) {
+            static ConsumerThrowingMessagingException<MimeMessage> recipient(RecipientType rt, String address) {
                 return msg -> {
-                    try {
-                        msg.setRecipients(rt, address);
-                    } catch (MessagingException ex) {
-                        String m = String.format("set recipient type [%s], addresses %s", rt, address);
-                        throw new RuntimeException(m, ex);
-                    }
+                    msg.setRecipients(rt, address);
                 };
             }
 
-            static Consumer<MimeMessage> recipient(RecipientType rt, Address address) {
+            static ConsumerThrowingMessagingException<MimeMessage> recipient(RecipientType rt, Address address) {
                 return recipients(rt, new Address[]{address});
             }
 
-            static Consumer<MimeMessage> recipients(RecipientType rt, Address[] addresses) {
+            static ConsumerThrowingMessagingException<MimeMessage> recipients(RecipientType rt, Address[] addresses) {
                 return msg -> {
-                    try {
-                        msg.setRecipients(rt, addresses);
-                    } catch (MessagingException ex) {
-                        String m = String.format("set recipient type [%s], addresseses %s", rt, Arrays.toString(addresses));
-                        throw new RuntimeException(m, ex);
-                    }
+                    msg.setRecipients(rt, addresses);
                 };
             }
 
-            static Consumer<MimeMessage> subject(String subject) {
+            static ConsumerThrowingMessagingException<MimeMessage> subject(String subject) {
                 return subject(subject, null);
             }
 
-            static Consumer<MimeMessage> subject(String subject, String charset) {
+            static ConsumerThrowingMessagingException<MimeMessage> subject(String subject, String charset) {
                 return msg -> {
-                    try {
-                        msg.setSubject(subject, charset);
-                    } catch (MessagingException ex) {
-                        String m = String.format("set subject [%s]", subject);
-                        throw new RuntimeException(m, ex);
-                    }
+                    msg.setSubject(subject, charset);
                 };
             }
 
-            static Consumer<MimeMessage> sentDate(Date d) {
+            static ConsumerThrowingMessagingException<MimeMessage> sentDate(Date d) {
                 return msg -> {
-                    try {
-                        msg.setSentDate(d);
-                    } catch (MessagingException ex) {
-                        String m = String.format("set sentDate [%tc]", d);
-                        throw new RuntimeException(m, ex);
-                    }
+                    msg.setSentDate(d);
                 };
             }
 
-            static Consumer<MimeMessage> text(String text) {
+            static ConsumerThrowingMessagingException<MimeMessage> text(String text) {
                 return msg -> {
-                    try {
-                        msg.setText(text);
-                    } catch (MessagingException ex) {
-                        String m = String.format("set text [%s]", text);
-                        throw new RuntimeException(m, ex);
-                    }
+                    msg.setText(text);
                 };
             }
         }

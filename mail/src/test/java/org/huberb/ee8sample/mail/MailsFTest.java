@@ -16,7 +16,6 @@
 package org.huberb.ee8sample.mail;
 
 import java.util.Properties;
-import java.util.function.Consumer;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
@@ -28,6 +27,7 @@ import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilderTraditional;
 import org.huberb.ee8sample.mail.MailsF.InternetAddressF;
 import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
 import org.huberb.ee8sample.mail.MailsF.SessionTransportF;
+import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +54,7 @@ public class MailsFTest {
         assertNotNull(session);
 
         MimeMessageF messageF = new MimeMessageF(session);
-        Consumer<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
+        ConsumerThrowingMessagingException<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
                 .andThen(MimeMessageF.Consumers.recipient(RecipientType.TO, "me@localhost"))
                 .andThen(MimeMessageF.Consumers.subject("subject"))
                 .andThen(MimeMessageF.Consumers.text("text"));
@@ -85,7 +85,7 @@ public class MailsFTest {
         };
 
         MimeMessageF messageF = SessionTransportF.MimeMessages.mimeMessageF().apply(session);
-        Consumer<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
+        ConsumerThrowingMessagingException<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
                 .andThen(MimeMessageF.Consumers.recipient(RecipientType.TO, "me@localhost"))
                 .andThen(MimeMessageF.Consumers.recipient(RecipientType.CC, addressFaddress))
                 .andThen(MimeMessageF.Consumers.recipients(RecipientType.BCC, addresses))

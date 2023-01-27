@@ -27,7 +27,6 @@ import org.huberb.ee8sample.mail.MailsF.SessionTransportF;
 import org.huberb.ee8sample.mail.MailsF.TransportF;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,8 +48,10 @@ public class DumbsterConnectIT {
             try (Transport transport = new SessionTransportF(session).provide(SessionTransportF.Transports.transport())) {
                 assertFalse(transport.isConnected());
                 TransportF transportF = new TransportF(transport);
-                transportF.consume(TransportF.Cosumers.connect());
-                assertTrue(transport.isConnected());
+                TransportF.Consumers.whithConnected(transport,
+                        (t) -> {
+                            assertTrue(transport.isConnected());
+                        });
             }
         }
 
@@ -64,21 +65,22 @@ public class DumbsterConnectIT {
                     .build();
             dumbster.stop();
 
-            RuntimeException rtex = Assertions.assertThrows(RuntimeException.class,
+            MessagingException rtex = Assertions.assertThrows(MessagingException.class,
                     () -> {
                         try (Transport transport = new SessionTransportF(session).provide(SessionTransportF.Transports.transport())) {
                             assertFalse(transport.isConnected());
                             TransportF transportF = new TransportF(transport);
-                            transportF.consume(TransportF.Cosumers.connect());
+                            TransportF.Consumers.whithConnected(transport,
+                                    (t) -> {
+                                    });
                             assertFalse(transport.isConnected());
                         }
                     });
             assertNotNull(rtex);
             assertAll(
-                    () -> assertEquals("connect", rtex.getMessage()),
                     () -> {
                         Pattern exMessagePattern = Pattern.compile("Couldn't connect to host, port: localhost, [0-9]+; timeout -1");
-                        String exMessage = rtex.getCause().getMessage();
+                        String exMessage = rtex.getMessage();
                         Matcher matcher = exMessagePattern.matcher(exMessage);
                         String m = String.format("pattern: '%s'%n"
                                 + "exception message: '%s'%n", exMessagePattern, exMessage);

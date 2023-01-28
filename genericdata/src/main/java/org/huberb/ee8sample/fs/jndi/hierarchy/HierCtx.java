@@ -76,6 +76,8 @@ public class HierCtx implements Context {
         return testRoot;
     }
      */
+
+ /*
     public static void main(String[] args) {
         try {
             Context ctx = new HierCtx(null);
@@ -94,11 +96,11 @@ public class HierCtx implements Context {
             e.printStackTrace();
         }
     }
-
-    protected Hashtable myEnv;
-    protected Hashtable bindings = new Hashtable(11);
-    protected HierCtx parent = null;
-    protected String myAtomicName = null;
+     */
+    private Hashtable myEnv;
+    private Hashtable bindings = new Hashtable(11);
+    private HierCtx parent = null;
+    private String myAtomicName = null;
 
     HierCtx(Hashtable inEnv) {
         myEnv = (inEnv != null)
@@ -126,7 +128,7 @@ public class HierCtx implements Context {
      * Utility method for processing composite/compound name.
      *
      * @param name The non-null composite or compound name to process.
-     * @return The non-null string name in this namespace to be processed.
+     * @return The non-null string name in this name space to be processed.
      * @throws javax.naming.NamingException
      */
     protected Name getMyComponents(Name name) throws NamingException {

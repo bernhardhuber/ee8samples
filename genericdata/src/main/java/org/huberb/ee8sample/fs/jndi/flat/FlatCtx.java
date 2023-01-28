@@ -30,11 +30,8 @@
  * maintenance of any nuclear facility. Licensee represents and warrants
  * that it will not use or redistribute the Software for such purposes.  
  */
-//package examples;
 package org.huberb.ee8sample.fs.jndi.flat;
 
-//import java.util.*;
-//import javax.naming.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.NoSuchElementException;
@@ -56,10 +53,11 @@ import javax.naming.OperationNotSupportedException;
  * A sample service provider that implements a flat namespace in memory.
  */
 class FlatCtx implements Context {
+
     protected static final NameParser myParser = new FlatNameParser();
 
-    protected Hashtable myEnv;
-    protected Hashtable bindings = new Hashtable(11);
+    private Hashtable myEnv;
+    private Hashtable bindings = new Hashtable(11);
 
     FlatCtx(Hashtable inEnv) {
         myEnv = (inEnv != null)
@@ -80,13 +78,12 @@ class FlatCtx implements Context {
      * Utility method for processing composite/compound name.
      *
      * @param name The non-null composite or compound name to process.
-     * @return The non-null string name in this namespace to be processed.
+     * @return The non-null string name in this name space to be processed.
      */
     protected String getMyComponents(Name name) throws NamingException {
         if (name instanceof CompositeName) {
             if (name.size() > 1) {
-                throw new InvalidNameException(name.toString()
-                        + " has more components than namespace can handle");
+                throw new InvalidNameException(name.toString() + " has more components than namespace can handle");
             }
             return name.get(0);
         } else {
@@ -179,10 +176,12 @@ class FlatCtx implements Context {
         bindings.remove(nm);
     }
 
+    @Override
     public void rename(String oldname, String newname) throws NamingException {
         rename(new CompositeName(oldname), new CompositeName(newname));
     }
 
+    @Override
     public void rename(Name oldname, Name newname) throws NamingException {
         if (oldname.isEmpty() || newname.isEmpty()) {
             throw new InvalidNameException("Cannot rename empty name");
@@ -207,10 +206,12 @@ class FlatCtx implements Context {
         bindings.put(newnm, oldBinding);
     }
 
+    @Override
     public NamingEnumeration list(String name) throws NamingException {
         return list(new CompositeName(name));
     }
 
+    @Override
     public NamingEnumeration list(Name name) throws NamingException {
         if (name.isEmpty()) {
             // listing this context
@@ -231,7 +232,7 @@ class FlatCtx implements Context {
 
     @Override
     public NamingEnumeration listBindings(String name) throws NamingException {
-        return listBindings(name);
+        return listBindings(new CompositeName(name));
     }
 
     @Override
@@ -260,8 +261,7 @@ class FlatCtx implements Context {
 
     @Override
     public void destroySubcontext(Name name) throws NamingException {
-        throw new OperationNotSupportedException(
-                "FlatCtx does not support subcontexts");
+        throw new OperationNotSupportedException("FlatCtx does not support subcontexts");
     }
 
     @Override
@@ -271,8 +271,7 @@ class FlatCtx implements Context {
 
     @Override
     public Context createSubcontext(Name name) throws NamingException {
-        throw new OperationNotSupportedException(
-                "FlatCtx does not support subcontexts");
+        throw new OperationNotSupportedException("FlatCtx does not support subcontexts");
     }
 
     @Override

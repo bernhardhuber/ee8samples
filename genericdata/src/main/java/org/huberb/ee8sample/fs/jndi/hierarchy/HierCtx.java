@@ -51,7 +51,8 @@ import javax.naming.OperationNotSupportedException;
 import javax.naming.spi.NamingManager;
 
 /**
- * A sample service provider that implements a hierarchical namespace in memory.
+ * A sample service provider that implements a hierarchical name space in
+ * memory.
  */
 public class HierCtx implements Context {
 
@@ -66,18 +67,18 @@ public class HierCtx implements Context {
         this(null, null, inEnv, new Hashtable(11));
     }
 
-    protected HierCtx(HierCtx parent, String name,
+    private HierCtx(HierCtx parent, String name,
             Hashtable inEnv,
             Hashtable bindings) {
         myEnv = (inEnv != null)
                 ? (Hashtable) (inEnv.clone())
                 : null;
         this.parent = parent;
-        myAtomicName = name;
+        this.myAtomicName = name;
         this.bindings = (Hashtable) bindings.clone();
     }
 
-    protected Context createCtx(HierCtx parent, String name, Hashtable inEnv) {
+    private Context createCtx(HierCtx parent, String name, Hashtable inEnv) {
         return new HierCtx(parent, name, inEnv, new Hashtable(11));
     }
 

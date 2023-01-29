@@ -56,7 +56,7 @@ import javax.naming.OperationNotSupportedException;
 /**
  * A sample service provider that implements a flat name space in memory.
  */
-class FlatCtx implements Context {
+public class FlatCtx implements Context {
 
     protected static final NameParser myParser = new FlatNameParser();
 
@@ -75,7 +75,9 @@ class FlatCtx implements Context {
     }
 
     private FlatCtx cloneCtx() {
-        return new FlatCtx(myEnv, bindings);
+        final Map<String, Object> clonedBinding = new HashMap<String, Object>();
+        clonedBinding.putAll(this.bindings);
+        return new FlatCtx(myEnv, clonedBinding);
     }
 
     /**

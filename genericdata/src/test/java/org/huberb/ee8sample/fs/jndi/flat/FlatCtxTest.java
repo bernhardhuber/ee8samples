@@ -45,13 +45,21 @@ public class FlatCtxTest {
     }
 
     @Test
-    public void hello1() throws NamingException {
+    public void testLookup() throws NamingException {
         assertEquals("A1", flatCtx.lookup("a"));
         assertEquals(10, flatCtx.lookup("b"));
     }
 
     @Test
-    public void hello2() throws NamingException {
+    public void testLookupFs() throws NamingException {
+        String a = LookupFs.lookup(flatCtx, "a", String.class);
+        assertEquals("A1", a);
+        Integer b = LookupFs.lookup(flatCtx, "b", Integer.class);
+        assertEquals(10, b);
+    }
+
+    @Test
+    public void testList() throws NamingException {
         assertAll(
                 () -> assertTrue(flatCtx.list("").hasMore()),
                 () -> assertTrue(flatCtx.list("").hasMoreElements())
@@ -65,7 +73,7 @@ public class FlatCtxTest {
     }
 
     @Test
-    public void hello3() throws NamingException {
+    public void testListBinding() throws NamingException {
         assertAll(
                 () -> assertTrue(flatCtx.listBindings("").hasMore()),
                 () -> assertTrue(flatCtx.listBindings("").hasMoreElements())
@@ -80,8 +88,12 @@ public class FlatCtxTest {
     }
 
     @Test
-    public void hello4() throws NamingException {
+    public void testEnvironment() throws NamingException {
         assertTrue(flatCtx.getEnvironment().isEmpty());
+    }
+
+    @Test
+    public void testNamespace() throws NamingException {
         assertEquals("", flatCtx.getNameInNamespace());
     }
 }

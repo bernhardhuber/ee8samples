@@ -15,11 +15,16 @@
  */
 package org.huberb.ee8sample.fs.jndi.hierarchysearch;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiFunction;
 import javax.naming.Context;
-import javax.naming.NamingEnumeration;
+import javax.naming.NameClassPair;
 import javax.naming.NamingException;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
+import javax.naming.directory.SearchResult;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -28,37 +33,73 @@ import org.junit.jupiter.api.Test;
  */
 public class HierDirCtxTest {
 
-    public HierDirCtxTest() {
+    static DirContext createDirContext() throws NamingException {
+        final DirContext ctx = new HierDirCtx(null);
+
+        final BasicAttributes baA = new BasicAttributes() {
+            {
+                put("attrID1", "attrID1Value");
+                put("fact", "the letter A");
+            }
+        };
+        final DirContext a = ctx.createSubcontext("a", baA);
+        a.bind("a1", "A");
+
+        final DirContext b = ctx.createSubcontext("b", new BasicAttributes("fact", "the letter B"));
+        b.bind("b1", "B");
+
+        final Context c = b.createSubcontext("c");
+        c.bind("c1", "C1");
+
+        return ctx;
     }
 
     @Test
     public void hello1() throws NamingException {
+        final DirContext ctx = createDirContext();
+        Context c = (Context) ctx.lookup("b.c");
+        assertEquals("b.c", c.getNameInNamespace());
 
-        DirContext ctx = new HierDirCtx(null);
+        assertEquals(1, ctx.getAttributes("a").get("fact").size());
+        assertEquals("fact", ctx.getAttributes("a").get("fact").getID());
+        assertEquals("the letter A", ctx.getAttributes("a").get("fact").get());
+    }
 
-        DirContext a = ctx.createSubcontext("a", new BasicAttributes("fact", "the letter A"));
-        a.bind("a1", "A");
-        DirContext b = ctx.createSubcontext("b", new BasicAttributes("fact", "the letter B"));
-        b.bind("b1", "B");
-        Context c = b.createSubcontext("c");
-        c.bind("c1", "C1");
+    @Test
+    public void hello2() throws NamingException {
+        final DirContext ctx = createDirContext();
+        final List<NameClassPair> l = new ArrayList<>();
+        ctx.list("").asIterator()
+                .forEachRemaining(ncp -> {
+                    l.add(ncp);
+                });
+        final BiFunction< List<NameClassPair>, String, String> matching = (ncpl, s) -> ncpl.stream()
+                .filter(ncp -> ncp.getName().equals(s))
+                .findFirst().get()
+                .getName();
+        final BiFunction< List<NameClassPair>, String, Boolean> missing = (ncpl, s) -> ncpl.stream()
+                .filter(ncp -> ncp.getName().equals(s))
+                .findFirst().isEmpty();
 
-        System.out.println("c's full name: " + c.getNameInNamespace());
-        System.out.println("attributes of a: " + ctx.getAttributes("a"));
+        assertEquals("a", matching.apply(l, "a"));
+        assertEquals("b", matching.apply(l, "b"));
+        assertEquals(true, missing.apply(l, "c"));
+    }
 
-        System.out.println("list: ");
-        NamingEnumeration enumE = ctx.list("");
-        while (enumE.hasMore()) {
-            System.out.println(enumE.next());
-        }
+    @Test
+    public void hello3() throws NamingException {
+        final DirContext ctx = createDirContext();
 
-        System.out.println("search: ");
-        enumE = ctx.search("", new BasicAttributes("fact", "the letter A"));
+        List<SearchResult> l = new ArrayList<>();
+        ctx.search("", new BasicAttributes("fact", "the letter A")).asIterator()
+                .forEachRemaining(sr -> l.add(sr));
 
-        while (enumE.hasMore()) {
-            System.out.println(enumE.next());
-        }
-
+        assertEquals(1, l.size());
+        assertEquals("a", l.get(0).getName());
+        // TODO throws UnsupportedOperationException assertEquals("a", l.get(0).getNameInNamespace());
+        assertEquals(1, l.get(0).getAttributes().get("fact").size());
+        assertEquals("the letter A", l.get(0).getAttributes().get("fact").get());
+        assertEquals("fact", l.get(0).getAttributes().get("fact").getID());
     }
 
 }

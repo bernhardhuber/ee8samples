@@ -32,9 +32,13 @@
  */
 package org.huberb.ee8sample.fs.jndi.flat;
 
-import java.util.Enumeration;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import javax.naming.Binding;
 import javax.naming.CompositeName;
 import javax.naming.Context;
@@ -50,23 +54,23 @@ import javax.naming.NotContextException;
 import javax.naming.OperationNotSupportedException;
 
 /**
- * A sample service provider that implements a flat namespace in memory.
+ * A sample service provider that implements a flat name space in memory.
  */
 class FlatCtx implements Context {
 
     protected static final NameParser myParser = new FlatNameParser();
 
-    private Hashtable myEnv;
-    private Hashtable bindings = new Hashtable(11);
+    private final Hashtable myEnv;
+    private Map<String, Object> bindings;
 
-    FlatCtx(Hashtable inEnv) {
-        myEnv = (inEnv != null)
-                ? (Hashtable) (inEnv.clone())
-                : null;
+    public FlatCtx(Hashtable inEnv) {
+        this(inEnv, Collections.synchronizedMap(new HashMap<String, Object>()));
     }
 
-    private FlatCtx(Hashtable inEnv, Hashtable bindings) {
-        this(inEnv);
+    private FlatCtx(Hashtable inEnv, Map<String, Object> bindings) {
+        this.myEnv = (inEnv != null)
+                ? (Hashtable) (inEnv.clone())
+                : new Hashtable(3, 0.75f);
         this.bindings = bindings;
     }
 
@@ -132,8 +136,7 @@ class FlatCtx implements Context {
 
         // Find object in internal hash table
         if (bindings.get(nm) != null) {
-            throw new NameAlreadyBoundException(
-                    "Use rebind to override");
+            throw new NameAlreadyBoundException("Use rebind to override");
         }
 
         // Add object to internal hash table
@@ -193,8 +196,7 @@ class FlatCtx implements Context {
 
         // Check if new name exists
         if (bindings.get(newnm) != null) {
-            throw new NameAlreadyBoundException(newname.toString()
-                    + " is already bound");
+            throw new NameAlreadyBoundException(newname.toString() + " is already bound");
         }
 
         // Check if old name is bound
@@ -207,15 +209,15 @@ class FlatCtx implements Context {
     }
 
     @Override
-    public NamingEnumeration list(String name) throws NamingException {
+    public NamingEnumeration<NameClassPair> list(String name) throws NamingException {
         return list(new CompositeName(name));
     }
 
     @Override
-    public NamingEnumeration list(Name name) throws NamingException {
+    public NamingEnumeration<NameClassPair> list(Name name) throws NamingException {
         if (name.isEmpty()) {
             // listing this context
-            return new ListOfNames(bindings.keys());
+            return new ListOfNames2(bindings.keySet());
         }
 
         // Perhaps 'name' names a context
@@ -231,15 +233,15 @@ class FlatCtx implements Context {
     }
 
     @Override
-    public NamingEnumeration listBindings(String name) throws NamingException {
+    public NamingEnumeration<Binding> listBindings(String name) throws NamingException {
         return listBindings(new CompositeName(name));
     }
 
     @Override
-    public NamingEnumeration listBindings(Name name) throws NamingException {
+    public NamingEnumeration<Binding> listBindings(Name name) throws NamingException {
         if (name.isEmpty()) {
             // listing this context
-            return new ListOfBindings(bindings.keys());
+            return new ListOfBindings2(bindings.keySet());
         }
 
         // Perhaps 'name' names a context
@@ -319,30 +321,30 @@ class FlatCtx implements Context {
     @Override
     public Object addToEnvironment(String propName, Object propVal)
             throws NamingException {
-        if (myEnv == null) {
-            myEnv = new Hashtable(5, 0.75f);
-        }
+//        if (myEnv == null) {
+//            myEnv = new Hashtable(5, 0.75f);
+//        }
         return myEnv.put(propName, propVal);
     }
 
     @Override
     public Object removeFromEnvironment(String propName)
             throws NamingException {
-        if (myEnv == null) {
-            return null;
-        }
+//        if (myEnv == null) {
+//            return null;
+//        }
 
         return myEnv.remove(propName);
     }
 
     @Override
     public Hashtable getEnvironment() throws NamingException {
-        if (myEnv == null) {
-            // Must return non-null
-            return new Hashtable(3, 0.75f);
-        } else {
-            return (Hashtable) myEnv.clone();
-        }
+//        if (myEnv == null) {
+//            // Must return non-null
+//            return new Hashtable(3, 0.75f);
+//        } else {
+        return (Hashtable) myEnv.clone();
+//        }
     }
 
     @Override
@@ -354,13 +356,14 @@ class FlatCtx implements Context {
     public void close() throws NamingException {
     }
 
+    //---
     // Class for enumerating name/class pairs
-    class ListOfNames implements NamingEnumeration {
+    class ListOfNames2 implements NamingEnumeration<NameClassPair> {
 
-        protected Enumeration names;
+        private Iterator<String> names;
 
-        ListOfNames(Enumeration names) {
-            this.names = names;
+        ListOfNames2(Set<String> names) {
+            this.names = names.iterator();
         }
 
         @Override
@@ -374,18 +377,11 @@ class FlatCtx implements Context {
 
         @Override
         public boolean hasMore() throws NamingException {
-            return names.hasMoreElements();
+            return names.hasNext();
         }
 
         @Override
-        public Object next() throws NamingException {
-            String name = (String) names.nextElement();
-            String className = bindings.get(name).getClass().getName();
-            return new NameClassPair(name, className);
-        }
-
-        @Override
-        public Object nextElement() {
+        public NameClassPair nextElement() {
             try {
                 return next();
             } catch (NamingException e) {
@@ -394,21 +390,57 @@ class FlatCtx implements Context {
         }
 
         @Override
+        public NameClassPair next() throws NamingException {
+            String name = (String) names.next();
+            String className = bindings.get(name).getClass().getName();
+            return new NameClassPair(name, className);
+        }
+
+        @Override
         public void close() {
         }
     }
 
     // Class for enumerating bindings
-    class ListOfBindings extends ListOfNames {
+    class ListOfBindings2 implements NamingEnumeration<Binding> {
 
-        ListOfBindings(Enumeration names) {
-            super(names);
+        private Iterator<String> names;
+
+        ListOfBindings2(Set<String> names) {
+            this.names = names.iterator();
         }
 
         @Override
-        public Object next() throws NamingException {
-            String name = (String) names.nextElement();
+        public boolean hasMoreElements() {
+            try {
+                return hasMore();
+            } catch (NamingException e) {
+                return false;
+            }
+        }
+
+        @Override
+        public boolean hasMore() throws NamingException {
+            return names.hasNext();
+        }
+
+        @Override
+        public Binding nextElement() {
+            try {
+                return next();
+            } catch (NamingException e) {
+                throw new NoSuchElementException(e.toString());
+            }
+        }
+
+        @Override
+        public Binding next() throws NamingException {
+            String name = (String) names.next();
             return new Binding(name, bindings.get(name));
+        }
+
+        @Override
+        public void close() {
         }
     }
 };

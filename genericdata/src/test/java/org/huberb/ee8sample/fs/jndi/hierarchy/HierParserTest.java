@@ -57,10 +57,10 @@ public class HierParserTest {
         Name name = fnp.parse(theName);
         assertNotNull(name);
         assertAll(
-                () -> assertEquals("subname", name.get(0)),
-                () -> assertEquals("name", name.get(1)),
+                () -> assertEquals("name", name.get(0)),
+                () -> assertEquals("subname", name.get(1)),
                 () -> assertEquals(true, name.getAll().hasMoreElements()),
-                () -> assertEquals("subname", name.getAll().nextElement()),
+                () -> assertEquals("name", name.getAll().nextElement()),
                 () -> assertEquals(false, name.isEmpty()),
                 () -> assertEquals(2, name.size())
         );

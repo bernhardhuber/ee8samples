@@ -97,20 +97,21 @@ public class HierCtx implements Context {
         }
     }
      */
-    private Hashtable myEnv;
-    private Hashtable bindings = new Hashtable(11);
-    private HierCtx parent = null;
-    private String myAtomicName = null;
+    private final Hashtable myEnv;
+    private final Hashtable bindings;
+    private final HierCtx parent;
+    private final String myAtomicName;
 
     HierCtx(Hashtable inEnv) {
+        this(null, null, inEnv, new Hashtable(11));
+    }
+
+    protected HierCtx(HierCtx parent, String name,
+            Hashtable inEnv,
+            Hashtable bindings) {
         myEnv = (inEnv != null)
                 ? (Hashtable) (inEnv.clone())
                 : null;
-    }
-
-    protected HierCtx(HierCtx parent, String name, Hashtable inEnv,
-            Hashtable bindings) {
-        this(inEnv);
         this.parent = parent;
         myAtomicName = name;
         this.bindings = (Hashtable) bindings.clone();
@@ -176,16 +177,14 @@ public class HierCtx implements Context {
                         new CompositeName().add(atom),
                         this, myEnv);
             } catch (Exception e) {
-                NamingException ne = new NamingException(
-                        "getObjectInstance failed");
+                NamingException ne = new NamingException("getObjectInstance failed");
                 ne.setRootCause(e);
                 throw ne;
             }
         } else {
             // Intermediate name: Consume name in this context and continue
             if (!(inter instanceof Context)) {
-                throw new NotContextException(atom
-                        + " does not name a context");
+                throw new NotContextException(atom + " does not name a context");
             }
 
             return ((Context) inter).lookup(nm.getSuffix(1));
@@ -347,12 +346,12 @@ public class HierCtx implements Context {
     }
 
     @Override
-    public NamingEnumeration list(String name) throws NamingException {
+    public NamingEnumeration<NameClassPair> list(String name) throws NamingException {
         return list(new CompositeName(name));
     }
 
     @Override
-    public NamingEnumeration list(Name name) throws NamingException {
+    public NamingEnumeration<NameClassPair> list(Name name) throws NamingException {
         if (name.isEmpty()) {
             // listing this context
             return new ListOfNames(bindings.keys());
@@ -367,12 +366,12 @@ public class HierCtx implements Context {
     }
 
     @Override
-    public NamingEnumeration listBindings(String name) throws NamingException {
+    public NamingEnumeration<Binding> listBindings(String name) throws NamingException {
         return listBindings(new CompositeName(name));
     }
 
     @Override
-    public NamingEnumeration listBindings(Name name) throws NamingException {
+    public NamingEnumeration<Binding> listBindings(Name name) throws NamingException {
         if (name.isEmpty()) {
             // listing this context
             return new ListOfBindings(bindings.keys());
@@ -492,31 +491,31 @@ public class HierCtx implements Context {
     @Override
     public Object addToEnvironment(String propName, Object propVal)
             throws NamingException {
-        if (myEnv == null) {
-            myEnv = new Hashtable(5, 0.75f);
-        }
+//        if (myEnv == null) {
+//            myEnv = new Hashtable(5, 0.75f);
+//        }
         return myEnv.put(propName, propVal);
     }
 
     @Override
     public Object removeFromEnvironment(String propName)
             throws NamingException {
-        if (myEnv == null) {
-            return null;
-        }
+//        if (myEnv == null) {
+//            return null;
+//        }
 
         return myEnv.remove(propName);
     }
 
     @Override
     public Hashtable getEnvironment() throws NamingException {
-        if (myEnv == null) {
-            // Must return non-null
-            return new Hashtable(3, 0.75f);
-        } else {
-            return (Hashtable) myEnv.clone();
-        }
+//        if (myEnv == null) {
+//            // Must return non-null
+//            return new Hashtable(3, 0.75f);
+//        } else {
+        return (Hashtable) myEnv.clone();
     }
+//    }
 
     @Override
     public String getNameInNamespace() throws NamingException {
@@ -553,7 +552,7 @@ public class HierCtx implements Context {
     }
 
     // Class for enumerating name/class pairs
-    class ListOfNames implements NamingEnumeration {
+    class ListOfNames implements NamingEnumeration<NameClassPair> {
 
         protected Enumeration names;
 
@@ -576,14 +575,7 @@ public class HierCtx implements Context {
         }
 
         @Override
-        public Object next() throws NamingException {
-            String name = (String) names.nextElement();
-            String className = bindings.get(name).getClass().getName();
-            return new NameClassPair(name, className);
-        }
-
-        @Override
-        public Object nextElement() {
+        public NameClassPair nextElement() {
             try {
                 return next();
             } catch (NamingException e) {
@@ -592,19 +584,51 @@ public class HierCtx implements Context {
         }
 
         @Override
+        public NameClassPair next() throws NamingException {
+            String name = (String) names.nextElement();
+            String className = bindings.get(name).getClass().getName();
+            return new NameClassPair(name, className);
+        }
+
+        @Override
         public void close() {
         }
     }
 
     // Class for enumerating bindings
-    class ListOfBindings extends ListOfNames {
+    class ListOfBindings implements NamingEnumeration<Binding> {
+
+        protected Enumeration names;
 
         ListOfBindings(Enumeration names) {
-            super(names);
+            this.names = names;
         }
 
         @Override
-        public Object next() throws NamingException {
+        public boolean hasMoreElements() {
+            try {
+                return hasMore();
+            } catch (NamingException e) {
+                return false;
+            }
+        }
+
+        @Override
+        public boolean hasMore() throws NamingException {
+            return names.hasMoreElements();
+        }
+
+        @Override
+        public Binding nextElement() {
+            try {
+                return next();
+            } catch (NamingException e) {
+                throw new NoSuchElementException(e.toString());
+            }
+        }
+
+        @Override
+        public Binding next() throws NamingException {
             String name = (String) names.nextElement();
             Object obj = bindings.get(name);
 
@@ -621,6 +645,11 @@ public class HierCtx implements Context {
 
             return new Binding(name, obj);
         }
+
+        @Override
+        public void close() throws NamingException {
+        }
+
     }
 
 };

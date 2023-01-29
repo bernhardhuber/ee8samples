@@ -15,26 +15,23 @@
  */
 package org.huberb.ee8sample.mail;
 
-import java.util.Properties;
+import org.huberb.ee8sample.mail.MailsF.*;
+import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilderF;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilderTraditional;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressF;
-import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
-import org.huberb.ee8sample.mail.MailsF.SessionTransportF;
-import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
+import java.util.Properties;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 /**
- *
  * @author berni3
  */
 public class MailsFTest {
@@ -80,8 +77,8 @@ public class MailsFTest {
 
         Address addressFaddress = new InternetAddressBuilderF().addressPersonal("me@localhost", "Ich").build();
         Address[] addresses = new Address[]{
-            new InternetAddressBuilderTraditional().addressPersonal("me@localhost", "Ich").build(),
-            new InternetAddressBuilderTraditional().addressPersonal("you@localhost", "Du").build()
+                new InternetAddressBuilderTraditional().addressPersonal("me@localhost", "Ich").build(),
+                new InternetAddressBuilderTraditional().addressPersonal("you@localhost", "Du").build()
         };
 
         MimeMessageF messageF = SessionTransportF.MimeMessages.mimeMessageF().apply(session);

@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
@@ -79,11 +78,11 @@ public class BodyTextMergersTest {
         //---
         final String template = "Hello %s,%n"
                 + "body text.%n";
-        final Consumer<MimeMessage> assignBodyTextConsumer = StringFormatBodyMerger.assignBodyText(
+        final ConsumerThrowingMessagingException<MimeMessage> assignBodyTextConsumer = StringFormatBodyMerger.assignBodyText(
                 template,
                 new Object[]{"world"}
         );
-        assignBodyTextConsumer.accept((MimeMessage) mimeMessage);
+        assignBodyTextConsumer.accept(mimeMessage);
         assertNormalized("Hello world, body text. ", (String) mimeMessage.getContent());
     }
 
@@ -94,7 +93,7 @@ public class BodyTextMergersTest {
         //---
         final String template = "Hello %s,%n"
                 + "body text.%n";
-        final Consumer<MimeMessage> assignBodyTextConsumer = StringFormatBodyMerger.assignBodyText(
+        final ConsumerThrowingMessagingException<MimeMessage> assignBodyTextConsumer = StringFormatBodyMerger.assignBodyText(
                 locale,
                 template,
                 new Object[]{"world"}
@@ -118,11 +117,11 @@ public class BodyTextMergersTest {
         };
         final String template = "Hello @name@,\r\n"
                 + "body text.\r\n";
-        final Consumer<MimeMessage> assignBodyTextConsumer = SimpleSubstitutionBodyMerger.assignBodyText(
+        final ConsumerThrowingMessagingException<MimeMessage> assignBodyTextConsumer = SimpleSubstitutionBodyMerger.assignBodyText(
                 template,
                 map
         );
-        assignBodyTextConsumer.accept((MimeMessage) mimeMessage);
+        assignBodyTextConsumer.accept(mimeMessage);
         assertNormalized("Hello world, body text. ", (String) mimeMessage.getContent());
     }
 

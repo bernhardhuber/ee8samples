@@ -20,15 +20,14 @@ import java.util.function.Function;
 import javax.mail.MessagingException;
 
 /**
- *
  * @author berni3
  */
 public class Supports {
-      /**
+    /**
      * Define a consumer for jdbc operations.
      *
-     * @author berni3
      * @param <T>
+     * @author berni3
      */
     @FunctionalInterface
     public static interface ConsumerThrowingMessagingException<T> {
@@ -37,9 +36,9 @@ public class Supports {
          * Performs this operation on the given argument.
          *
          * @param t the input argument
-         * @throws  MessagingException
+         * @throws MessagingException
          */
-        void accept(T t) throws  MessagingException;
+        void accept(T t) throws MessagingException;
 
         /**
          * Returns a composed {@code Consumer} that performs, in sequence, this
@@ -80,13 +79,12 @@ public class Supports {
          * If evaluation of either function throws an exception, it is relayed
          * to the caller of the composed function.
          *
-         * @param <V> the type of input to the {@code before} function, and to
-         * the composed function
+         * @param <V>    the type of input to the {@code before} function, and to
+         *               the composed function
          * @param before the function to apply before this function is applied
          * @return a composed function that first applies the {@code before}
          * function and then applies this function
          * @throws NullPointerException if before is null
-         *
          * @see #andThen(Function)
          */
         default <V> FunctionThrowingMessagingException<V, R> compose(FunctionThrowingMessagingException<? super V, ? extends T> before) {
@@ -100,13 +98,12 @@ public class Supports {
          * evaluation of either function throws an exception, it is relayed to
          * the caller of the composed function.
          *
-         * @param <V> the type of output of the {@code after} function, and of
-         * the composed function
+         * @param <V>   the type of output of the {@code after} function, and of
+         *              the composed function
          * @param after the function to apply after this function is applied
          * @return a composed function that first applies this function and then
          * applies the {@code after} function
          * @throws NullPointerException if after is null
-         *
          * @see #compose(Function)
          */
         default <V> FunctionThrowingMessagingException<T, V> andThen(FunctionThrowingMessagingException<? super R, ? extends V> after) {
@@ -125,4 +122,14 @@ public class Supports {
         }
     }
 
+
+    public static class MailRuntimeException extends RuntimeException {
+        public MailRuntimeException(String m) {
+            super(m);
+        }
+
+        public MailRuntimeException(String m, Throwable cause) {
+            super(m, cause);
+        }
+    }
 }

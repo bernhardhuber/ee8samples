@@ -22,17 +22,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import javax.mail.Address;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
+import org.huberb.ee8sample.mail.Supports.FunctionThrowingMessagingException;
 
 /**
  * Wrappers for sending emails using {@link javax.mail} API.
@@ -49,17 +48,17 @@ public class MailsF {
             this.session = session;
         }
 
-        <T> T provide(Function<Session, T> f) {
+        <T> T provide(FunctionThrowingMessagingException<Session, T> f) throws MessagingException {
             return f.apply(this.session);
         }
 
-        static Function<Session, Boolean> debug() {
+        static FunctionThrowingMessagingException<Session, Boolean> debug() {
             return session -> {
                 return session.getDebug();
             };
         }
 
-        static Function<Session, PrintStream> debugOut() {
+        static FunctionThrowingMessagingException<Session, PrintStream> debugOut() {
             return session -> {
                 return session.getDebugOut();
             };
@@ -86,64 +85,33 @@ public class MailsF {
 
         static class Transports {
 
-            static Function<Session, Transport> transport() {
+            static FunctionThrowingMessagingException<Session, Transport> transport() {
                 return session -> {
-                    try {
-                        return session.getTransport();
-                    } catch (NoSuchProviderException ex) {
-                        String m = "get transport";
-                        throw new RuntimeException(m, ex);
-                    }
+                    return session.getTransport();
                 };
             }
 
-            static Function<Session, Transport> transport(Address address) {
+            static FunctionThrowingMessagingException<Session, Transport> transport(Address address) {
                 return session -> {
-                    try {
-                        return session.getTransport(address);
-                    } catch (NoSuchProviderException ex) {
-                        String m = "get transport";
-                        throw new RuntimeException(m, ex);
-                    }
+                    return session.getTransport(address);
                 };
             }
 
-            static Function<Session, Transport> transport(String protocol) {
+            static FunctionThrowingMessagingException<Session, Transport> transport(String protocol) {
                 return session -> {
-                    try {
-                        return session.getTransport(protocol);
-                    } catch (NoSuchProviderException ex) {
-                        String m = "get transport";
-                        throw new RuntimeException(m, ex);
-                    }
+                    return session.getTransport(protocol);
                 };
             }
 
-            static Function<Session, Transport> transport(javax.mail.Provider protocol) {
+            static FunctionThrowingMessagingException<Session, Transport> transport(javax.mail.Provider provider) {
                 return session -> {
-                    try {
-                        return session.getTransport(protocol);
-                    } catch (NoSuchProviderException ex) {
-                        String m = "get transport";
-                        throw new RuntimeException(m, ex);
-                    }
+                    return session.getTransport(provider);
                 };
             }
 
-            static Function<Session, Transport> transport(javax.mail.URLName protocol) {
+            static FunctionThrowingMessagingException<Session, Transport> transport(javax.mail.URLName protocol) {
                 return session -> {
-                    try {
-                        return session.getTransport(protocol);
-                    } catch (NoSuchProviderException ex) {
-                        String m = "get transport";
-                        throw new RuntimeException(m, ex);
-                    }
-                };
-            }
-
-            static Function<Transport, TransportF> transportF() {
-                return transport -> {
-                    return new TransportF(transport);
+                    return session.getTransport(protocol);
                 };
             }
         }
@@ -158,13 +126,6 @@ public class MailsF {
                 return session -> new MimeMessageF(new MimeMessage(session));
             }
 
-            static Supplier<MimeMessage> mimeMessage(Session session) {
-                return () -> new MimeMessage(session);
-            }
-
-            static Supplier<MimeMessageF> mimeMessageF(MimeMessage mimeMessage) {
-                return () -> new MimeMessageF(mimeMessage);
-            }
         }
     }
 
@@ -190,7 +151,8 @@ public class MailsF {
 
         static class Consumers {
 
-            static void whithConnected(Transport transport, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
+            static void withConnected(Transport transport,
+                    ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
                 try {
                     transport.connect();
                     c.accept(transport);
@@ -199,7 +161,9 @@ public class MailsF {
                 }
             }
 
-            static void connect(Transport transport, String u, String p, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
+            static void withConnect(Transport transport,
+                    String u, String p,
+                    ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
                 try {
                     transport.connect(u, p);
                     c.accept(transport);
@@ -208,7 +172,9 @@ public class MailsF {
                 }
             }
 
-            static void connect(Transport transport, String host, int port, String u, String p, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
+            static void withConnect(Transport transport,
+                    String host, int port, String u, String p,
+                    ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
                 try {
                     transport.connect(host, port, u, p);
                     c.accept(transport);
@@ -221,22 +187,22 @@ public class MailsF {
 
     static class MimeMessageF {
 
-        final MimeMessage mimeMesssage;
+        final MimeMessage mimeMessage;
 
         public MimeMessageF(MimeMessage mm) {
-            this.mimeMesssage = mm;
+            this.mimeMessage = mm;
         }
 
         public MimeMessageF(Session session) {
-            this.mimeMesssage = new MimeMessage(session);
+            this.mimeMessage = new MimeMessage(session);
         }
 
         public MimeMessage getMimeMessage() {
-            return this.mimeMesssage;
+            return this.mimeMessage;
         }
 
         public void consume(ConsumerThrowingMessagingException<MimeMessage> c) throws MessagingException {
-            c.accept(this.mimeMesssage);
+            c.accept(this.mimeMessage);
         }
 
         static class Consumers {
@@ -287,20 +253,15 @@ public class MailsF {
         }
 
         //---
-        public <T> T provide(Function<MimeMessage, T> f) {
-            return f.apply(this.mimeMesssage);
+        public <T> T provide(FunctionThrowingMessagingException<MimeMessage, T> f) throws MessagingException {
+            return f.apply(this.mimeMessage);
         }
 
         static class Providers {
 
-            static Function<MimeMessage, Address[]> allRecipients() {
+            static FunctionThrowingMessagingException<MimeMessage, Address[]> allRecipients() {
                 return msg -> {
-                    try {
-                        return msg.getAllRecipients();
-                    } catch (MessagingException ex) {
-                        String m = String.format("get all Recipients");
-                        throw new RuntimeException(m, ex);
-                    }
+                    return msg.getAllRecipients();
                 };
             }
         }
@@ -367,7 +328,6 @@ public class MailsF {
     /**
      * Define a recipient by its {@link RecipientType} and list of
      * {@link InternetAddress} sharing the same {@link RecipientType}.
-     *
      */
     static class Recipient {
 
@@ -388,22 +348,21 @@ public class MailsF {
 
         public static class RecipientBuilder {
 
-            private Recipient recipient = new Recipient();
+            private final Recipient recipient = new Recipient();
 
-            public RecipientBuilder addAddress(RecipientType rt, List<InternetAddress> ia) {
-                this.recipient.rt = rt;
-                this.recipient.iaList.addAll(ia);
+            public RecipientBuilder addAddress(RecipientType recipientType, List<InternetAddress> internetAddress) {
+                this.recipient.rt = recipientType;
+                this.recipient.iaList.addAll(internetAddress);
                 return this;
             }
 
-            public RecipientBuilder recipientType(RecipientType rt) {
-                this.recipient.rt = rt;
+            public RecipientBuilder recipientType(RecipientType recipientType) {
+                this.recipient.rt = recipientType;
                 return this;
             }
 
-            public RecipientBuilder addAddress(InternetAddress ia) {
-                this.recipient.iaList.add(ia);
-                ;
+            public RecipientBuilder addAddress(InternetAddress internetAddress) {
+                this.recipient.iaList.add(internetAddress);
                 return this;
             }
 
@@ -482,7 +441,7 @@ public class MailsF {
                 this.internetAddress.validate();
                 return this;
             } catch (AddressException ex) {
-                String m = String.format("validting address [%s]", this.internetAddress.getAddress());
+                String m = String.format("validating address [%s]", this.internetAddress.getAddress());
                 throw new RuntimeException(m, ex);
             }
         }

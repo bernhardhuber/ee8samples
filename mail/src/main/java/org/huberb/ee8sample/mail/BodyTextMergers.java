@@ -20,9 +20,9 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Consumer;
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
+import org.huberb.ee8sample.mail.Supports.MailRuntimeException;
 
 /**
  * Some very simple text template mergers.
@@ -37,13 +37,9 @@ public class BodyTextMergers {
      * @param bodyText
      * @return
      */
-    public static Consumer<MimeMessage> assignBodyText(String bodyText) {
+    public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(String bodyText) {
         return (mm) -> {
-            try {
-                mm.setText(bodyText);
-            } catch (MessagingException ex) {
-                throw new RuntimeException("assignBodyText", ex);
-            }
+            mm.setText(bodyText);
         };
     }
 
@@ -60,7 +56,7 @@ public class BodyTextMergers {
          * @param args
          * @return
          */
-        public static Consumer<MimeMessage> assignBodyText(String template, Object[] args) {
+        public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(String template, Object[] args) {
             return StringFormatBodyMerger.assignBodyText(Locale.getDefault(), template, args);
         }
 
@@ -72,7 +68,7 @@ public class BodyTextMergers {
          * @param args
          * @return
          */
-        public static Consumer<MimeMessage> assignBodyText(Locale locale, String template, Object[] args) {
+        public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(Locale locale, String template, Object[] args) {
             final StringFormatBodyMerger merger = new StringFormatBodyMerger(locale);
             final String bodyText = merger.merge(template, args);
             return BodyTextMergers.assignBodyText(bodyText);
@@ -101,9 +97,7 @@ public class BodyTextMergers {
          * @param template the template
          * @param arguments the arguments for the template
          * @return formatted {@link String}
-         * @throws IllegalArgumentException if
-         * {@link String#format(java.util.Locale, java.lang.String, java.lang.Object...)}
-         * fails.
+         * @throws MailRuntimeException if merge fails.
          *
          * @see String#format(java.util.Locale, java.lang.String,
          * java.lang.Object...)
@@ -111,8 +105,12 @@ public class BodyTextMergers {
         public String merge(String template, Object[] arguments) {
             // TODO how to handle IllegalArgumentException?
             // maybe thrown by String#format
-            final String result = String.format(locale, template, arguments);
-            return result;
+            try {
+                final String result = String.format(locale, template, arguments);
+                return result;
+            } catch (IllegalArgumentException iaex) {
+                throw new MailRuntimeException("merge", iaex);
+            }
         }
     }
 
@@ -128,7 +126,7 @@ public class BodyTextMergers {
          * @param m
          * @return
          */
-        public static Consumer<MimeMessage> assignBodyText(String template, Map<String, Object> m) {
+        public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(String template, Map<String, Object> m) {
             final SimpleSubstitutionBodyMerger merger = new SimpleSubstitutionBodyMerger();
             final String bodyText = merger.merge(template, m);
             return BodyTextMergers.assignBodyText(bodyText);
@@ -155,13 +153,13 @@ public class BodyTextMergers {
          * @param m
          * @return
          *
-         * @throws RuntimeException if merge fails.
+         * @throws MailRuntimeException if merge fails.
          */
         public String merge(String template, Map<String, Object> m) {
             try {
                 return process(template, m);
-            } catch (IOException ex) {
-                throw new RuntimeException("merge", ex);
+            } catch (IOException ioex) {
+                throw new MailRuntimeException("merge", ioex);
             }
         }
 

@@ -48,7 +48,7 @@ public class DumbsterConnectIT {
             try (Transport transport = new SessionTransportF(session).provide(SessionTransportF.Transports.transport())) {
                 assertFalse(transport.isConnected());
                 TransportF transportF = new TransportF(transport);
-                TransportF.Consumers.whithConnected(transport,
+                TransportF.Consumers.withConnected(transport,
                         (t) -> {
                             assertTrue(transport.isConnected());
                         });
@@ -70,7 +70,7 @@ public class DumbsterConnectIT {
                         try (Transport transport = new SessionTransportF(session).provide(SessionTransportF.Transports.transport())) {
                             assertFalse(transport.isConnected());
                             TransportF transportF = new TransportF(transport);
-                            TransportF.Consumers.whithConnected(transport,
+                            TransportF.Consumers.withConnected(transport,
                                     (t) -> {
                                     });
                             assertFalse(transport.isConnected());

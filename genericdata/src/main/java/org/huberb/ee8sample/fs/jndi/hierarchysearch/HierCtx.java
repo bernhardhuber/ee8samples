@@ -51,7 +51,7 @@ import javax.naming.OperationNotSupportedException;
 import javax.naming.spi.NamingManager;
 
 /**
- * A sample service provider that implements a hierarchical namespace in memory.
+ * A sample service provider that implements a hierarchical name space in memory.
  */
 public class HierCtx implements Context {
 

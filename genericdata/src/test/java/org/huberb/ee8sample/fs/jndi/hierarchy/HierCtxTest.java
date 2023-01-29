@@ -85,10 +85,13 @@ public class HierCtxTest {
     @Test
     public void hello4() throws NamingException {
         assertTrue(hierCtx.getEnvironment().isEmpty());
+    }
+
+    @Test
+    public void hello5() throws NamingException {
         assertEquals("", hierCtx.getNameInNamespace());
     }
 
- 
     @Test
     public void testCreateSubcontext() throws NamingException {
         Context ctx = new HierCtx(null);

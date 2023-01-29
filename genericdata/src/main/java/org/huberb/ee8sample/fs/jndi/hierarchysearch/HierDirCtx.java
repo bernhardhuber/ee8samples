@@ -32,7 +32,6 @@
  */
 package org.huberb.ee8sample.fs.jndi.hierarchysearch;
 
-//import javax.naming.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -52,16 +51,16 @@ import javax.naming.spi.DirStateFactory;
 import javax.naming.spi.DirectoryManager;
 
 /**
- * A sample service provider that implements a hierarchical namespace in memory.
- * Shortcomings:
- * <li>- nonatomic updates for hybrid naming/directory operations
+ * A sample service provider that implements a hierarchical name space in
+ * memory. Shortcomings:
+ * <li>- non atomic updates for hybrid naming/directory operations
  * <li>- cannot accept null object for bind/rebind
  * <li>- does not support filter (advanced) searches
  */
 public class HierDirCtx extends HierCtx implements DirContext {
 
     /**
-     * Returns true if superset contains subset.
+     * Returns true if super set contains subset.
      */
     private static boolean contains(Attributes superset, Attributes subset)
             throws NamingException {
@@ -262,35 +261,6 @@ public class HierDirCtx extends HierCtx implements DirContext {
         }
         return buf.toString();
     }
-    /*
-    public static void main(String[] args) {
-        try {
-            DirContext ctx = new HierDirCtx(null);
-
-            DirContext a = ctx.createSubcontext("a", new BasicAttributes("fact", "the letter A"));
-            DirContext b = ctx.createSubcontext("b", new BasicAttributes("fact", "the letter B"));
-            Context c = b.createSubcontext("c");
-
-            System.out.println("c's full name: " + c.getNameInNamespace());
-            System.out.println("attributes of a: " + ctx.getAttributes("a"));
-
-            System.out.println("list: ");
-            NamingEnumeration enumE = ctx.list("");
-            while (enumE.hasMore()) {
-                System.out.println(enumE.next());
-            }
-
-            System.out.println("search: ");
-            enumE = ctx.search("", new BasicAttributes("fact", "the letter A"));
-
-            while (enumE.hasMore()) {
-                System.out.println(enumE.next());
-            }
-
-        } catch (NamingException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     private Attributes myAttrs = new BasicAttributes();
     private Hashtable bindingAttrs = new Hashtable(11);
@@ -299,8 +269,10 @@ public class HierDirCtx extends HierCtx implements DirContext {
         super(env);
     }
 
-    protected HierDirCtx(HierCtx parent, String name, Hashtable inEnv,
-            Hashtable bindings, Attributes myAttrs, Hashtable bindingAttrs) {
+    protected HierDirCtx(HierCtx parent, String name,
+            Hashtable inEnv,
+            Hashtable bindings,
+            Attributes myAttrs, Hashtable bindingAttrs) {
         super(parent, name, inEnv, bindings);
 
         try {
@@ -319,7 +291,9 @@ public class HierDirCtx extends HierCtx implements DirContext {
 
     @Override
     protected Context cloneCtx() {
-        return new HierDirCtx(parent, myAtomicName, myEnv, bindings,
+        return new HierDirCtx(parent, myAtomicName,
+                myEnv,
+                bindings,
                 myAttrs, bindingAttrs);
     }
 
@@ -454,9 +428,12 @@ public class HierDirCtx extends HierCtx implements DirContext {
     }
 
     /**
-     * Apply modifications to attrs in place. NOTE: Simplified implementation: -
-     * Modifications NOT performed atomically - Attribute names case-sensitive -
-     * All attributes can be multivalued
+     * Apply modifications to attrs in place.
+     * <p>
+     * NOTE: Simplified implementation:
+     * <li>- Modifications NOT performed atomically
+     * <li>- Attribute names case-sensitive
+     * <li>- All attributes can be multivalued
      */
     private void doMods(Attributes attrs, ModificationItem[] mods)
             throws NamingException {
@@ -551,8 +528,10 @@ public class HierDirCtx extends HierCtx implements DirContext {
     }
 
     /**
-     * NOTE: Simplified implementation: add attributes and object nonatomically
-     * Does not accept null obj (throws NullPointerException)
+     * <p>
+     * NOTE: Simplified implementation:
+     * <li>- add attributes and object non atomically
+     * <li>- Does not accept null obj (throws NullPointerException)
      */
     @Override
     public void bind(Name name, Object obj, Attributes attrs)
@@ -569,8 +548,7 @@ public class HierDirCtx extends HierCtx implements DirContext {
         if (nm.size() == 1) {
             // Atomic name: Find object in internal data structure
             if (inter != null) {
-                throw new NameAlreadyBoundException(
-                        "Use rebind to override");
+                throw new NameAlreadyBoundException("Use rebind to override");
             }
 
             // Call getStateToBind for using any state factories
@@ -606,8 +584,10 @@ public class HierDirCtx extends HierCtx implements DirContext {
     }
 
     /**
-     * NOTE: Simplified implementation: remove object first, then add back Does
-     * not accept null obj (throws NullPointerException)
+     * <p>
+     * NOTE: Simplified implementation:
+     * <li>- remove object first, then add back
+     * <li>- Does not accept null obj (throws NullPointerException)
      */
     @Override
     public void rebind(Name name, Object obj, Attributes attrs)
@@ -754,8 +734,7 @@ public class HierDirCtx extends HierCtx implements DirContext {
     @Override
     public NamingEnumeration search(Name name,
             String filter, SearchControls cons) throws NamingException {
-        throw new OperationNotSupportedException(
-                "Filter search not supported");
+        throw new OperationNotSupportedException("Filter search not supported");
     }
 
     @Override
@@ -934,8 +913,7 @@ public class HierDirCtx extends HierCtx implements DirContext {
                         obj, new CompositeName().add(name), HierDirCtx.this,
                         HierDirCtx.this.myEnv, attrs);
             } catch (Exception e) {
-                NamingException ne = new NamingException(
-                        "getObjectInstance failed");
+                NamingException ne = new NamingException("getObjectInstance failed");
                 ne.setRootCause(e);
                 throw ne;
             }

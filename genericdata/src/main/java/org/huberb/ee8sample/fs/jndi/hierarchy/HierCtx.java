@@ -64,22 +64,24 @@ public class HierCtx implements Context {
     private final String myAtomicName;
 
     HierCtx(Hashtable inEnv) {
-        this(null, null, inEnv, new Hashtable(11));
+        this(null, null, inEnv, null);
     }
 
     private HierCtx(HierCtx parent, String name,
             Hashtable inEnv,
-            Hashtable bindings) {
-        myEnv = (inEnv != null)
+            Hashtable inBindings) {
+        this.myEnv = (inEnv != null)
                 ? (Hashtable) (inEnv.clone())
-                : null;
+                : new Hashtable(5);
         this.parent = parent;
         this.myAtomicName = name;
-        this.bindings = (Hashtable) bindings.clone();
+        this.bindings = (inBindings != null)
+                ? (Hashtable) inBindings.clone()
+                : new Hashtable(11);
     }
 
     private Context createCtx(HierCtx parent, String name, Hashtable inEnv) {
-        return new HierCtx(parent, name, inEnv, new Hashtable(11));
+        return new HierCtx(parent, name, inEnv, null);
     }
 
     protected Context cloneCtx() {
@@ -452,31 +454,19 @@ public class HierCtx implements Context {
     @Override
     public Object addToEnvironment(String propName, Object propVal)
             throws NamingException {
-//        if (myEnv == null) {
-//            myEnv = new Hashtable(5, 0.75f);
-//        }
         return myEnv.put(propName, propVal);
     }
 
     @Override
     public Object removeFromEnvironment(String propName)
             throws NamingException {
-//        if (myEnv == null) {
-//            return null;
-//        }
-
         return myEnv.remove(propName);
     }
 
     @Override
     public Hashtable getEnvironment() throws NamingException {
-//        if (myEnv == null) {
-//            // Must return non-null
-//            return new Hashtable(3, 0.75f);
-//        } else {
         return (Hashtable) myEnv.clone();
     }
-//    }
 
     @Override
     public String getNameInNamespace() throws NamingException {
@@ -539,8 +529,8 @@ public class HierCtx implements Context {
         public NameClassPair nextElement() {
             try {
                 return next();
-            } catch (NamingException e) {
-                throw new NoSuchElementException(e.toString());
+            } catch (NamingException ex) {
+                throw new NoSuchElementException("nextElement", ex);
             }
         }
 
@@ -584,7 +574,7 @@ public class HierCtx implements Context {
             try {
                 return next();
             } catch (NamingException e) {
-                throw new NoSuchElementException(e.toString());
+                throw new NoSuchElementException("nextElement", e);
             }
         }
 
@@ -598,8 +588,7 @@ public class HierCtx implements Context {
                         new CompositeName().add(name), HierCtx.this,
                         HierCtx.this.myEnv);
             } catch (Exception e) {
-                NamingException ne = new NamingException(
-                        "getObjectInstance failed");
+                NamingException ne = new NamingException("getObjectInstance failed");
                 ne.setRootCause(e);
                 throw ne;
             }

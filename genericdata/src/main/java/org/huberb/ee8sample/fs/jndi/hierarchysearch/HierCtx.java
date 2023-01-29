@@ -57,45 +57,6 @@ public class HierCtx implements Context {
 
     protected final static NameParser myParser = new HierParser();
 
-    /*
-    static HierCtx testRoot;
-    static {
-        try {
-            testRoot = new HierCtx(null);
-
-            Context a = testRoot.createSubcontext("a");
-            Context b = a.createSubcontext("b");
-            Context c = b.createSubcontext("c");
-
-            testRoot.createSubcontext("x");
-            testRoot.createSubcontext("y");
-        } catch (NamingException e) {
-        }
-    }
-    public static Context getStaticNamespace(Hashtable env) {
-        return testRoot;
-    }
-     */
- /*
-    public static void main(String[] args) {
-        try {
-            Context ctx = new HierCtx(null);
-
-            Context a = ctx.createSubcontext("a");
-            Context b = a.createSubcontext("b");
-            Context c = b.createSubcontext("c");
-
-            System.out.println(c.getNameInNamespace());
-
-            System.out.println(ctx.lookup(""));
-            System.out.println(ctx.lookup("a"));
-            System.out.println(ctx.lookup("b.a"));
-            System.out.println(a.lookup("c.b"));
-        } catch (NamingException e) {
-            e.printStackTrace();
-        }
-    }
-     */
     protected Hashtable myEnv;
     protected Hashtable bindings = new Hashtable(11);
     protected HierCtx parent = null;
@@ -127,7 +88,7 @@ public class HierCtx implements Context {
      * Utility method for processing composite/compound name.
      *
      * @param name The non-null composite or compound name to process.
-     * @return The non-null string name in this namespace to be processed.
+     * @return The non-null string name in this name space to be processed.
      * @throws javax.naming.NamingException
      */
     protected Name getMyComponents(Name name) throws NamingException {
@@ -175,16 +136,14 @@ public class HierCtx implements Context {
                         new CompositeName().add(atom),
                         this, myEnv);
             } catch (Exception e) {
-                NamingException ne = new NamingException(
-                        "getObjectInstance failed");
+                NamingException ne = new NamingException("getObjectInstance failed");
                 ne.setRootCause(e);
                 throw ne;
             }
         } else {
             // Intermediate name: Consume name in this context and continue
             if (!(inter instanceof Context)) {
-                throw new NotContextException(atom
-                        + " does not name a context");
+                throw new NotContextException(atom + " does not name a context");
             }
 
             return ((Context) inter).lookup(nm.getSuffix(1));

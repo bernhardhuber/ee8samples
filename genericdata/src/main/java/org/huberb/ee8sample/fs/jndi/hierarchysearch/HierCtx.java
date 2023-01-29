@@ -76,6 +76,7 @@ public class HierCtx implements Context {
         return testRoot;
     }
      */
+ /*
     public static void main(String[] args) {
         try {
             Context ctx = new HierCtx(null);
@@ -94,7 +95,7 @@ public class HierCtx implements Context {
             e.printStackTrace();
         }
     }
-
+     */
     protected Hashtable myEnv;
     protected Hashtable bindings = new Hashtable(11);
     protected HierCtx parent = null;

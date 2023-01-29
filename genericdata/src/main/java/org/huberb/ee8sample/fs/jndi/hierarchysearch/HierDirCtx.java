@@ -262,7 +262,7 @@ public class HierDirCtx extends HierCtx implements DirContext {
         }
         return buf.toString();
     }
-
+    /*
     public static void main(String[] args) {
         try {
             DirContext ctx = new HierDirCtx(null);
@@ -290,7 +290,7 @@ public class HierDirCtx extends HierCtx implements DirContext {
         } catch (NamingException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     private Attributes myAttrs = new BasicAttributes();
     private Hashtable bindingAttrs = new Hashtable(11);

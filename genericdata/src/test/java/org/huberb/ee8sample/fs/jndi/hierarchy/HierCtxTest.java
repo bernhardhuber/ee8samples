@@ -87,4 +87,33 @@ public class HierCtxTest {
         assertTrue(hierCtx.getEnvironment().isEmpty());
         assertEquals("", hierCtx.getNameInNamespace());
     }
+
+ 
+    @Test
+    public void testCreateSubcontext() throws NamingException {
+        Context ctx = new HierCtx(null);
+
+        Context a = ctx.createSubcontext("a");
+        Context b = a.createSubcontext("b");
+        Context c = b.createSubcontext("c");
+
+        assertEquals("a.b.c", c.getNameInNamespace());
+
+        assertAll(
+                () -> assertTrue(ctx.lookup("") instanceof HierCtx),
+                () -> assertEquals("ROOT CONTEXT", ctx.lookup("").toString())
+        );
+        assertAll(
+                () -> assertTrue(ctx.lookup("a") instanceof HierCtx),
+                () -> assertEquals("a", ctx.lookup("a").toString())
+        );
+        assertAll(
+                () -> assertTrue(ctx.lookup("a.b") instanceof HierCtx),
+                () -> assertEquals("b", ctx.lookup("a.b").toString())
+        );
+        assertAll(
+                () -> assertTrue(a.lookup("b.c") instanceof HierCtx),
+                () -> assertEquals("c", a.lookup("b.c").toString())
+        );
+    }
 }

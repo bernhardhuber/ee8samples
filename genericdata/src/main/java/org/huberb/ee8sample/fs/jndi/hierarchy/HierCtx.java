@@ -57,46 +57,6 @@ public class HierCtx implements Context {
 
     protected final static NameParser myParser = new HierParser();
 
-    /*
-    static HierCtx testRoot;
-    static {
-        try {
-            testRoot = new HierCtx(null);
-
-            Context a = testRoot.createSubcontext("a");
-            Context b = a.createSubcontext("b");
-            Context c = b.createSubcontext("c");
-
-            testRoot.createSubcontext("x");
-            testRoot.createSubcontext("y");
-        } catch (NamingException e) {
-        }
-    }
-    public static Context getStaticNamespace(Hashtable env) {
-        return testRoot;
-    }
-     */
-
- /*
-    public static void main(String[] args) {
-        try {
-            Context ctx = new HierCtx(null);
-
-            Context a = ctx.createSubcontext("a");
-            Context b = a.createSubcontext("b");
-            Context c = b.createSubcontext("c");
-
-            System.out.println(c.getNameInNamespace());
-
-            System.out.println(ctx.lookup(""));
-            System.out.println(ctx.lookup("a"));
-            System.out.println(ctx.lookup("b.a"));
-            System.out.println(a.lookup("c.b"));
-        } catch (NamingException e) {
-            e.printStackTrace();
-        }
-    }
-     */
     private final Hashtable myEnv;
     private final Hashtable bindings;
     private final HierCtx parent;

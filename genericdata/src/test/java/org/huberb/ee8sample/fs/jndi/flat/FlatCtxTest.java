@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author berni3
  */
-public class FaltCtxTest {
+public class FlatCtxTest {
 
     FlatCtx flatCtx;
 

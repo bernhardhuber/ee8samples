@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.fs.jndi.flat;
+package org.huberb.ee8sample.jndi.impl.flat;
 
+import org.huberb.ee8sample.jndi.impl.flat.FlatCtx;
+import org.huberb.ee8sample.jndi.impl.flat.LookupFs;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;

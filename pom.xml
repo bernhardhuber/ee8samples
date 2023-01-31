@@ -21,6 +21,7 @@
         <module>wildfly</module>
         <module>mail</module>
         <module>genericdata</module>
+        <module>jndi</module>
     </modules>
     <dependencyManagement>
         <dependencies>

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.fs.jndi.hierarchysearch;
+package org.huberb.ee8sample.jndi.impl.hierarchysearch;
 
+import org.huberb.ee8sample.jndi.impl.hierarchysearch.HierDirCtx;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;

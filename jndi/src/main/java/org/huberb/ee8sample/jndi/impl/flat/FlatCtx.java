@@ -30,7 +30,7 @@
  * maintenance of any nuclear facility. Licensee represents and warrants
  * that it will not use or redistribute the Software for such purposes.  
  */
-package org.huberb.ee8sample.fs.jndi.flat;
+package org.huberb.ee8sample.jndi.impl.flat;
 
 import java.util.Collections;
 import java.util.HashMap;

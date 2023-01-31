@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.fs.jndi.flat;
+package org.huberb.ee8sample.jndi.impl.flat;
 
 import javax.naming.Context;
 import javax.naming.NamingException;

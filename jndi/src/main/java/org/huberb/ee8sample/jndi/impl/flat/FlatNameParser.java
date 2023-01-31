@@ -1,4 +1,4 @@
-package org.huberb.ee8sample.fs.jndi.flat;
+package org.huberb.ee8sample.jndi.impl.flat;
 
 /*
  * "@(#)FlatNameParser.java	1.1	00/01/18 SMI"

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.fs.jndi.hierarchy;
+package org.huberb.ee8sample.jndi.impl.hierarchy;
 
+import org.huberb.ee8sample.jndi.impl.hierarchy.HierParser;
 import javax.naming.Name;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;

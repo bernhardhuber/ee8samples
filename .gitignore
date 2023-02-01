@@ -52,3 +52,4 @@ replay_pid*
 **/temp/
 
 /genericdata/nbproject/
+/.idea/

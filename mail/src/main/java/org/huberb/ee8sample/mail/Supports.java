@@ -23,6 +23,7 @@ import javax.mail.MessagingException;
  * @author berni3
  */
 public class Supports {
+
     /**
      * Define a consumer for jdbc operations.
      *
@@ -31,6 +32,11 @@ public class Supports {
      */
     @FunctionalInterface
     public static interface ConsumerThrowingMessagingException<T> {
+
+        public static <T> ConsumerThrowingMessagingException<T> NOOP() {
+            return t -> {
+            };
+        }
 
         /**
          * Performs this operation on the given argument.
@@ -62,6 +68,12 @@ public class Supports {
 
     }
 
+    /**
+     * Define a functions for jdbc operations.
+     *
+     * @param <T> input type of the function
+     * @param <R> output type of the function
+     */
     @FunctionalInterface
     public static interface FunctionThrowingMessagingException<T, R> {
 
@@ -79,8 +91,8 @@ public class Supports {
          * If evaluation of either function throws an exception, it is relayed
          * to the caller of the composed function.
          *
-         * @param <V>    the type of input to the {@code before} function, and to
-         *               the composed function
+         * @param <V> the type of input to the {@code before} function, and to
+         * the composed function
          * @param before the function to apply before this function is applied
          * @return a composed function that first applies the {@code before}
          * function and then applies this function
@@ -98,8 +110,8 @@ public class Supports {
          * evaluation of either function throws an exception, it is relayed to
          * the caller of the composed function.
          *
-         * @param <V>   the type of output of the {@code after} function, and of
-         *              the composed function
+         * @param <V> the type of output of the {@code after} function, and of
+         * the composed function
          * @param after the function to apply after this function is applied
          * @return a composed function that first applies this function and then
          * applies the {@code after} function
@@ -122,8 +134,8 @@ public class Supports {
         }
     }
 
-
     public static class MailRuntimeException extends RuntimeException {
+
         public MailRuntimeException(String m) {
             super(m);
         }

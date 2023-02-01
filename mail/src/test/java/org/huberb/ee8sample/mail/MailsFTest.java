@@ -15,21 +15,22 @@
  */
 package org.huberb.ee8sample.mail;
 
-import org.huberb.ee8sample.mail.MailsF.*;
-import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
+import java.util.Properties;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import java.util.Properties;
-
+import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilder;
+import org.huberb.ee8sample.mail.MailsF.InternetAddressF;
+import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
+import org.huberb.ee8sample.mail.MailsF.SessionsF;
+import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author berni3
@@ -75,13 +76,13 @@ public class MailsFTest {
         );
         addressF.consume(InternetAddressF.Consumers.addressPersonalValidate("me@localhost", "Ich"));
 
-        Address addressFaddress = new InternetAddressBuilderF().addressPersonal("me@localhost", "Ich").build();
+        Address addressFaddress = new InternetAddressBuilder().addressPersonal("me@localhost", "Ich").build();
         Address[] addresses = new Address[]{
-                new InternetAddressBuilderTraditional().addressPersonal("me@localhost", "Ich").build(),
-                new InternetAddressBuilderTraditional().addressPersonal("you@localhost", "Du").build()
+            new InternetAddressBuilder().addressPersonal("me@localhost", "Ich").build(),
+            new InternetAddressBuilder().addressPersonal("you@localhost", "Du").build()
         };
 
-        MimeMessageF messageF = SessionTransportF.MimeMessages.mimeMessageF().apply(session);
+        MimeMessageF messageF = SessionsF.MimeMessages.mimeMessageF().apply(session);
         ConsumerThrowingMessagingException<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
                 .andThen(MimeMessageF.Consumers.recipient(RecipientType.TO, "me@localhost"))
                 .andThen(MimeMessageF.Consumers.recipient(RecipientType.CC, addressFaddress))

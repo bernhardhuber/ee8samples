@@ -32,6 +32,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import org.huberb.ee8sample.mail.Supports.FunctionThrowingMessagingException;
+import org.huberb.ee8sample.mail.Supports.MailRuntimeException;
 
 /**
  * Wrappers for sending emails using {@link javax.mail} API.
@@ -40,32 +41,21 @@ import org.huberb.ee8sample.mail.Supports.FunctionThrowingMessagingException;
  */
 public class MailsF {
 
-    static class SessionTransportF {
+    static class SessionsF {
 
-        final Session session;
+        static class Functions {
 
-        public SessionTransportF(Session session) {
-            this.session = session;
-        }
+            static FunctionThrowingMessagingException<Session, Boolean> debug() {
+                return session -> {
+                    return session.getDebug();
+                };
+            }
 
-        <T> T provide(FunctionThrowingMessagingException<Session, T> f) throws MessagingException {
-            return f.apply(this.session);
-        }
-
-        static FunctionThrowingMessagingException<Session, Boolean> debug() {
-            return session -> {
-                return session.getDebug();
-            };
-        }
-
-        static FunctionThrowingMessagingException<Session, PrintStream> debugOut() {
-            return session -> {
-                return session.getDebugOut();
-            };
-        }
-
-        void consume(Consumer<Session> c) {
-            c.accept(this.session);
+            static FunctionThrowingMessagingException<Session, PrintStream> debugOut() {
+                return session -> {
+                    return session.getDebugOut();
+                };
+            }
         }
 
         static class Consumers {
@@ -129,24 +119,13 @@ public class MailsF {
         }
     }
 
-    static class TransportF {
+    static class TransportsF {
 
-        final Transport transport;
+        static class Functions {
 
-        public TransportF(Transport transport) {
-            this.transport = transport;
-        }
-
-        <T> T provide(Function<Transport, T> f) {
-            return f.apply(this.transport);
-        }
-
-        Function<Transport, Boolean> connected() {
-            return transport -> transport.isConnected();
-        }
-
-        void consume(ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
-            c.accept(this.transport);
+            Function<Transport, Boolean> connected() {
+                return transport -> transport.isConnected();
+            }
         }
 
         static class Consumers {
@@ -307,7 +286,7 @@ public class MailsF {
                         ia.setPersonal(personal, charset);
                     } catch (UnsupportedEncodingException ex) {
                         String m = String.format("personal [%s]", personal);
-                        throw new RuntimeException(m, ex);
+                        throw new MailRuntimeException(m, ex);
                     }
                 };
             }
@@ -318,7 +297,7 @@ public class MailsF {
                         ia.validate();
                     } catch (AddressException ex) {
                         final String m = String.format("validate [%s]", ia);
-                        throw new RuntimeException(m, ex);
+                        throw new MailRuntimeException(m, ex);
                     }
                 };
             }
@@ -372,77 +351,51 @@ public class MailsF {
         }
     }
 
-    static class InternetAddressBuilderF {
-
-        final InternetAddressF addressF = new InternetAddressF();
-
-        InternetAddressBuilderF address(String address) {
-            addressF.consume(InternetAddressF.Consumers.address(address));
-            return this;
-        }
-
-        InternetAddressBuilderF personal(String address) {
-            addressF.consume(InternetAddressF.Consumers.personal(address));
-            return this;
-        }
-
-        InternetAddressBuilderF addressPersonal(String address, String personal) {
-            addressF.consume(InternetAddressF.Consumers.address(address)
-                    .andThen(InternetAddressF.Consumers.personal(personal)));
-            return this;
-        }
-
-        InternetAddress build() {
-            addressF.consume(InternetAddressF.Consumers.validate());
-            return this.addressF.getInternetAddress();
-        }
-    }
-
-    static class InternetAddressBuilderTraditional {
+    static class InternetAddressBuilder {
 
         final InternetAddress internetAddress;
 
-        public InternetAddressBuilderTraditional() {
+        public InternetAddressBuilder() {
             this(new InternetAddress());
         }
 
-        public InternetAddressBuilderTraditional(InternetAddress ia) {
+        public InternetAddressBuilder(InternetAddress ia) {
             this.internetAddress = ia;
         }
 
-        InternetAddressBuilderTraditional address(String address) {
+        InternetAddressBuilder address(String address) {
             this.internetAddress.setAddress(address);
             return this;
         }
 
-        InternetAddressBuilderTraditional personal(String personal) {
+        InternetAddressBuilder personal(String personal) {
             try {
                 this.internetAddress.setPersonal(personal, "UTF-8");
                 return this;
             } catch (UnsupportedEncodingException ex) {
                 String m = String.format("setting personal [%s]", personal);
-                throw new RuntimeException(m, ex);
+                throw new MailRuntimeException(m, ex);
             }
         }
 
-        InternetAddressBuilderTraditional addressPersonal(String address, String personal) {
+        InternetAddressBuilder addressPersonal(String address, String personal) {
             try {
                 this.internetAddress.setAddress(address);
                 this.internetAddress.setPersonal(personal, "UTF-8");
             } catch (UnsupportedEncodingException ex) {
                 String m = String.format("setting address personal [%s], address [%s]", personal, address);
-                throw new RuntimeException(m, ex);
+                throw new MailRuntimeException(m, ex);
             }
             return this;
         }
 
-        InternetAddressBuilderTraditional validate() {
+        InternetAddressBuilder validate() {
             try {
                 this.internetAddress.validate();
                 return this;
             } catch (AddressException ex) {
                 String m = String.format("validating address [%s]", this.internetAddress.getAddress());
-                throw new RuntimeException(m, ex);
+                throw new MailRuntimeException(m, ex);
             }
         }
 

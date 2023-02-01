@@ -73,6 +73,7 @@ public class BodyTextMergers {
             final String bodyText = merger.merge(template, args);
             return BodyTextMergers.assignBodyText(bodyText);
         }
+
         private final Locale locale;
 
         /**

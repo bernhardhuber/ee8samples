@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 berni3.
+ * Copyright 2023 berni3.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,21 @@
 package org.huberb.ee8sample.mail;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
+import java.util.MissingFormatArgumentException;
 import java.util.Properties;
 import java.util.stream.Stream;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import org.huberb.ee8sample.mail.BodyTextMergers.SimpleSubstitutionBodyMerger;
 import org.huberb.ee8sample.mail.BodyTextMergers.StringFormatBodyMerger;
 import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
+import org.huberb.ee8sample.mail.Supports.MailRuntimeException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * @author berni3
  */
-public class BodyTextMergersTest {
+public class StringFormatBodyMergerTest {
 
     Session session;
 
@@ -86,6 +86,25 @@ public class BodyTextMergersTest {
         assertNormalized("Hello world, body text. ", (String) mimeMessage.getContent());
     }
 
+    @Test
+    public void testStringFormatBodyMergerAssignBodyText_badTemplate() throws MessagingException, IOException {
+        MailRuntimeException mrex = assertThrows(MailRuntimeException.class, () -> {
+            final MimeMessage mimeMessage = createAMimeMessage();
+            //---
+            final String template = "Hello %s, %s %s%n"
+                    + "body text.%n";
+            final ConsumerThrowingMessagingException<MimeMessage> assignBodyTextConsumer = StringFormatBodyMerger.assignBodyText(
+                    template,
+                    new Object[]{"world"}
+            );
+            assignBodyTextConsumer.accept(mimeMessage);
+            assertNormalized("Hello world, body text. ", (String) mimeMessage.getContent());
+        });
+        assertNotNull(mrex);
+        assertEquals("merge: template: \'Hello %s, %s %s%nbody text.%n\', arguments: \'[world]\'", mrex.getMessage());
+        assertEquals(MissingFormatArgumentException.class, mrex.getCause().getClass());
+    }
+
     @ParameterizedTest
     @MethodSource("localeProvider")
     public void testStringFormatBodyMergerAssignBodyText_vary_locale(Locale locale) throws MessagingException, IOException {
@@ -104,25 +123,6 @@ public class BodyTextMergersTest {
 
     public static Stream<Locale> localeProvider() {
         return Stream.of(Locale.getDefault(), Locale.GERMAN, Locale.ENGLISH);
-    }
-
-    @Test
-    public void testSimpleSubstitutionBodyMergerAssignBodyText() throws MessagingException, IOException {
-        final MimeMessage mimeMessage = createAMimeMessage();
-        //---
-        Map<String, Object> map = new HashMap<>() {
-            {
-                put("name", "world");
-            }
-        };
-        final String template = "Hello @name@,\r\n"
-                + "body text.\r\n";
-        final ConsumerThrowingMessagingException<MimeMessage> assignBodyTextConsumer = SimpleSubstitutionBodyMerger.assignBodyText(
-                template,
-                map
-        );
-        assignBodyTextConsumer.accept(mimeMessage);
-        assertNormalized("Hello world, body text. ", (String) mimeMessage.getContent());
     }
 
     void assertNormalized(String exp, String res) {

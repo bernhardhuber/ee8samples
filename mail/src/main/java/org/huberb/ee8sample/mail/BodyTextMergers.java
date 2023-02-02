@@ -18,6 +18,8 @@ package org.huberb.ee8sample.mail;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import javax.mail.internet.MimeMessage;
@@ -109,7 +111,8 @@ public class BodyTextMergers {
                 final String result = String.format(locale, template, arguments);
                 return result;
             } catch (IllegalArgumentException iaex) {
-                throw new MailRuntimeException("merge", iaex);
+                final String m = String.format("merge: template: '%s', arguments: '%s'", template, Arrays.toString(arguments));
+                throw new MailRuntimeException(m, iaex);
             }
         }
     }
@@ -202,5 +205,42 @@ public class BodyTextMergers {
             }
             return strV;
         }
+    }
+
+    /**
+     * Merger using {@link MessageFormat#format} internally for merging.
+     *
+     * @see MessageFormat
+     * @see MessageFormat#format
+     */
+    public static class MessageFormatBodyMerger {
+
+        /**
+         * Create a consumer for setting mime-message text.
+         *
+         * @param template {@link MessageFormat} pattern
+         * @param args arguments for the template
+         * @return
+         *
+         */
+        public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(String template, Object[] args) {
+            return assignBodyText(Locale.getDefault(), template, args);
+        }
+
+        /**
+         * Create a consumer for setting mime-message text.
+         *
+         * @param locale
+         * @param template {@link MessageFormat} pattern
+         * @param args arguments for the template
+         * @return
+         *
+         */
+        public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(Locale locale, String template, Object[] args) {
+            final MessageFormat messageFormat = new MessageFormat(template, locale);
+            final String bodyText = messageFormat.format(args);
+            return BodyTextMergers.assignBodyText(bodyText);
+        }
+
     }
 }

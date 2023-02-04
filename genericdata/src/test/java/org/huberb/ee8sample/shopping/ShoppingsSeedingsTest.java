@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.genericdata;
+package org.huberb.ee8sample.shopping;
 
+import org.huberb.ee8sample.shopping.ShoppingsSeedings;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;

@@ -16,25 +16,22 @@
 package org.huberb.ee8sample.mail;
 
 import java.util.Properties;
-import java.util.function.Consumer;
 import javax.mail.Address;
-import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilderF;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilderTraditional;
+import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilder;
 import org.huberb.ee8sample.mail.MailsF.InternetAddressF;
 import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
-import org.huberb.ee8sample.mail.MailsF.SessionTransportF;
+import org.huberb.ee8sample.mail.MailsF.SessionF;
+import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- *
  * @author berni3
  */
 public class MailsFTest {
@@ -53,19 +50,17 @@ public class MailsFTest {
     public void hello1() throws MessagingException {
         assertNotNull(session);
 
-        MimeMessageF messageF = new MimeMessageF(session);
-        Consumer<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
+        ConsumerThrowingMessagingException<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
                 .andThen(MimeMessageF.Consumers.recipient(RecipientType.TO, "me@localhost"))
                 .andThen(MimeMessageF.Consumers.subject("subject"))
                 .andThen(MimeMessageF.Consumers.text("text"));
 
-        messageF.consume(c);
-        Message m = messageF.getMimeMessage();
-        assertNotNull(m);
-
-        assertEquals("subject", m.getSubject());
-        assertEquals("me@localhost", m.getFrom()[0].toString());
-        assertEquals("me@localhost", m.getRecipients(RecipientType.TO)[0].toString());
+        final MimeMessage mimeMessage = SessionF.MimeMessages.mimeMessage().apply(session);
+        c.accept(mimeMessage);
+        assertNotNull(mimeMessage);
+        assertEquals("subject", mimeMessage.getSubject());
+        assertEquals("me@localhost", mimeMessage.getFrom()[0].toString());
+        assertEquals("me@localhost", mimeMessage.getRecipients(RecipientType.TO)[0].toString());
     }
 
     @Test
@@ -78,28 +73,28 @@ public class MailsFTest {
         );
         addressF.consume(InternetAddressF.Consumers.addressPersonalValidate("me@localhost", "Ich"));
 
-        Address addressFaddress = new InternetAddressBuilderF().addressPersonal("me@localhost", "Ich").build();
+        Address addressFaddress = new InternetAddressBuilder().addressPersonal("me@localhost", "Ich").build();
         Address[] addresses = new Address[]{
-            new InternetAddressBuilderTraditional().addressPersonal("me@localhost", "Ich").build(),
-            new InternetAddressBuilderTraditional().addressPersonal("you@localhost", "Du").build()
+            new InternetAddressBuilder().addressPersonal("me@localhost", "Ich").build()
         };
-
-        MimeMessageF messageF = SessionTransportF.MimeMessages.mimeMessageF().apply(session);
-        Consumer<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
+        ConsumerThrowingMessagingException<MimeMessage> c = MimeMessageF.Consumers.from(
+                "me@localhost")
                 .andThen(MimeMessageF.Consumers.recipient(RecipientType.TO, "me@localhost"))
                 .andThen(MimeMessageF.Consumers.recipient(RecipientType.CC, addressFaddress))
                 .andThen(MimeMessageF.Consumers.recipients(RecipientType.BCC, addresses))
                 .andThen(MimeMessageF.Consumers.subject("subject"))
                 .andThen(MimeMessageF.Consumers.text("text"));
 
-        messageF.consume(c);
-        Message m = messageF.getMimeMessage();
-        assertNotNull(m);
+        final MimeMessage mimeMessage = SessionF.MimeMessages.mimeMessage().apply(session);
 
-        assertEquals("subject", m.getSubject());
-        assertEquals("me@localhost", m.getFrom()[0].toString());
-        assertEquals("me@localhost", m.getRecipients(RecipientType.TO)[0].toString());
-        assertEquals("Ich <me@localhost>", m.getRecipients(RecipientType.CC)[0].toString());
+        c.accept(mimeMessage);
+
+        assertNotNull(mimeMessage);
+
+        assertEquals("subject", mimeMessage.getSubject());
+        assertEquals("me@localhost", mimeMessage.getFrom()[0].toString());
+        assertEquals("me@localhost", mimeMessage.getRecipients(RecipientType.TO)[0].toString());
+        assertEquals("Ich <me@localhost>", mimeMessage.getRecipients(RecipientType.CC)[0].toString());
     }
 
 }

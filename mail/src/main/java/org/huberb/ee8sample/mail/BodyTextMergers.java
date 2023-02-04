@@ -18,17 +18,32 @@ package org.huberb.ee8sample.mail;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Consumer;
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
+import org.huberb.ee8sample.mail.Supports.MailRuntimeException;
 
 /**
+ * Some very simple text template mergers.
  *
  * @author berni3
  */
 public class BodyTextMergers {
+
+    /**
+     * Create a consumer for setting mime-message text.
+     *
+     * @param bodyText
+     * @return
+     */
+    public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(String bodyText) {
+        return (mm) -> {
+            mm.setText(bodyText);
+        };
+    }
 
     /**
      * Merger using {@link String#format(java.lang.String, java.lang.Object...)
@@ -36,33 +51,70 @@ public class BodyTextMergers {
      */
     public static class StringFormatBodyMerger {
 
+        /**
+         * Create a consumer for setting mime-message text.
+         *
+         * @param template
+         * @param args
+         * @return
+         */
+        public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(String template, Object[] args) {
+            return StringFormatBodyMerger.assignBodyText(Locale.getDefault(), template, args);
+        }
+
+        /**
+         * Create a consumer for setting mime-message text.
+         *
+         * @param locale
+         * @param template
+         * @param args
+         * @return
+         */
+        public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(Locale locale, String template, Object[] args) {
+            final StringFormatBodyMerger merger = new StringFormatBodyMerger(locale);
+            final String bodyText = merger.merge(template, args);
+            return BodyTextMergers.assignBodyText(bodyText);
+        }
+
         private final Locale locale;
 
+        /**
+         * Create instance with locale {@link Locale#getDefault()}.
+         */
         public StringFormatBodyMerger() {
             this(Locale.getDefault());
         }
 
+        /**
+         * Create instance with given {@link Locale} instance.
+         *
+         * @param l
+         */
         public StringFormatBodyMerger(Locale l) {
             this.locale = l;
         }
 
-        public static Consumer<MimeMessage> assignBodyText(String template, Object[] args) {
-            return (mm) -> {
-                try {
-                    StringFormatBodyMerger merger = new StringFormatBodyMerger();
-                    String bodyText = merger.merge(template, args);
-                    mm.setText(bodyText);
-                } catch (MessagingException ex) {
-                    throw new RuntimeException("merge", ex);
-                }
-            };
-        }
-
-        public String merge(String template, Object[] args) {
+        /**
+         * Merge template with given arguments.
+         *
+         * @param template the template
+         * @param arguments the arguments for the template
+         * @return formatted {@link String}
+         * @throws MailRuntimeException if merge fails.
+         *
+         * @see String#format(java.util.Locale, java.lang.String,
+         * java.lang.Object...)
+         */
+        public String merge(String template, Object[] arguments) {
             // TODO how to handle IllegalArgumentException?
             // maybe thrown by String#format
-            final String result = String.format(locale, template, args);
-            return result;
+            try {
+                final String result = String.format(locale, template, arguments);
+                return result;
+            } catch (IllegalArgumentException iaex) {
+                final String m = String.format("merge: template: '%s', arguments: '%s'", template, Arrays.toString(arguments));
+                throw new MailRuntimeException(m, iaex);
+            }
         }
     }
 
@@ -71,16 +123,17 @@ public class BodyTextMergers {
      */
     public static class SimpleSubstitutionBodyMerger {
 
-        public static Consumer<MimeMessage> assignBodyText(String template, Map<String, Object> m) {
-            return (mm) -> {
-                try {
-                    SimpleSubstitutionBodyMerger merger = new SimpleSubstitutionBodyMerger();
-                    String bodyText = merger.merge(template, m);
-                    mm.setText(bodyText);
-                } catch (MessagingException ex) {
-                    throw new RuntimeException("merge", ex);
-                }
-            };
+        /**
+         * Create a consumer for setting mime-message text.
+         *
+         * @param template
+         * @param m
+         * @return
+         */
+        public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(String template, Map<String, Object> m) {
+            final SimpleSubstitutionBodyMerger merger = new SimpleSubstitutionBodyMerger();
+            final String bodyText = merger.merge(template, m);
+            return BodyTextMergers.assignBodyText(bodyText);
         }
 
         private final int EOF = -1;
@@ -97,18 +150,26 @@ public class BodyTextMergers {
 
         }
 
+        /**
+         * Merge template with given arguments represented as {@link Map}.
+         *
+         * @param template
+         * @param m
+         * @return
+         *
+         * @throws MailRuntimeException if merge fails.
+         */
         public String merge(String template, Map<String, Object> m) {
             try {
                 return process(template, m);
-            } catch (IOException ex) {
-                throw new RuntimeException("merge", ex);
+            } catch (IOException ioex) {
+                throw new MailRuntimeException("merge", ioex);
             }
         }
 
         String process(String template, Map<String, Object> m) throws IOException {
             final StringBuilder sb = new StringBuilder();
 
-            // This can be easiliy FileReader or any Reader
             try (final Reader sr = new StringReader(template)) {
                 for (int c; (c = sr.read()) != EOF;) {
                     if (c == varDelimStart) {
@@ -144,6 +205,71 @@ public class BodyTextMergers {
                 strV = String.valueOf(v);
             }
             return strV;
+        }
+    }
+
+    /**
+     * Merger using {@link MessageFormat#format} internally for merging.
+     *
+     * @see MessageFormat
+     * @see MessageFormat#format
+     */
+    public static class MessageFormatBodyMerger {
+
+        /**
+         * Create a consumer for setting mime-message text.
+         *
+         * @param template {@link MessageFormat} pattern
+         * @param arguments arguments for the template
+         * @return
+         *
+         */
+        public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(String template, Object[] arguments) {
+            return assignBodyText(Locale.getDefault(), template, arguments);
+        }
+
+        /**
+         * Create a consumer for setting mime-message text.
+         *
+         * @param locale
+         * @param template {@link MessageFormat} pattern
+         * @param arguments arguments for the template
+         * @return
+         *
+         */
+        public static ConsumerThrowingMessagingException<MimeMessage> assignBodyText(Locale locale, String template, Object[] arguments) {
+            MessageFormatBodyMerger messageFormatBodyMerger = new MessageFormatBodyMerger(locale);
+            final String bodyText = messageFormatBodyMerger.merge(template, arguments);
+            return BodyTextMergers.assignBodyText(bodyText);
+        }
+
+        private final Locale locale;
+
+        public MessageFormatBodyMerger() {
+            this(Locale.getDefault());
+        }
+
+        public MessageFormatBodyMerger(Locale locale) {
+            this.locale = locale;
+        }
+
+        /**
+         * Merge template with given arguments.
+         *
+         * @param template
+         * @param arguments
+         * @return
+         * @see MessageFormat#format(java.lang.Object)
+         */
+        public String merge(String template, Object[] arguments) {
+            try {
+                final MessageFormat messageFormat = new MessageFormat(template, locale);
+                final String bodyText = messageFormat.format(arguments);
+                return bodyText;
+            } catch (IllegalArgumentException iaex) {
+                final String m = String.format("merge: template: '%s', arguments: '%s'", template, Arrays.toString(arguments));
+                throw new MailRuntimeException(m, iaex);
+            }
         }
     }
 }

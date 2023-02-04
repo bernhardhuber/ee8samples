@@ -17,8 +17,7 @@ package org.huberb.ee8sample.mail;
 
 import java.util.function.Consumer;
 import javax.mail.internet.InternetAddress;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilderF;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilderTraditional;
+import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilder;
 import org.huberb.ee8sample.mail.MailsF.InternetAddressF;
 import org.huberb.ee8sample.mail.MailsF.InternetAddressF.Consumers;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -64,7 +63,7 @@ public class InternetAddressTest {
             String expectedAddress = d[0];
             String inaddress = d[1];
 
-            InternetAddress ia = new InternetAddressBuilderF()
+            InternetAddress ia = new InternetAddressBuilder()
                     .address(inaddress)
                     .build();
 
@@ -74,7 +73,7 @@ public class InternetAddressTest {
             String expectedAddress = d[0];
             String inaddress = d[1];
 
-            InternetAddress ia = new InternetAddressBuilderTraditional()
+            InternetAddress ia = new InternetAddressBuilder()
                     .address(inaddress)
                     .build();
 
@@ -118,7 +117,7 @@ public class InternetAddressTest {
             String inaddress = d[1];
             String inpersonal = d[2];
 
-            InternetAddress ia = new InternetAddressBuilderF()
+            InternetAddress ia = new InternetAddressBuilder()
                     .address(inaddress)
                     .personal(inpersonal)
                     .build();
@@ -130,7 +129,7 @@ public class InternetAddressTest {
             String inaddress = d[1];
             String inpersonal = d[2];
 
-            InternetAddress ia = new InternetAddressBuilderTraditional()
+            InternetAddress ia = new InternetAddressBuilder()
                     .address(inaddress)
                     .personal(inpersonal)
                     .build();

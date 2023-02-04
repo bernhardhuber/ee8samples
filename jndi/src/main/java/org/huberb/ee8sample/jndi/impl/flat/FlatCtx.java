@@ -30,7 +30,7 @@
  * maintenance of any nuclear facility. Licensee represents and warrants
  * that it will not use or redistribute the Software for such purposes.  
  */
-package org.huberb.ee8sample.fs.jndi.flat;
+package org.huberb.ee8sample.jndi.impl.flat;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,20 +64,25 @@ public class FlatCtx implements Context {
     private Map<String, Object> bindings;
 
     public FlatCtx(Hashtable inEnv) {
-        this(inEnv, Collections.synchronizedMap(new HashMap<String, Object>()));
+        this(inEnv, null);
     }
 
-    private FlatCtx(Hashtable inEnv, Map<String, Object> bindings) {
+    private FlatCtx(Hashtable inEnv, Map<String, Object> inBindings) {
         this.myEnv = (inEnv != null)
                 ? (Hashtable) (inEnv.clone())
                 : new Hashtable(3, 0.75f);
-        this.bindings = bindings;
+
+        if (inBindings != null) {
+            final Map<String, Object> clonedBinding = new HashMap<String, Object>();
+            clonedBinding.putAll(inBindings);
+            this.bindings = clonedBinding;
+        } else {
+            this.bindings = Collections.synchronizedMap(new HashMap<String, Object>());
+        }
     }
 
     private FlatCtx cloneCtx() {
-        final Map<String, Object> clonedBinding = new HashMap<String, Object>();
-        clonedBinding.putAll(this.bindings);
-        return new FlatCtx(myEnv, clonedBinding);
+        return new FlatCtx(myEnv, this.bindings);
     }
 
     /**
@@ -112,10 +117,10 @@ public class FlatCtx implements Context {
         }
 
         // Extract components that belong to this namespace
-        String nm = getMyComponents(name);
+        final String nm = getMyComponents(name);
 
         // Find object in internal hash table
-        Object answer = bindings.get(nm);
+        final Object answer = bindings.get(nm);
         if (answer == null) {
             throw new NameNotFoundException(name + " not found");
         }
@@ -157,7 +162,7 @@ public class FlatCtx implements Context {
         }
 
         // Extract components that belong to this namespace
-        String nm = getMyComponents(name);
+        final String nm = getMyComponents(name);
 
         // Add object to internal hash table
         bindings.put(nm, obj);
@@ -193,8 +198,8 @@ public class FlatCtx implements Context {
         }
 
         // Extract components that belong to this namespace
-        String oldnm = getMyComponents(oldname);
-        String newnm = getMyComponents(newname);
+        final String oldnm = getMyComponents(oldname);
+        final String newnm = getMyComponents(newname);
 
         // Check if new name exists
         if (bindings.get(newnm) != null) {

@@ -29,6 +29,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
+import org.huberb.ee8sample.mail.MailsF.SessionF;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -122,9 +123,8 @@ public class DumbsterSendMessageIT {
                 .andThen(MimeMessageF.Consumers.sentDate(new Date()))
                 .andThen(MimeMessageF.Consumers.text(body));
 
-        final MimeMessageF messageF = new MimeMessageF(session);
-        messageF.consume(c);
-        final MimeMessage mimeMessage = messageF.getMimeMessage();
+        final MimeMessage mimeMessage = SessionF.MimeMessages.mimeMessage().apply(session);
+        c.accept(mimeMessage);
         return mimeMessage;
     }
 
@@ -144,10 +144,8 @@ public class DumbsterSendMessageIT {
                 throw new RuntimeException("createMessage3", ex);
             }
         };
-        final MimeMessageF messageF = new MimeMessageF(session);
-        messageF.consume(c);
-
-        final MimeMessage mimeMessage = messageF.getMimeMessage();
+        final MimeMessage mimeMessage = SessionF.MimeMessages.mimeMessage().apply(session);
+        c.accept(mimeMessage);
         return mimeMessage;
     }
 }

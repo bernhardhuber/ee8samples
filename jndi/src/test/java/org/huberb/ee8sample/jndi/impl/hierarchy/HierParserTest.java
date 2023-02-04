@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.fs.jndi.flat;
+package org.huberb.ee8sample.jndi.impl.hierarchy;
 
+import org.huberb.ee8sample.jndi.impl.hierarchy.HierParser;
 import javax.naming.Name;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,15 +27,16 @@ import org.junit.jupiter.params.provider.ValueSource;
  *
  * @author berni3
  */
-public class FlatNameParserTest {
+public class HierParserTest {
 
     /**
      * Test of parse method, of class FlatNameParser.
      */
     @ParameterizedTest
-    @ValueSource(strings = {"name", "anothername123", "_A_B_-_C_D_", "name.subname"})
+    @ValueSource(strings = {"name", "anothername123", "_A_B_-_C_D_"})
     public void testParse(String theName) throws Exception {
-        FlatNameParser fnp = new FlatNameParser();
+        HierParser fnp = new HierParser();
+
         Name name = fnp.parse(theName);
         assertNotNull(name);
         assertAll(
@@ -45,5 +47,23 @@ public class FlatNameParserTest {
                 () -> assertEquals(1, name.size())
         );
     }
+    /**
+     * Test of parse method, of class FlatNameParser.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = { "name.subname"})
+    public void testParse_1_subname(String theName) throws Exception {
+        HierParser fnp = new HierParser();
 
+        Name name = fnp.parse(theName);
+        assertNotNull(name);
+        assertAll(
+                () -> assertEquals("name", name.get(0)),
+                () -> assertEquals("subname", name.get(1)),
+                () -> assertEquals(true, name.getAll().hasMoreElements()),
+                () -> assertEquals("name", name.getAll().nextElement()),
+                () -> assertEquals(false, name.isEmpty()),
+                () -> assertEquals(2, name.size())
+        );
+    }
 }

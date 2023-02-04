@@ -41,96 +41,92 @@ import org.huberb.ee8sample.mail.Supports.MailRuntimeException;
  */
 public class MailsF {
 
-    static class SessionsF {
+    /**
+     * Functional inspired wrapper for mail {@link Session}.
+     */
+    public static class SessionF {
 
-        static class Functions {
-
-            static FunctionThrowingMessagingException<Session, Boolean> debug() {
-                return session -> {
-                    return session.getDebug();
-                };
-            }
-
-            static FunctionThrowingMessagingException<Session, PrintStream> debugOut() {
-                return session -> {
-                    return session.getDebugOut();
-                };
-            }
+        public static FunctionThrowingMessagingException<Session, Boolean> debug() {
+            return session -> {
+                return session.getDebug();
+            };
         }
 
-        static class Consumers {
+        public static FunctionThrowingMessagingException<Session, PrintStream> debugOut() {
+            return session -> {
+                return session.getDebugOut();
+            };
+        }
 
-            static Consumer<Session> debug(boolean v) {
+        public static class Consumers {
+
+            public static Consumer<Session> debug(boolean v) {
                 return session -> {
                     session.setDebug(v);
                 };
             }
 
-            static Consumer<Session> debugOut(PrintStream out) {
+            public static Consumer<Session> debugOut(PrintStream out) {
                 return session -> {
                     session.setDebugOut(out);
                 };
             }
         }
 
-        static class Transports {
+        public static class Transports {
 
-            static FunctionThrowingMessagingException<Session, Transport> transport() {
+            public static FunctionThrowingMessagingException<Session, Transport> transport() {
                 return session -> {
                     return session.getTransport();
                 };
             }
 
-            static FunctionThrowingMessagingException<Session, Transport> transport(Address address) {
+            public static FunctionThrowingMessagingException<Session, Transport> transport(Address address) {
                 return session -> {
                     return session.getTransport(address);
                 };
             }
 
-            static FunctionThrowingMessagingException<Session, Transport> transport(String protocol) {
+            public static FunctionThrowingMessagingException<Session, Transport> transport(String protocol) {
                 return session -> {
                     return session.getTransport(protocol);
                 };
             }
 
-            static FunctionThrowingMessagingException<Session, Transport> transport(javax.mail.Provider provider) {
+            public static FunctionThrowingMessagingException<Session, Transport> transport(javax.mail.Provider provider) {
                 return session -> {
                     return session.getTransport(provider);
                 };
             }
 
-            static FunctionThrowingMessagingException<Session, Transport> transport(javax.mail.URLName protocol) {
+            public static FunctionThrowingMessagingException<Session, Transport> transport(javax.mail.URLName protocol) {
                 return session -> {
                     return session.getTransport(protocol);
                 };
             }
         }
 
-        static class MimeMessages {
+        public static class MimeMessages {
 
-            static Function<Session, MimeMessage> mimeMessage() {
+            public static Function<Session, MimeMessage> mimeMessage() {
                 return session -> new MimeMessage(session);
-            }
-
-            static Function<Session, MimeMessageF> mimeMessageF() {
-                return session -> new MimeMessageF(new MimeMessage(session));
             }
 
         }
     }
 
-    static class TransportsF {
+    /**
+     * Functional inspired wrapper for mail {@link Transport}.
+     */
+    public static class TransportF {
 
-        static class Functions {
-
-            Function<Transport, Boolean> connected() {
-                return transport -> transport.isConnected();
-            }
+        public Function<Transport, Boolean> connected() {
+            return transport -> transport.isConnected();
         }
 
-        static class Consumers {
+        public static class Consumers {
 
-            static void withConnected(Transport transport,
+            public static void withConnected(Transport transport,
                     ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
                 try {
                     transport.connect();
@@ -140,7 +136,7 @@ public class MailsF {
                 }
             }
 
-            static void withConnect(Transport transport,
+            public static void withConnect(Transport transport,
                     String u, String p,
                     ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
                 try {
@@ -151,7 +147,7 @@ public class MailsF {
                 }
             }
 
-            static void withConnect(Transport transport,
+            public static void withConnect(Transport transport,
                     String host, int port, String u, String p,
                     ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
                 try {
@@ -164,81 +160,61 @@ public class MailsF {
         }
     }
 
-    static class MimeMessageF {
+    /**
+     * Functional inspired wrapper for mail {@link MimeMessage}.
+     */
+    public static class MimeMessageF {
 
-        final MimeMessage mimeMessage;
+        public static class Consumers {
 
-        public MimeMessageF(MimeMessage mm) {
-            this.mimeMessage = mm;
-        }
-
-        public MimeMessageF(Session session) {
-            this.mimeMessage = new MimeMessage(session);
-        }
-
-        public MimeMessage getMimeMessage() {
-            return this.mimeMessage;
-        }
-
-        public void consume(ConsumerThrowingMessagingException<MimeMessage> c) throws MessagingException {
-            c.accept(this.mimeMessage);
-        }
-
-        static class Consumers {
-
-            static ConsumerThrowingMessagingException<MimeMessage> from(String address) {
+            public static ConsumerThrowingMessagingException<MimeMessage> from(String address) {
                 return msg -> {
                     msg.setFrom(address);
                 };
             }
 
-            static ConsumerThrowingMessagingException<MimeMessage> recipient(RecipientType rt, String address) {
+            public static ConsumerThrowingMessagingException<MimeMessage> recipient(RecipientType rt, String address) {
                 return msg -> {
                     msg.setRecipients(rt, address);
                 };
             }
 
-            static ConsumerThrowingMessagingException<MimeMessage> recipient(RecipientType rt, Address address) {
+            public static ConsumerThrowingMessagingException<MimeMessage> recipient(RecipientType rt, Address address) {
                 return recipients(rt, new Address[]{address});
             }
 
-            static ConsumerThrowingMessagingException<MimeMessage> recipients(RecipientType rt, Address[] addresses) {
+            public static ConsumerThrowingMessagingException<MimeMessage> recipients(RecipientType rt, Address[] addresses) {
                 return msg -> {
                     msg.setRecipients(rt, addresses);
                 };
             }
 
-            static ConsumerThrowingMessagingException<MimeMessage> subject(String subject) {
+            public static ConsumerThrowingMessagingException<MimeMessage> subject(String subject) {
                 return subject(subject, null);
             }
 
-            static ConsumerThrowingMessagingException<MimeMessage> subject(String subject, String charset) {
+            public static ConsumerThrowingMessagingException<MimeMessage> subject(String subject, String charset) {
                 return msg -> {
                     msg.setSubject(subject, charset);
                 };
             }
 
-            static ConsumerThrowingMessagingException<MimeMessage> sentDate(Date d) {
+            public static ConsumerThrowingMessagingException<MimeMessage> sentDate(Date d) {
                 return msg -> {
                     msg.setSentDate(d);
                 };
             }
 
-            static ConsumerThrowingMessagingException<MimeMessage> text(String text) {
+            public static ConsumerThrowingMessagingException<MimeMessage> text(String text) {
                 return msg -> {
                     msg.setText(text);
                 };
             }
         }
 
-        //---
-        public <T> T provide(FunctionThrowingMessagingException<MimeMessage, T> f) throws MessagingException {
-            return f.apply(this.mimeMessage);
-        }
+        public static class Providers {
 
-        static class Providers {
-
-            static FunctionThrowingMessagingException<MimeMessage, Address[]> allRecipients() {
+            public static FunctionThrowingMessagingException<MimeMessage, Address[]> allRecipients() {
                 return msg -> {
                     return msg.getAllRecipients();
                 };
@@ -246,7 +222,10 @@ public class MailsF {
         }
     }
 
-    static class InternetAddressF {
+    /**
+     * Functional inspired wrapper for mail {@link InternetAddress}.
+     */
+    public static class InternetAddressF {
 
         final InternetAddress address;
 
@@ -308,7 +287,7 @@ public class MailsF {
      * Define a recipient by its {@link RecipientType} and list of
      * {@link InternetAddress} sharing the same {@link RecipientType}.
      */
-    static class Recipient {
+    public static class Recipient {
 
         private RecipientType rt;
         private final List<InternetAddress> iaList = new ArrayList<>();
@@ -351,7 +330,7 @@ public class MailsF {
         }
     }
 
-    static class InternetAddressBuilder {
+    public static class InternetAddressBuilder {
 
         final InternetAddress internetAddress;
 

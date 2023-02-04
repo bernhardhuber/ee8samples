@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.fs.jndi.hierarchy;
+package org.huberb.ee8sample.jndi.impl.hierarchy;
 
+import org.huberb.ee8sample.jndi.impl.hierarchy.HierCtx;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -85,10 +86,13 @@ public class HierCtxTest {
     @Test
     public void hello4() throws NamingException {
         assertTrue(hierCtx.getEnvironment().isEmpty());
+    }
+
+    @Test
+    public void hello5() throws NamingException {
         assertEquals("", hierCtx.getNameInNamespace());
     }
 
- 
     @Test
     public void testCreateSubcontext() throws NamingException {
         Context ctx = new HierCtx(null);

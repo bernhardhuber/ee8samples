@@ -1,7 +1,5 @@
-package org.huberb.ee8sample.fs.jndi.flat;
-
 /*
- * "@(#)FlatNameParser.java	1.1	00/01/18 SMI"
+ * "@(#)HierParser.java	1.1	00/01/18 SMI"
  *
  * Copyright 1997, 1998, 1999 Sun Microsystems, Inc. All Rights
  * Reserved.
@@ -32,19 +30,25 @@ package org.huberb.ee8sample.fs.jndi.flat;
  * maintenance of any nuclear facility. Licensee represents and warrants
  * that it will not use or redistribute the Software for such purposes. 
  */
+package org.huberb.ee8sample.jndi.impl.hierarchysearch;
+
 import java.util.Properties;
 import javax.naming.CompoundName;
 import javax.naming.Name;
 import javax.naming.NameParser;
 import javax.naming.NamingException;
 
-class FlatNameParser implements NameParser {
+class HierParser implements NameParser {
 
     private static final Properties syntax = new Properties();
 
     static {
-        syntax.put("jndi.syntax.direction", "flat");
+        //syntax.put("jndi.syntax.direction", "right_to_left");
+        syntax.put("jndi.syntax.direction", "left_to_right");
+        syntax.put("jndi.syntax.separator", ".");
         syntax.put("jndi.syntax.ignorecase", "false");
+        syntax.put("jndi.syntax.escape", "\\");
+        syntax.put("jndi.syntax.beginquote", "'");
     }
 
     @Override

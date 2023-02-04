@@ -23,8 +23,6 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import org.huberb.ee8sample.mail.DumbsterSendMessageIT.DumbsterSessionBuilder;
-import org.huberb.ee8sample.mail.MailsF.SessionsF;
-import org.huberb.ee8sample.mail.MailsF.TransportsF;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -46,9 +44,9 @@ public class DumbsterConnectIT {
                     .port(dumbster.getPort())
                     .build();
 
-            try (Transport transport = SessionsF.Transports.transport().apply(session)) {
+            try (Transport transport = MailsF.SessionF.Transports.transport().apply(session)) {
                 assertFalse(transport.isConnected());
-                TransportsF.Consumers.withConnected(transport,
+                MailsF.TransportF.Consumers.withConnected(transport,
                         (t) -> {
                             assertTrue(transport.isConnected());
                         });
@@ -67,13 +65,14 @@ public class DumbsterConnectIT {
 
             MessagingException rtex = Assertions.assertThrows(MessagingException.class,
                     () -> {
-                        try (Transport transport = SessionsF.Transports.transport().apply(session)) {
+                        try (Transport transport = MailsF.SessionF.Transports.transport().apply(session)) {
                             assertFalse(transport.isConnected());
 
-                            TransportsF.Consumers.withConnected(transport, ConsumerThrowingMessagingException.NOOP());
+                            MailsF.TransportF.Consumers.withConnected(transport, ConsumerThrowingMessagingException.NOOP());
                             assertFalse(transport.isConnected());
                         }
-                    });
+                    }
+            );
             assertNotNull(rtex);
             assertAll(
                     () -> {

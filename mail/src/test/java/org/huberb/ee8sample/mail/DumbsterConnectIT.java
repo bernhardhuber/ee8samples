@@ -23,7 +23,7 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import org.huberb.ee8sample.mail.DumbsterSendMessageIT.DumbsterSessionBuilder;
-import org.huberb.ee8sample.mail.MailsF.SessionTransportF;
+import org.huberb.ee8sample.mail.MailsF.SessionF;
 import org.huberb.ee8sample.mail.MailsF.TransportF;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -45,9 +45,8 @@ public class DumbsterConnectIT {
                     .port(dumbster.getPort())
                     .build();
 
-            try (Transport transport = new SessionTransportF(session).provide(SessionTransportF.Transports.transport())) {
+            try (Transport transport = SessionF.Transports.transport().apply(session)) {
                 assertFalse(transport.isConnected());
-                TransportF transportF = new TransportF(transport);
                 TransportF.Consumers.withConnected(transport,
                         (t) -> {
                             assertTrue(transport.isConnected());
@@ -67,9 +66,8 @@ public class DumbsterConnectIT {
 
             MessagingException rtex = Assertions.assertThrows(MessagingException.class,
                     () -> {
-                        try (Transport transport = new SessionTransportF(session).provide(SessionTransportF.Transports.transport())) {
+                        try (Transport transport = SessionF.Transports.transport().apply(session)) {
                             assertFalse(transport.isConnected());
-                            TransportF transportF = new TransportF(transport);
                             TransportF.Consumers.withConnected(transport,
                                     (t) -> {
                                     });

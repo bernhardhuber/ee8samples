@@ -25,6 +25,7 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import org.huberb.ee8sample.mail.BodyTextMergers.MessageFormatBodyMerger;
 import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
+import org.huberb.ee8sample.mail.MailsF.SessionF;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -52,21 +53,19 @@ public class MessageFormatBodyMergerTest {
 
     MimeMessage createAMimeMessage() throws MessagingException, IOException {
 
-        MimeMessageF messageF = new MimeMessageF(session);
         ConsumerThrowingMessagingException<MimeMessage> c = MimeMessageF.Consumers.from("me@localhost")
                 .andThen(MimeMessageF.Consumers.recipient(RecipientType.TO, "me@localhost"))
                 .andThen(MimeMessageF.Consumers.subject("subject"))
                 .andThen(MimeMessageF.Consumers.text("text"));
 
-        messageF.consume(c);
-        MimeMessage m = messageF.getMimeMessage();
-        assertNotNull(m);
-
-        assertEquals("subject", m.getSubject());
-        assertEquals("text", m.getContent());
-        assertEquals("me@localhost", m.getFrom()[0].toString());
-        assertEquals("me@localhost", m.getRecipients(RecipientType.TO)[0].toString());
-        return m;
+        final MimeMessage mimeMessage = SessionF.MimeMessages.mimeMessage().apply(session);
+        c.accept(mimeMessage);
+        assertNotNull(mimeMessage);
+        assertEquals("subject", mimeMessage.getSubject());
+        assertEquals("text", mimeMessage.getContent());
+        assertEquals("me@localhost", mimeMessage.getFrom()[0].toString());
+        assertEquals("me@localhost", mimeMessage.getRecipients(RecipientType.TO)[0].toString());
+        return mimeMessage;
     }
 
     @Test

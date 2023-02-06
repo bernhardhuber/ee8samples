@@ -15,6 +15,7 @@
 
         <mockito.version>3.12.4</mockito.version>
 
+        <asciidoclet.version>1.5.6</asciidoclet.version>
     </properties>
     <dependencies>
         <dependency>
@@ -56,14 +57,67 @@
         </dependency>
     </dependencies>
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M7</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.4.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M7</version>
                 <configuration>
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <overview>src/main/java/overview.html</overview>
+                    <!--
+                      all
+                      none,
+                      syntax
+                    -->
+                    <doclint>syntax</doclint>
+                </configuration>
+                <!--configuration>
+                    <source>${maven.compiler.source}</source>
+                    <doclet>org.asciidoctor.Asciidoclet</doclet>
+                    <docletArtifact>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoclet</artifactId>
+                        <version>${asciidoclet.version}</version>
+                    </docletArtifact>
+                    <overview>src/main/java/overview.adoc</overview>
+                    <additionalparam>
+                        - -base-dir ${project.basedir}
+                        - -attribute "name=${project.name}"
+                        - -attribute "version=${project.version}"
+                    </additionalparam>
+                    < ! - -
+                        - - attribute "title-link=https://example.com[${project.name} ${project.version}]"
+                    - - >
+                </configuration-->
+            </plugin>            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

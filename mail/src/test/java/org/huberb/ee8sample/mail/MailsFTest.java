@@ -20,6 +20,7 @@ import javax.mail.Address;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilder;
 import org.huberb.ee8sample.mail.MailsF.InternetAddressF;
@@ -66,12 +67,13 @@ public class MailsFTest {
     @Test
     public void hello2() throws MessagingException {
 
-        InternetAddressF addressF = new InternetAddressF();
-        addressF.consume(InternetAddressF.Consumers.address("me@localhost")
+        final InternetAddress addressF = new InternetAddress();
+        InternetAddressF.Consumers.address("me@localhost")
                 .andThen(InternetAddressF.Consumers.personal("Ich"))
                 .andThen(InternetAddressF.Consumers.validate())
-        );
-        addressF.consume(InternetAddressF.Consumers.addressPersonalValidate("me@localhost", "Ich"));
+                .accept(addressF);
+        InternetAddressF.Consumers.addressPersonalValidate("me@localhost", "Ich")
+                .accept(addressF);
 
         Address addressFaddress = new InternetAddressBuilder().addressPersonal("me@localhost", "Ich").build();
         Address[] addresses = new Address[]{

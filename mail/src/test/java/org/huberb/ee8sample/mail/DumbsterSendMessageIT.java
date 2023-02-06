@@ -65,13 +65,12 @@ public class DumbsterSendMessageIT {
             // send the message
             Transport.send(mimeMessage);
 
-            List<SmtpMessage> emails = dumbster.getReceivedEmails();
-            assertEquals(1, emails.size());
-            SmtpMessage email = emails.get(0);
-
-            assertEquals("Test", email.getHeaderValue("Subject"));
-            assertEquals("Test Body", email.getBody());
-            assertEquals("receiver@there.com", email.getHeaderValue("To"));
+            final List<SmtpMessage> smptMessageList = dumbster.getReceivedEmails();
+            assertEquals(1, smptMessageList.size());
+            final SmtpMessage smtpMessage = smptMessageList.get(0);
+            assertEquals("Test", smtpMessage.getHeaderValue("Subject"));
+            assertEquals("Test Body", smtpMessage.getBody());
+            assertEquals("receiver@there.com", smtpMessage.getHeaderValue("To"));
         }
     }
 
@@ -99,20 +98,20 @@ public class DumbsterSendMessageIT {
         }
     }
 
-    private MimeMessage createMessage1(Session session,
+    private static MimeMessage createMessage1(Session session,
             String from, String to,
             String subject,
             String body) throws MessagingException {
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(from));
+        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
         msg.setSubject(subject);
         msg.setSentDate(new Date());
         msg.setText(body);
-        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
         return msg;
     }
 
-    private MimeMessage createMessage2(Session session,
+    private static MimeMessage createMessage2(Session session,
             String from, String to,
             String subject,
             String body) throws MessagingException {
@@ -128,21 +127,17 @@ public class DumbsterSendMessageIT {
         return mimeMessage;
     }
 
-    private MimeMessage createMessage3(Session session,
+    private static MimeMessage createMessage3(Session session,
             String from, String to,
             String subject,
             String body) throws MessagingException {
 
         ConsumerThrowingMessagingException<MimeMessage> c = (MimeMessage msg) -> {
-            try {
-                msg.setFrom(new InternetAddress(from));
-                msg.setSubject(subject);
-                msg.setSentDate(new Date());
-                msg.setText(body);
-                msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
-            } catch (MessagingException ex) {
-                throw new RuntimeException("createMessage3", ex);
-            }
+            msg.setFrom(new InternetAddress(from));
+            msg.setSubject(subject);
+            msg.setSentDate(new Date());
+            msg.setText(body);
+            msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
         };
         final MimeMessage mimeMessage = SessionF.MimeMessages.mimeMessage().apply(session);
         c.accept(mimeMessage);

@@ -18,6 +18,7 @@ package org.huberb.ee8sample.mail;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
@@ -73,6 +74,10 @@ public class MailsF {
             }
         }
 
+        /**
+         * Encapsulate functions for creating a {@link Transport} instance from
+         * a {@link Session} instance.
+         */
         public static class Transports {
 
             public static FunctionThrowingMessagingException<Session, Transport> transport() {
@@ -106,6 +111,10 @@ public class MailsF {
             }
         }
 
+        /**
+         * Encapsulate functions for creating a {@link  MimeMessage} instance
+         * from a {@link Session} instance.
+         */
         public static class MimeMessages {
 
             public static Function<Session, MimeMessage> mimeMessage() {
@@ -124,6 +133,10 @@ public class MailsF {
             return transport -> transport.isConnected();
         }
 
+        /**
+         * Encapsulate {@link Consumers} accepting an connected
+         * {@link Transport} instance.
+         */
         public static class Consumers {
 
             public static void withConnected(Transport transport,
@@ -165,6 +178,11 @@ public class MailsF {
      */
     public static class MimeMessageF {
 
+        /**
+         * Encapsulate methods returning
+         * {@link ConsumerThrowingMessagingException} accepting a
+         * {@link MimeMessage}.
+         */
         public static class Consumers {
 
             public static ConsumerThrowingMessagingException<MimeMessage> from(String address) {
@@ -210,6 +228,21 @@ public class MailsF {
                     msg.setText(text);
                 };
             }
+
+            /**
+             * Create an instance of {@link ConsumerThrowingMessagingException}
+             * accepting a {@link MimeMessage}, the consumer sends the
+             * {@link MimeMessage} via {@link Transport#send(javax.mail.Message)
+             * }.
+             *
+             * @return consumer
+             */
+            public static ConsumerThrowingMessagingException<MimeMessage> send() {
+                return msg -> {
+                    Transport.send(msg);
+                };
+            }
+
         }
 
         public static class Providers {
@@ -219,6 +252,28 @@ public class MailsF {
                     return msg.getAllRecipients();
                 };
             }
+
+            public static FunctionThrowingMessagingException<MimeMessage, Address[]> recipients(RecipientType rt) {
+                return msg -> {
+                    return msg.getRecipients(rt);
+                };
+            }
+
+            public static FunctionThrowingMessagingException<MimeMessage, Address[]> from() {
+                return msg -> {
+                    return msg.getFrom();
+                };
+            }
+
+            public static FunctionThrowingMessagingException<MimeMessage, Address[]> replyTo() {
+                return msg -> {
+                    return msg.getReplyTo();
+                };
+            }
+
+            public static Function<Address[], List<Address>> addressesAsList() {
+                return addresses -> Arrays.asList(addresses);
+            }
         }
     }
 
@@ -226,24 +281,6 @@ public class MailsF {
      * Functional inspired wrapper for mail {@link InternetAddress}.
      */
     public static class InternetAddressF {
-
-        final InternetAddress address;
-
-        public InternetAddressF() {
-            this(new InternetAddress());
-        }
-
-        public InternetAddressF(InternetAddress address) {
-            this.address = address;
-        }
-
-        InternetAddress getInternetAddress() {
-            return this.address;
-        }
-
-        void consume(Consumer<InternetAddress> c) {
-            c.accept(this.address);
-        }
 
         static class Consumers {
 
@@ -376,10 +413,6 @@ public class MailsF {
                 String m = String.format("validating address [%s]", this.internetAddress.getAddress());
                 throw new MailRuntimeException(m, ex);
             }
-        }
-
-        String getAddress() {
-            return this.getAddress();
         }
 
         InternetAddress build() {

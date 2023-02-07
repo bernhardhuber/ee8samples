@@ -20,8 +20,7 @@ import java.util.function.Function;
 import javax.mail.MessagingException;
 
 /**
- * Classes supporting the functional style API provided by
- * {@link BodyTextMergers}, and {@link MailsF}.
+ * Classes supporting the functional style API.
  *
  * @author berni3
  */

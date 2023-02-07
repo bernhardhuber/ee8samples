@@ -22,10 +22,6 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import org.huberb.ee8sample.mail.InternetAddressBuilder;
-import org.huberb.ee8sample.mail.InternetAddressF;
-import org.huberb.ee8sample.mail.MimeMessageF;
-import org.huberb.ee8sample.mail.SessionF;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,7 +31,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author berni3
  */
-public class MailsFTest {
+public class MimeMessageF2Test {
 
     Session session;
 
@@ -88,11 +84,8 @@ public class MailsFTest {
                 .andThen(MimeMessageF.Consumers.text("text"));
 
         final MimeMessage mimeMessage = SessionF.MimeMessages.mimeMessage().apply(session);
-
         c.accept(mimeMessage);
-
         assertNotNull(mimeMessage);
-
         assertEquals("subject", mimeMessage.getSubject());
         assertEquals("me@localhost", mimeMessage.getFrom()[0].toString());
         assertEquals("me@localhost", mimeMessage.getRecipients(RecipientType.TO)[0].toString());

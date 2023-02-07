@@ -17,8 +17,8 @@ package org.huberb.ee8sample.mail;
 
 import java.util.function.Consumer;
 import javax.mail.internet.InternetAddress;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilder;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressF.Consumers;
+import org.huberb.ee8sample.mail.InternetAddressBuilder;
+import org.huberb.ee8sample.mail.InternetAddressF.Consumers;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.params.ParameterizedTest;

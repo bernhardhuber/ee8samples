@@ -22,7 +22,6 @@ import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import org.huberb.ee8sample.mail.MailsF.MimeMessageF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -33,24 +32,34 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class MimeMessageFTest {
 
-    @ParameterizedTest
-    @MethodSource("emailAddresses")
-    public void testAddressFromString() throws MessagingException {
-
-        assertEquals("somename@somehost", MimeMessageF.Providers.addressFromString().apply("somename@somehost").toString());
+    public static Stream<String> emailAddresses() {
+        return Stream.of(
+                "somefirstname.somelastname@somehost",
+                "somefirstname.somelastname@somehost.somedomain",
+                "somename@somehost"
+        );
     }
 
     @ParameterizedTest
     @MethodSource("emailAddresses")
-    public void testAddressFromStringThrowingMailRuntimeException() {
-        assertEquals("somename@somehost", MimeMessageF.Providers.addressFromStringThrowingMailRuntimeException().apply("somename@somehost").toString());
+    public void testAddressFromString(String theEmailAddress) throws MessagingException {
+
+        assertEquals(theEmailAddress,
+                MimeMessageF.Providers.addressFromString().apply(theEmailAddress).toString());
     }
 
     @ParameterizedTest
     @MethodSource("emailAddresses")
-    public void testAddressesFromStringList() {
-        assertEquals("somename@somehost", MimeMessageF.Providers.addressesFromStringList()
-                .apply(Arrays.asList("somename@somehost"))
+    public void testAddressFromStringThrowingMailRuntimeException(String theEmailAddress) {
+        assertEquals(theEmailAddress,
+                MimeMessageF.Providers.addressFromStringThrowingMailRuntimeException().apply(theEmailAddress).toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("emailAddresses")
+    public void testAddressesFromStringList(String theEmailAddress) {
+        assertEquals(theEmailAddress, MimeMessageF.Providers.addressesFromStringList()
+                .apply(Arrays.asList(theEmailAddress))
                 .get(0).toString()
         );
     }
@@ -61,14 +70,6 @@ public class MimeMessageFTest {
         assertEquals(theEmailAddress, MimeMessageF.Providers.addressesFromStrings()
                 .apply(new String[]{theEmailAddress})
                 .get(0).toString()
-        );
-    }
-
-    public static Stream<String> emailAddresses() {
-        return Stream.of(
-                "somefirstname.somelastname@somehost",
-                "somefirstname.somelastname@somehost.somedomain",
-                "somename@somehost"
         );
     }
 

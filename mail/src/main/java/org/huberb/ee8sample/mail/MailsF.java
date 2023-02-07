@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import javax.mail.Address;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
@@ -31,6 +32,7 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import org.huberb.ee8sample.mail.MailsF.Recipient.RecipientBuilder;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import org.huberb.ee8sample.mail.Supports.FunctionThrowingMessagingException;
 import org.huberb.ee8sample.mail.Supports.MailRuntimeException;
@@ -191,10 +193,65 @@ public class MailsF {
                 };
             }
 
+            public static ConsumerThrowingMessagingException<MimeMessage> from(Address address) {
+                return msg -> {
+                    msg.setFrom(address);
+                };
+            }
+
+            public static ConsumerThrowingMessagingException<MimeMessage> replyTo(String address) {
+                return msg -> {
+                    msg.setReplyTo(new Address[]{new InternetAddress(address)});
+                };
+            }
+
+            public static ConsumerThrowingMessagingException<MimeMessage> replyTo(Address address) {
+                return msg -> {
+                    msg.setReplyTo(new Address[]{address});
+                };
+            }
+
+            public static ConsumerThrowingMessagingException<MimeMessage> replyTo(Address[] address) {
+                return msg -> {
+                    msg.setReplyTo(Arrays.copyOf(address, address.length));
+                };
+            }
+
+            public static ConsumerThrowingMessagingException<MimeMessage> replyTo(List<Address> address) {
+                return msg -> {
+                    msg.setReplyTo(address.toArray(Address[]::new));
+                };
+            }
+
+            public static ConsumerThrowingMessagingException<MimeMessage> to(String address) {
+                return recipient(RecipientType.TO, address);
+            }
+
+            public static ConsumerThrowingMessagingException<MimeMessage> to(String[] address) {
+                return recipients(RecipientType.TO, Providers.addressesFromStrings().apply(address));
+
+            }
+
+            public static ConsumerThrowingMessagingException<MimeMessage> to(Address[] addresses) {
+                return recipients(RecipientType.TO, addresses);
+            }
+
+            public static ConsumerThrowingMessagingException<MimeMessage> to(List<Address> addresses) {
+                return recipients(RecipientType.TO, addresses);
+            }
+
+            public static ConsumerThrowingMessagingException<MimeMessage> recipient(Recipient rt) {
+                return recipients(rt.getRecipientType(), rt.getInternetAddressAsArray());
+            }
+
             public static ConsumerThrowingMessagingException<MimeMessage> recipient(RecipientType rt, String address) {
                 return msg -> {
                     msg.setRecipients(rt, address);
                 };
+            }
+
+            public static ConsumerThrowingMessagingException<MimeMessage> recipients(RecipientType rt, String[] addresses) {
+                return recipients(RecipientType.TO, Providers.addressesFromStrings().apply(addresses));
             }
 
             public static ConsumerThrowingMessagingException<MimeMessage> recipient(RecipientType rt, Address address) {
@@ -204,6 +261,12 @@ public class MailsF {
             public static ConsumerThrowingMessagingException<MimeMessage> recipients(RecipientType rt, Address[] addresses) {
                 return msg -> {
                     msg.setRecipients(rt, addresses);
+                };
+            }
+
+            public static ConsumerThrowingMessagingException<MimeMessage> recipients(RecipientType rt, List<Address> addresses) {
+                return msg -> {
+                    msg.setRecipients(rt, Providers.addressesFromList().apply(addresses));
                 };
             }
 
@@ -271,8 +334,46 @@ public class MailsF {
                 };
             }
 
+            //---
+            public static FunctionThrowingMessagingException<String, Address> addressFromString() {
+                return address -> new InternetAddress(address);
+            }
+
+            public static Function<String, Address> addressFromStringThrowingMailRuntimeException() {
+                return (address) -> {
+                    try {
+                        return addressFromString().apply(address);
+                    } catch (MessagingException mex) {
+                        throw new MailRuntimeException("addressFromString");
+                    }
+                };
+            }
+
+            public static Function<String[], List<Address>> addressesFromStrings() {
+                return address -> {
+                    List<Address> addressList = new ArrayList<>();
+                    Stream.of(address).map(addressFromStringThrowingMailRuntimeException())
+                            .forEach(a -> addressList.add(a));
+                    return addressList;
+                };
+            }
+
+            public static Function<List<String>, List<Address>> addressesFromStringList() {
+                return address -> {
+                    List<Address> addressList = new ArrayList<>();
+                    address.stream()
+                            .map(addressFromStringThrowingMailRuntimeException())
+                            .forEach(a -> addressList.add(a));
+                    return addressList;
+                };
+            }
+
             public static Function<Address[], List<Address>> addressesAsList() {
                 return addresses -> Arrays.asList(addresses);
+            }
+
+            public static Function<List<Address>, Address[]> addressesFromList() {
+                return addresses -> addresses.toArray(Address[]::new);
             }
         }
     }
@@ -326,19 +427,19 @@ public class MailsF {
      */
     public static class Recipient {
 
-        private RecipientType rt;
-        private final List<InternetAddress> iaList = new ArrayList<>();
+        private RecipientType recipientType;
+        private final List<InternetAddress> internetAddressList = new ArrayList<>();
 
-        public RecipientType getRt() {
-            return rt;
+        public RecipientType getRecipientType() {
+            return recipientType;
         }
 
         public InternetAddress[] getInternetAddressAsArray() {
-            return iaList.toArray(InternetAddress[]::new);
+            return internetAddressList.toArray(InternetAddress[]::new);
         }
 
         public List<InternetAddress> getInternetAddress() {
-            return iaList;
+            return internetAddressList;
         }
 
         public static class RecipientBuilder {
@@ -346,18 +447,18 @@ public class MailsF {
             private final Recipient recipient = new Recipient();
 
             public RecipientBuilder addAddress(RecipientType recipientType, List<InternetAddress> internetAddress) {
-                this.recipient.rt = recipientType;
-                this.recipient.iaList.addAll(internetAddress);
+                this.recipient.recipientType = recipientType;
+                this.recipient.internetAddressList.addAll(internetAddress);
                 return this;
             }
 
             public RecipientBuilder recipientType(RecipientType recipientType) {
-                this.recipient.rt = recipientType;
+                this.recipient.recipientType = recipientType;
                 return this;
             }
 
             public RecipientBuilder addAddress(InternetAddress internetAddress) {
-                this.recipient.iaList.add(internetAddress);
+                this.recipient.internetAddressList.add(internetAddress);
                 return this;
             }
 

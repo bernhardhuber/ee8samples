@@ -28,8 +28,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import org.huberb.ee8sample.mail.MimeMessageF;
-import org.huberb.ee8sample.mail.SessionF;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -90,10 +88,13 @@ public class DumbsterSendMessageIT {
         }
 
         private Properties createMailProperties(int port) {
-            Properties mailProps = new Properties();
-            mailProps.setProperty("mail.smtp.host", "localhost");
-            mailProps.setProperty("mail.smtp.port", "" + port);
-            mailProps.setProperty("mail.smtp.sendpartial", "true");
+            Properties mailProps = new Properties() {
+                {
+                    setProperty("mail.smtp.host", "localhost");
+                    setProperty("mail.smtp.port", "" + port);
+                    setProperty("mail.smtp.sendpartial", "true");
+                }
+            };
             return mailProps;
         }
     }

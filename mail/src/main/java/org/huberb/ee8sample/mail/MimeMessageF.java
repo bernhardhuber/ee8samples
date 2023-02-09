@@ -37,9 +37,8 @@ import org.huberb.ee8sample.mail.Supports.MailRuntimeException;
 public class MimeMessageF {
 
     /**
-     * Encapsulate methods returning
-     * {@link ConsumerThrowingMessagingException} accepting a
-     * {@link MimeMessage}.
+     * Encapsulate methods returning {@link ConsumerThrowingMessagingException}
+     * accepting a {@link MimeMessage}.
      */
     public static class Consumers {
 
@@ -87,6 +86,10 @@ public class MimeMessageF {
             return recipients(RecipientType.TO, Providers.addressesFromStrings().apply(address));
         }
 
+        public static ConsumerThrowingMessagingException<MimeMessage> to(Address address) {
+            return recipients(RecipientType.TO, new Address[]{address});
+        }
+
         public static ConsumerThrowingMessagingException<MimeMessage> to(Address[] addresses) {
             return recipients(RecipientType.TO, addresses);
         }
@@ -106,7 +109,7 @@ public class MimeMessageF {
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> recipients(RecipientType rt, String[] addresses) {
-            return recipients(RecipientType.TO, Providers.addressesFromStrings().apply(addresses));
+            return recipients(rt, Providers.addressesFromStrings().apply(addresses));
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> recipient(RecipientType rt, Address address) {
@@ -227,5 +230,5 @@ public class MimeMessageF {
             return addresses -> addresses.toArray(Address[]::new);
         }
     }
-    
+
 }

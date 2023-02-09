@@ -15,7 +15,6 @@
  */
 package org.huberb.ee8sample.mail;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -25,9 +24,13 @@ import javax.mail.Address;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import org.huberb.ee8sample.mail.MimeMessageF.Consumers;
+import static org.huberb.ee8sample.mail.MimeMessageF.Consumers.recipients;
 import org.huberb.ee8sample.mail.Recipient.RecipientBuilder;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,6 +74,15 @@ public class MimeMessageFTest {
 
     @ParameterizedTest
     @MethodSource("emailAddresses")
+    public void testAddressesFromStrings(String theEmailAddress) {
+        assertEquals(theEmailAddress, MimeMessageF.Providers.addressesFromStrings()
+                .apply(new String[]{theEmailAddress})
+                .get(0).toString()
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("emailAddresses")
     public void testAddressesFromStringList(String theEmailAddress) {
         assertEquals(theEmailAddress, MimeMessageF.Providers.addressesFromStringList()
                 .apply(Arrays.asList(theEmailAddress))
@@ -80,10 +92,18 @@ public class MimeMessageFTest {
 
     @ParameterizedTest
     @MethodSource("emailAddresses")
-    public void testAddressesFromStrings(String theEmailAddress) {
-        assertEquals(theEmailAddress, MimeMessageF.Providers.addressesFromStrings()
-                .apply(new String[]{theEmailAddress})
+    public void testAddressesAsList(String theEmailAddress) throws AddressException {
+        assertEquals(theEmailAddress, MimeMessageF.Providers.addressesAsList()
+                .apply(new InternetAddress[]{new InternetAddress(theEmailAddress)})
                 .get(0).toString()
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("emailAddresses")
+    public void testAddressesFromList(String theEmailAddress) throws AddressException {
+        assertEquals(theEmailAddress, MimeMessageF.Providers.addressesFromList()
+                .apply(Arrays.asList(new InternetAddress(theEmailAddress)))[0].toString()
         );
     }
 
@@ -122,17 +142,28 @@ public class MimeMessageFTest {
     }
 
     @Test
-    public void testReplyToAddresses() throws MessagingException {
+    public void testReplyToAddressesList() throws MessagingException {
         List<String> addressesAsStringList = emailAddresses().collect(Collectors.toList());
-
-        List<Address> addressesList = addressesAsStringList.
-                stream()
-                .collect(
-                        () -> new ArrayList<Address>(),
-                        (l, s) -> l.add(MimeMessageF.Providers.addressFromStringThrowingMailRuntimeException().apply(s)),
-                        (l1, l2) -> l1.addAll(l2));
+        List<Address> addressesList = addressesAsStringList.stream()
+                .map(e -> MimeMessageF.Providers.addressFromStringThrowingMailRuntimeException().apply(e))
+                .collect(Collectors.toList());
         MimeMessage mimeMessage = new MimeMessage(session);
         MimeMessageF.Consumers.replyTo(addressesList).accept(mimeMessage);
+        assertEquals(3, mimeMessage.getReplyTo().length);
+        assertEquals(addressesAsStringList.get(0), mimeMessage.getReplyTo()[0].toString());
+        assertEquals(addressesAsStringList.get(1), mimeMessage.getReplyTo()[1].toString());
+        assertEquals(addressesAsStringList.get(2), mimeMessage.getReplyTo()[2].toString());
+    }
+
+    @Test
+    public void testReplyToAddresses() throws MessagingException {
+        List<String> addressesAsStringList = emailAddresses().collect(Collectors.toList());
+        InternetAddress[] internetAddresses = addressesAsStringList.stream()
+                .map(e -> MimeMessageF.Providers.addressFromStringThrowingMailRuntimeException().apply(e))
+                .collect(Collectors.toList())
+                .toArray(InternetAddress[]::new);
+        MimeMessage mimeMessage = new MimeMessage(session);
+        MimeMessageF.Consumers.replyTo(internetAddresses).accept(mimeMessage);
         assertEquals(3, mimeMessage.getReplyTo().length);
         assertEquals(addressesAsStringList.get(0), mimeMessage.getReplyTo()[0].toString());
         assertEquals(addressesAsStringList.get(1), mimeMessage.getReplyTo()[1].toString());
@@ -144,6 +175,38 @@ public class MimeMessageFTest {
     public void testTo(String theEmailAddress) throws MessagingException {
         MimeMessage mimeMessage = new MimeMessage(session);
         MimeMessageF.Consumers.to(theEmailAddress).accept(mimeMessage);
+        assertEquals(theEmailAddress, mimeMessage.getRecipients(RecipientType.TO)[0].toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("emailAddresses")
+    public void testTo_Strings(String theEmailAddress) throws MessagingException {
+        MimeMessage mimeMessage = new MimeMessage(session);
+        MimeMessageF.Consumers.to(new String[]{theEmailAddress}).accept(mimeMessage);
+        assertEquals(theEmailAddress, mimeMessage.getRecipients(RecipientType.TO)[0].toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("emailAddresses")
+    public void testTo_Address(String theEmailAddress) throws MessagingException {
+        MimeMessage mimeMessage = new MimeMessage(session);
+        MimeMessageF.Consumers.to(new InternetAddress(theEmailAddress)).accept(mimeMessage);
+        assertEquals(theEmailAddress, mimeMessage.getRecipients(RecipientType.TO)[0].toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("emailAddresses")
+    public void testTo_Addresses(String theEmailAddress) throws MessagingException {
+        MimeMessage mimeMessage = new MimeMessage(session);
+        MimeMessageF.Consumers.to(new InternetAddress[]{new InternetAddress(theEmailAddress)}).accept(mimeMessage);
+        assertEquals(theEmailAddress, mimeMessage.getRecipients(RecipientType.TO)[0].toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("emailAddresses")
+    public void testTo_AddressList(String theEmailAddress) throws MessagingException {
+        MimeMessage mimeMessage = new MimeMessage(session);
+        MimeMessageF.Consumers.to(Arrays.asList(new InternetAddress(theEmailAddress))).accept(mimeMessage);
         assertEquals(theEmailAddress, mimeMessage.getRecipients(RecipientType.TO)[0].toString());
     }
 
@@ -181,5 +244,64 @@ public class MimeMessageFTest {
         MimeMessage mimeMessage = new MimeMessage(session);
         MimeMessageF.Consumers.recipient(RecipientType.BCC, theEmailAddress).accept(mimeMessage);
         assertEquals(theEmailAddress, mimeMessage.getRecipients(RecipientType.BCC)[0].toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("emailAddresses")
+    public void testRecipientsTo(String theEmailAddress) throws MessagingException {
+        MimeMessage mimeMessage = new MimeMessage(session);
+        MimeMessageF.Consumers.recipients(RecipientType.TO, new String[]{theEmailAddress}).accept(mimeMessage);
+        assertEquals(theEmailAddress, mimeMessage.getRecipients(RecipientType.TO)[0].toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("emailAddresses")
+    public void testRecipientsCc(String theEmailAddress) throws MessagingException {
+        MimeMessage mimeMessage = new MimeMessage(session);
+        MimeMessageF.Consumers.recipients(RecipientType.CC, new String[]{theEmailAddress}).accept(mimeMessage);
+        assertEquals(theEmailAddress, mimeMessage.getRecipients(RecipientType.CC)[0].toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("emailAddresses")
+    public void testRecipientsBcc(String theEmailAddress) throws MessagingException {
+        MimeMessage mimeMessage = new MimeMessage(session);
+        MimeMessageF.Consumers.recipients(RecipientType.BCC, new String[]{theEmailAddress}).accept(mimeMessage);
+        assertEquals(theEmailAddress, mimeMessage.getRecipients(RecipientType.BCC)[0].toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("emailAddresses")
+    public void testAllRecipients(String theEmailAddress) throws MessagingException {
+        String fromtheEmailAddress = "from" + theEmailAddress;
+        String replytheEmailAddress = "replyTo" + theEmailAddress;
+        String totheEmailAddress = "to" + theEmailAddress;
+        String cctheEmailAddress = "cc" + theEmailAddress;
+        String bcctheEmailAddress = "bcc" + theEmailAddress;
+
+        MimeMessage mimeMessage = new MimeMessage(session);
+        MimeMessageF.Consumers
+                .from(fromtheEmailAddress)
+                .andThen(Consumers.replyTo(replytheEmailAddress))
+                .andThen(recipients(RecipientType.TO, new String[]{totheEmailAddress}))
+                .andThen(recipients(RecipientType.CC, new String[]{cctheEmailAddress}))
+                .andThen(recipients(RecipientType.BCC, new String[]{bcctheEmailAddress}))
+                .accept(mimeMessage);
+        assertAll(
+                () -> assertEquals(fromtheEmailAddress, mimeMessage.getFrom()[0].toString()),
+                () -> assertEquals(replytheEmailAddress, mimeMessage.getReplyTo()[0].toString()),
+                () -> assertEquals(totheEmailAddress, mimeMessage.getRecipients(RecipientType.TO)[0].toString()),
+                () -> assertEquals(cctheEmailAddress, mimeMessage.getRecipients(RecipientType.CC)[0].toString()),
+                () -> assertEquals(bcctheEmailAddress, mimeMessage.getRecipients(RecipientType.BCC)[0].toString())
+        );
+        assertAll(
+                () -> assertEquals(fromtheEmailAddress, MimeMessageF.Providers.from().apply(mimeMessage)[0].toString()),
+                () -> assertEquals(replytheEmailAddress, MimeMessageF.Providers.replyTo().apply(mimeMessage)[0].toString()),
+                () -> assertEquals(3, MimeMessageF.Providers.allRecipients().apply(mimeMessage).length),
+                () -> assertEquals(totheEmailAddress, MimeMessageF.Providers.recipients(RecipientType.TO).apply(mimeMessage)[0].toString()),
+                () -> assertEquals(cctheEmailAddress, MimeMessageF.Providers.recipients(RecipientType.CC).apply(mimeMessage)[0].toString()),
+                () -> assertEquals(bcctheEmailAddress, MimeMessageF.Providers.recipients(RecipientType.BCC).apply(mimeMessage)[0].toString())
+        );
+
     }
 }

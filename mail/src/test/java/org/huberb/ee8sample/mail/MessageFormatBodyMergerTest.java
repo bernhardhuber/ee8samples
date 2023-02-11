@@ -15,25 +15,23 @@
  */
 package org.huberb.ee8sample.mail;
 
-import java.io.IOException;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.stream.Stream;
-import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
 import org.huberb.ee8sample.mail.BodyTextMergers.MessageFormatBodyMerger;
-import org.huberb.ee8sample.mail.MimeMessageF;
-import org.huberb.ee8sample.mail.SessionF;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -109,7 +107,7 @@ public class MessageFormatBodyMergerTest {
                 template,
                 new Object[]{"world", "me"}
         );
-        assignBodyTextConsumer.accept((MimeMessage) mimeMessage);
+        assignBodyTextConsumer.accept(mimeMessage);
         assertNormalized("Hello world, body text. From me", (String) mimeMessage.getContent());
     }
 
@@ -129,5 +127,20 @@ public class MessageFormatBodyMergerTest {
                 .replace('\n', ' ');
         assertTrue(result.length() <= s.length());
         return result;
+    }
+
+    @Test
+    public void testMerge_locale_default() {
+        MessageFormatBodyMerger instance = new MessageFormatBodyMerger();
+
+        String result = instance.merge("Hello, {0}!", new Object[]{"world"});
+        assertEquals("Hello, world!", result);
+    }
+    @Test
+    public void testMerge_locale_ENGLISH() {
+        MessageFormatBodyMerger instance = new MessageFormatBodyMerger(Locale.ENGLISH);
+
+        String result = instance.merge("Hello, {0}!", new Object[]{"world"});
+        assertEquals("Hello, world!", result);
     }
 }

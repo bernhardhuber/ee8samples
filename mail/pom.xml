@@ -20,12 +20,6 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>        
-
-        <dependency>
             <groupId>com.github.kirviq</groupId>
             <artifactId>dumbster</artifactId>
             <version>1.7.1</version>

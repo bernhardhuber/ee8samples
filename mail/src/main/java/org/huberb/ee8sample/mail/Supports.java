@@ -20,12 +20,17 @@ import java.util.function.Function;
 import javax.mail.MessagingException;
 
 /**
+ * Classes supporting the functional style API.
+ *
  * @author berni3
  */
 public class Supports {
 
     /**
-     * Define a consumer for jdbc operations.
+     * Define a consumer for mail operations.
+     * <p>
+     * This consumer rethrows the {@link MessagingException} and don't try to
+     * handle it.
      *
      * @param <T>
      * @author berni3
@@ -69,7 +74,10 @@ public class Supports {
     }
 
     /**
-     * Define a functions for jdbc operations.
+     * Define a functions for mail operations.
+     * <p>
+     * This function rethrows the {@link MessagingException} and don't try to
+     * handle it.
      *
      * @param <T> input type of the function
      * @param <R> output type of the function
@@ -134,6 +142,13 @@ public class Supports {
         }
     }
 
+    /**
+     * Define a run-time exception for wrapping any {@link  RuntimeException}.
+     * <p>
+     * Instead of throwing {@link  RuntimeException} in the API. The API wraps a
+     * {@link RuntimeException} as {@link MailRuntimeException} in order to make
+     * it more easier for a API use to catch it specifically.
+     */
     public static class MailRuntimeException extends RuntimeException {
 
         public MailRuntimeException(String m) {

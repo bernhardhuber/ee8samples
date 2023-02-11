@@ -44,9 +44,9 @@ public class DumbsterConnectIT {
                     .port(dumbster.getPort())
                     .build();
 
-            try (Transport transport = MailsF.SessionF.Transports.transport().apply(session)) {
+            try (Transport transport = SessionF.Transports.transport().apply(session)) {
                 assertFalse(transport.isConnected());
-                MailsF.TransportF.Consumers.withConnected(transport,
+                TransportF.Consumers.withConnected(transport,
                         (t) -> {
                             assertTrue(transport.isConnected());
                         });
@@ -65,10 +65,10 @@ public class DumbsterConnectIT {
 
             MessagingException rtex = Assertions.assertThrows(MessagingException.class,
                     () -> {
-                        try (Transport transport = MailsF.SessionF.Transports.transport().apply(session)) {
+                        try (Transport transport = SessionF.Transports.transport().apply(session)) {
                             assertFalse(transport.isConnected());
 
-                            MailsF.TransportF.Consumers.withConnected(transport, ConsumerThrowingMessagingException.NOOP());
+                            TransportF.Consumers.withConnected(transport, ConsumerThrowingMessagingException.NOOP());
                             assertFalse(transport.isConnected());
                         }
                     }

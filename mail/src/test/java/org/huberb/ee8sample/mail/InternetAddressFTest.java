@@ -17,9 +17,7 @@ package org.huberb.ee8sample.mail;
 
 import java.util.function.Consumer;
 import javax.mail.internet.InternetAddress;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressBuilder;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressF;
-import org.huberb.ee8sample.mail.MailsF.InternetAddressF.Consumers;
+import org.huberb.ee8sample.mail.InternetAddressF.Consumers;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +27,7 @@ import org.junit.jupiter.params.provider.CsvSource;
  *
  * @author berni3
  */
-public class InternetAddressTest {
+public class InternetAddressFTest {
 
     /**
      * Build internet address from address without personal.
@@ -40,30 +38,28 @@ public class InternetAddressTest {
             String expectedAddress = d[0];
             String inaddress = d[1];
 
-            InternetAddressF iaf = new InternetAddressF();
-            iaf.consume(Consumers.address(inaddress)
+            final InternetAddress internetAddress = new InternetAddress();
+            Consumers.address(inaddress)
                     .andThen(Consumers.validate())
-            );
+                    .accept(internetAddress);
 
-            InternetAddress ia = iaf.getInternetAddress();
-            assertEquals(expectedAddress, ia.toString());
+            assertEquals(expectedAddress, internetAddress.toString());
         };
         static Consumer<String[]> cInternetAddressFv2_address_null = d -> {
             String expectedAddress = d[0];
             String inaddress = d[1];
 
-            InternetAddressF iaf = new InternetAddressF();
-            iaf.consume(Consumers.addressPersonalValidate(inaddress, null));
+            final InternetAddress internetAddress = new InternetAddress();
+            Consumers.addressPersonalValidate(inaddress, null).accept(internetAddress);
 
-            InternetAddress ia = iaf.getInternetAddress();
-            assertEquals(expectedAddress, ia.toString());
+            assertEquals(expectedAddress, internetAddress.toString());
 
         };
         static Consumer<String[]> cInternetAddressBuilderF_address = d -> {
             String expectedAddress = d[0];
             String inaddress = d[1];
 
-            InternetAddress ia = new InternetAddressBuilder()
+            final InternetAddress ia = new InternetAddressBuilder()
                     .address(inaddress)
                     .build();
 
@@ -73,7 +69,7 @@ public class InternetAddressTest {
             String expectedAddress = d[0];
             String inaddress = d[1];
 
-            InternetAddress ia = new InternetAddressBuilder()
+            final InternetAddress ia = new InternetAddressBuilder()
                     .address(inaddress)
                     .build();
 
@@ -91,25 +87,24 @@ public class InternetAddressTest {
             String inaddress = d[1];
             String inpersonal = d[2];
 
-            InternetAddressF iaf = new InternetAddressF();
-            iaf.consume(Consumers.address(inaddress)
+            final InternetAddress internetAddress = new InternetAddress();
+            Consumers.address(inaddress)
                     .andThen(Consumers.personal(inpersonal))
                     .andThen(Consumers.validate())
-            );
+                    .accept(internetAddress);
 
-            InternetAddress ia = iaf.getInternetAddress();
-            assertEquals(expectedAddress, ia.toString());
+            assertEquals(expectedAddress, internetAddress.toString());
         };
         static Consumer<String[]> cInternetAddressFv2_address_personal = d -> {
             String expectedAddress = d[0];
             String inaddress = d[1];
             String inpersonal = d[2];
 
-            InternetAddressF iaf = new InternetAddressF();
-            iaf.consume(Consumers.addressPersonalValidate(inaddress, inpersonal));
+            final InternetAddress internetAddress = new InternetAddress();
+            Consumers.addressPersonalValidate(inaddress, inpersonal)
+                    .accept(internetAddress);
 
-            InternetAddress ia = iaf.getInternetAddress();
-            assertEquals(expectedAddress, ia.toString());
+            assertEquals(expectedAddress, internetAddress.toString());
 
         };
         static Consumer<String[]> cInternetAddressBuilderF_address_personal = d -> {

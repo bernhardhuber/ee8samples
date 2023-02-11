@@ -20,13 +20,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.mail.Address;
+import javax.mail.Header;
 import javax.mail.Message;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Provider;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.URLName;
+import org.huberb.ee8sample.mail.SessionF;
 
 /**
  *
@@ -34,15 +41,35 @@ import javax.mail.URLName;
  */
 public class StoringOnlyTransport extends Transport {
 
-    public static String protocol() {
-        return "storingOnly";
+    static class Factory {
+
+        public static String protocol() {
+            return "storingOnly";
+        }
+
+        public static Provider provider() {
+            String protocol = protocol();
+            return new Provider(Provider.Type.TRANSPORT, protocol, StoringOnlyTransport.class.getName(), "huberb", "1.0-SNAPSHOT");
+        }
+
+        public static Session createDefaultSession() {
+            String protocol = StoringOnlyTransport.Factory.protocol();
+            Properties props = new Properties() {
+                {
+                    setProperty("mail.transport.protocol.rfc822", protocol);
+                    setProperty("mail.transport.protocol.smtp", protocol);
+                    setProperty("mail." + protocol + ".class", StoringOnlyTransport.class.getName());
+                }
+            };
+            Provider provider = StoringOnlyTransport.Factory.provider();
+            Session session = Session.getInstance(props, null);
+            SessionF.Consumers.debug(true).accept(session);
+            session.addProvider(provider);
+            return session;
+        }
     }
 
-    public static Provider provider() {
-        String protocol = protocol();
-        return new Provider(Provider.Type.TRANSPORT, protocol, StoringOnlyTransport.class.getName(), "huberb", "1.0-SNAPSHOT");
-    }
-
+    //-------------------------------------------------------------------------
     private final static List<String> SENT_MESSAGES_LIST = Collections.synchronizedList(new ArrayList<String>());
 
     private final static List<String> dataSingletonInstance() {
@@ -56,10 +83,7 @@ public class StoringOnlyTransport extends Transport {
     @Override
     public void sendMessage(Message msg, Address[] addresses) throws MessagingException {
         try {
-            String msgAsString = String.format("subject: '%s', text: '%s'", msg.getSubject(), String.valueOf(msg.getContent()));
-            String addressesAsString = Arrays.toString(addresses);
-
-            String result = String.format("addresses: %s, msg: %s", addressesAsString, msgAsString);
+            String result = MimeMessageStringReps.createStringRepB(msg, addresses);
             dataSingletonInstance().add(result);
         } catch (IOException ioex) {
             throw new MessagingException("sendMessage", ioex);
@@ -78,6 +102,51 @@ public class StoringOnlyTransport extends Transport {
 
     public void clearSentMessages() {
         dataSingletonInstance().clear();
+    }
+
+    static class MimeMessageStringReps {
+
+        static String createStringRepA(Message msg, Address[] addresses) throws MessagingException, IOException {
+            String msgAsString = String.format("subject: '%s', text: '%s'",
+                    msg.getSubject(),
+                    String.valueOf(msg.getContent())
+            );
+            String addressesAsString = Arrays.toString(addresses);
+
+            String result = String.format("addresses: %s, msg: %s", addressesAsString, msgAsString);
+            return result;
+        }
+
+        public static Function<Address[], List<Address>> addressesF = (addresses) -> {
+            return Optional.ofNullable(addresses).map(as -> Arrays.asList(as)).orElse(Collections.emptyList());
+        };
+
+        static String createStringRepB(Message msg, Address[] addresses) throws MessagingException, IOException {
+            StringBuilder sb = new StringBuilder();
+
+            List<Address> froms = addressesF.apply(msg.getFrom());
+            List<Address> replyTos = addressesF.apply(msg.getReplyTo());
+            List<Address> tos = addressesF.apply(msg.getRecipients(RecipientType.TO));
+            List<Address> ccs = addressesF.apply(msg.getRecipients(RecipientType.TO));
+            List<Address> bccs = addressesF.apply(msg.getRecipients(RecipientType.TO));
+            List<Header> headers = Collections.emptyList();
+            String subject = msg.getSubject();
+
+            Function<List<? extends Address>, String> listToStringF = (l) -> Optional.ofNullable(l)
+                    .map(lst -> lst.stream().map(a -> String.format("'%s'", a.toString())).collect(Collectors.joining(",", "[", "]")))
+                    .orElse("[]");
+
+            sb.append(String.format("'from':%s, ", Optional.ofNullable(froms).map(l -> listToStringF.apply(l)).orElse("")));
+            sb.append(String.format("'reply-to':%s, ", Optional.ofNullable(replyTos).map(l -> listToStringF.apply(l)).orElse("")));
+
+            sb.append(String.format("'to':%s, ", Optional.ofNullable(tos).map(l -> listToStringF.apply(l)).orElse("")));
+            sb.append(String.format("'cc':%s, ", Optional.ofNullable(ccs).map(l -> listToStringF.apply(l)).orElse("")));
+            sb.append(String.format("'bcc':%s, ", Optional.ofNullable(bccs).map(l -> listToStringF.apply(l)).orElse("")));
+
+            sb.append(String.format("'subject':'%s' ", Optional.ofNullable(subject).map(f -> f.toString()).orElse("")));
+
+            return sb.toString();
+        }
     }
 
 }

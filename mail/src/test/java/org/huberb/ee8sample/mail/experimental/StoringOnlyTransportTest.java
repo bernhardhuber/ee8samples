@@ -15,13 +15,13 @@
  */
 package org.huberb.ee8sample.mail.experimental;
 
-import java.util.Properties;
-import javax.mail.Provider;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import org.huberb.ee8sample.mail.MimeMessageF;
 import org.huberb.ee8sample.mail.SessionF;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
@@ -32,26 +32,26 @@ import org.junit.jupiter.api.Test;
 public class StoringOnlyTransportTest {
 
     /**
+     * Test of StoringOnlyTransport.Factory.createDefaultSession method, of class StoringOnlyTransport.
+     */
+    @Test
+    public void testStoringOnlyTransport_is_registered() throws MessagingException {
+        final Session session = StoringOnlyTransport.Factory.createDefaultSession();
+        final Transport transport = session.getTransport(StoringOnlyTransport.Factory.provider());
+        assertAll(
+                () -> assertEquals(StoringOnlyTransport.class.getName(), transport.getClass().getName()),
+                () -> assertEquals(StoringOnlyTransport.Factory.protocol(), transport.getURLName().getProtocol())
+        );
+    }
+
+    /**
      * Test of sendMessage method, of class StoringOnlyTransport.
      */
     @Test
-    public void testSendMessage() throws Exception {
-        Properties props = new Properties() {
-            {
-                setProperty("mail.transport.protocol.rfc822", StoringOnlyTransport.protocol());
-                setProperty("mail.transport.protocol.smtp", StoringOnlyTransport.protocol());
-                setProperty("mail." + StoringOnlyTransport.protocol() + ".class", StoringOnlyTransport.class.getName());
-            }
-        };
-        Provider provider = StoringOnlyTransport.provider();
-        Session session = Session.getInstance(props, null);
-        SessionF.Consumers.debug(true).accept(session);
-        session.addProvider(provider);
-        Transport transport = session.getTransport(provider);
-        assertEquals(StoringOnlyTransport.class.getName(), transport.getClass().getName());
-        assertEquals(StoringOnlyTransport.protocol(), transport.getURLName().getProtocol());
+    public void testSendMessage_via_StoringOnlyTransport() throws MessagingException {
+        final Session session = StoringOnlyTransport.Factory.createDefaultSession();
 
-        MimeMessage mm = SessionF.MimeMessages.mimeMessage().apply(session);
+        final MimeMessage mm = SessionF.MimeMessages.mimeMessage().apply(session);
         MimeMessageF.Consumers.from("me")
                 .andThen(MimeMessageF.Consumers.to("you"))
                 .andThen(MimeMessageF.Consumers.subject("the-subject"))
@@ -59,9 +59,10 @@ public class StoringOnlyTransportTest {
                 .accept(mm);
         Transport.send(mm);
 
-        StoringOnlyTransport storingOnlyTransport = (StoringOnlyTransport) session.getTransport(StoringOnlyTransport.protocol());
+        final StoringOnlyTransport storingOnlyTransport = (StoringOnlyTransport) session.getTransport(StoringOnlyTransport.Factory.protocol());
         assertEquals(1, storingOnlyTransport.sentMessages().size());
-        assertEquals("addresses: [you], msg: subject: 'the-subject', text: 'the-text'", storingOnlyTransport.sentMessages().get(0));
+        final String expected = "'from':['me'], 'reply-to':['me'], 'to':['you'], 'cc':['you'], 'bcc':['you'], 'subject':'the-subject' ";
+        assertEquals(expected, storingOnlyTransport.sentMessages().get(0));
 
         storingOnlyTransport.clearSentMessages();
         assertEquals(0, storingOnlyTransport.sentMessages().size());

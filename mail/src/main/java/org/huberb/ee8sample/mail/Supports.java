@@ -47,7 +47,7 @@ public class Supports {
          * Performs this operation on the given argument.
          *
          * @param t the input argument
-         * @throws MessagingException
+         * @throws MessagingException thrown if consumer fails
          */
         void accept(T t) throws MessagingException;
 
@@ -89,7 +89,7 @@ public class Supports {
          * Performs this operation on the given argument.
          *
          * @param t the input argument
-         * @throws java.sql.SQLException
+         * @throws java.sql.SQLException thrown if operation fails
          */
         R apply(T t) throws MessagingException;
 
@@ -105,7 +105,7 @@ public class Supports {
          * @return a composed function that first applies the {@code before}
          * function and then applies this function
          * @throws NullPointerException if before is null
-         * @see #andThen(Function)
+         * @see #andThen(FunctionThrowingMessagingException)
          */
         default <V> FunctionThrowingMessagingException<V, R> compose(FunctionThrowingMessagingException<? super V, ? extends T> before) {
             Objects.requireNonNull(before);
@@ -124,7 +124,7 @@ public class Supports {
          * @return a composed function that first applies this function and then
          * applies the {@code after} function
          * @throws NullPointerException if after is null
-         * @see #compose(Function)
+         * @see #compose(FunctionThrowingMessagingException)
          */
         default <V> FunctionThrowingMessagingException<T, V> andThen(FunctionThrowingMessagingException<? super R, ? extends V> after) {
             Objects.requireNonNull(after);

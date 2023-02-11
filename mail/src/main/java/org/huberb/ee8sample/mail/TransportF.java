@@ -17,6 +17,7 @@ package org.huberb.ee8sample.mail;
 
 import java.util.function.Function;
 import javax.mail.MessagingException;
+import javax.mail.Service;
 import javax.mail.Transport;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 
@@ -26,7 +27,7 @@ import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 public class TransportF {
 
     public Function<Transport, Boolean> connected() {
-        return transport -> transport.isConnected();
+        return Service::isConnected;
     }
 
     /**
@@ -36,29 +37,23 @@ public class TransportF {
     public static class Consumers {
 
         public static void withConnected(Transport transport, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
-            try {
+            try (transport) {
                 transport.connect();
                 c.accept(transport);
-            } finally {
-                transport.close();
             }
         }
 
         public static void withConnect(Transport transport, String u, String p, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
-            try {
+            try (transport) {
                 transport.connect(u, p);
                 c.accept(transport);
-            } finally {
-                transport.close();
             }
         }
 
         public static void withConnect(Transport transport, String host, int port, String u, String p, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
-            try {
+            try (transport) {
                 transport.connect(host, port, u, p);
                 c.accept(transport);
-            } finally {
-                transport.close();
             }
         }
     }

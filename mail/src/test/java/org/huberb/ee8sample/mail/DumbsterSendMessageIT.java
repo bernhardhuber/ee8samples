@@ -88,14 +88,13 @@ public class DumbsterSendMessageIT {
         }
 
         private Properties createMailProperties(int port) {
-            Properties mailProps = new Properties() {
+            return new Properties() {
                 {
                     setProperty("mail.smtp.host", "localhost");
                     setProperty("mail.smtp.port", "" + port);
                     setProperty("mail.smtp.sendpartial", "true");
                 }
             };
-            return mailProps;
         }
     }
 

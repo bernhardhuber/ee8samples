@@ -15,11 +15,13 @@
  */
 package org.huberb.ee8sample.mail;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import org.huberb.ee8sample.mail.MimeMessageF.Consumers;
+import org.huberb.ee8sample.mail.Recipient.RecipientBuilder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import javax.mail.Address;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
@@ -27,15 +29,15 @@ import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import org.huberb.ee8sample.mail.MimeMessageF.Consumers;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static org.huberb.ee8sample.mail.MimeMessageF.Consumers.recipients;
-import org.huberb.ee8sample.mail.Recipient.RecipientBuilder;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
@@ -85,7 +87,7 @@ public class MimeMessageFTest {
     @MethodSource("emailAddresses")
     public void testAddressesFromStringList(String theEmailAddress) {
         assertEquals(theEmailAddress, MimeMessageF.Providers.addressesFromStringList()
-                .apply(Arrays.asList(theEmailAddress))
+                .apply(Collections.singletonList(theEmailAddress))
                 .get(0).toString()
         );
     }
@@ -103,7 +105,7 @@ public class MimeMessageFTest {
     @MethodSource("emailAddresses")
     public void testAddressesFromList(String theEmailAddress) throws AddressException {
         assertEquals(theEmailAddress, MimeMessageF.Providers.addressesFromList()
-                .apply(Arrays.asList(new InternetAddress(theEmailAddress)))[0].toString()
+                .apply(List.of(new InternetAddress(theEmailAddress)))[0].toString()
         );
     }
 
@@ -206,7 +208,7 @@ public class MimeMessageFTest {
     @MethodSource("emailAddresses")
     public void testTo_AddressList(String theEmailAddress) throws MessagingException {
         MimeMessage mimeMessage = new MimeMessage(session);
-        MimeMessageF.Consumers.to(Arrays.asList(new InternetAddress(theEmailAddress))).accept(mimeMessage);
+        MimeMessageF.Consumers.to(List.of(new InternetAddress(theEmailAddress))).accept(mimeMessage);
         assertEquals(theEmailAddress, mimeMessage.getRecipients(RecipientType.TO)[0].toString());
     }
 

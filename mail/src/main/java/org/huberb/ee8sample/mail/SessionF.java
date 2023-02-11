@@ -30,29 +30,21 @@ import org.huberb.ee8sample.mail.Supports.FunctionThrowingMessagingException;
 public class SessionF {
 
     public static FunctionThrowingMessagingException<Session, Boolean> debug() {
-        return session -> {
-            return session.getDebug();
-        };
+        return Session::getDebug;
     }
 
     public static FunctionThrowingMessagingException<Session, PrintStream> debugOut() {
-        return session -> {
-            return session.getDebugOut();
-        };
+        return Session::getDebugOut;
     }
 
     public static class Consumers {
 
         public static Consumer<Session> debug(boolean v) {
-            return session -> {
-                session.setDebug(v);
-            };
+            return session -> session.setDebug(v);
         }
 
         public static Consumer<Session> debugOut(PrintStream out) {
-            return session -> {
-                session.setDebugOut(out);
-            };
+            return session -> session.setDebugOut(out);
         }
     }
 
@@ -63,9 +55,7 @@ public class SessionF {
     public static class Transports {
 
         public static FunctionThrowingMessagingException<Session, Transport> transport() {
-            return session -> {
-                return session.getTransport();
-            };
+            return Session::getTransport;
         }
 
         public static FunctionThrowingMessagingException<Session, Transport> transport(Address address) {
@@ -100,7 +90,7 @@ public class SessionF {
     public static class MimeMessages {
 
         public static Function<Session, MimeMessage> mimeMessage() {
-            return session -> new MimeMessage(session);
+            return MimeMessage::new;
         }
     }
     

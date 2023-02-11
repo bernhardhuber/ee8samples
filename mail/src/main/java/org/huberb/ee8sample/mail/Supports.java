@@ -15,9 +15,8 @@
  */
 package org.huberb.ee8sample.mail;
 
-import java.util.Objects;
-import java.util.function.Function;
 import javax.mail.MessagingException;
+import java.util.Objects;
 
 /**
  * Classes supporting the functional style API.
@@ -36,7 +35,7 @@ public class Supports {
      * @author berni3
      */
     @FunctionalInterface
-    public static interface ConsumerThrowingMessagingException<T> {
+    public interface ConsumerThrowingMessagingException<T> {
 
         public static <T> ConsumerThrowingMessagingException<T> NOOP() {
             return t -> {
@@ -83,13 +82,13 @@ public class Supports {
      * @param <R> output type of the function
      */
     @FunctionalInterface
-    public static interface FunctionThrowingMessagingException<T, R> {
+    public interface FunctionThrowingMessagingException<T, R> {
 
         /**
          * Performs this operation on the given argument.
          *
          * @param t the input argument
-         * @throws java.sql.SQLException thrown if operation fails
+         * @throws MessagingException thrown if operation fails
          */
         R apply(T t) throws MessagingException;
 

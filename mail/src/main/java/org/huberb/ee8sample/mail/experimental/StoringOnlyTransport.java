@@ -70,7 +70,7 @@ public class StoringOnlyTransport extends Transport {
     }
 
     //-------------------------------------------------------------------------
-    private final static List<String> SENT_MESSAGES_LIST = Collections.synchronizedList(new ArrayList<String>());
+    private final static List<String> SENT_MESSAGES_LIST = Collections.synchronizedList(new ArrayList<>());
 
     private final static List<String> dataSingletonInstance() {
         return SENT_MESSAGES_LIST;
@@ -113,13 +113,10 @@ public class StoringOnlyTransport extends Transport {
             );
             String addressesAsString = Arrays.toString(addresses);
 
-            String result = String.format("addresses: %s, msg: %s", addressesAsString, msgAsString);
-            return result;
+            return String.format("addresses: %s, msg: %s", addressesAsString, msgAsString);
         }
 
-        public static Function<Address[], List<Address>> addressesF = (addresses) -> {
-            return Optional.ofNullable(addresses).map(as -> Arrays.asList(as)).orElse(Collections.emptyList());
-        };
+        public static Function<Address[], List<Address>> addressesF = (addresses) -> Optional.ofNullable(addresses).map(Arrays::asList).orElse(Collections.emptyList());
 
         static String createStringRepB(Message msg, Address[] addresses) throws MessagingException, IOException {
             StringBuilder sb = new StringBuilder();
@@ -136,14 +133,14 @@ public class StoringOnlyTransport extends Transport {
                     .map(lst -> lst.stream().map(a -> String.format("'%s'", a.toString())).collect(Collectors.joining(",", "[", "]")))
                     .orElse("[]");
 
-            sb.append(String.format("'from':%s, ", Optional.ofNullable(froms).map(l -> listToStringF.apply(l)).orElse("")));
-            sb.append(String.format("'reply-to':%s, ", Optional.ofNullable(replyTos).map(l -> listToStringF.apply(l)).orElse("")));
+            sb.append(String.format("'from':%s, ", Optional.ofNullable(froms).map(listToStringF::apply).orElse("")));
+            sb.append(String.format("'reply-to':%s, ", Optional.ofNullable(replyTos).map(listToStringF::apply).orElse("")));
 
-            sb.append(String.format("'to':%s, ", Optional.ofNullable(tos).map(l -> listToStringF.apply(l)).orElse("")));
-            sb.append(String.format("'cc':%s, ", Optional.ofNullable(ccs).map(l -> listToStringF.apply(l)).orElse("")));
-            sb.append(String.format("'bcc':%s, ", Optional.ofNullable(bccs).map(l -> listToStringF.apply(l)).orElse("")));
+            sb.append(String.format("'to':%s, ", Optional.ofNullable(tos).map(listToStringF::apply).orElse("")));
+            sb.append(String.format("'cc':%s, ", Optional.ofNullable(ccs).map(listToStringF::apply).orElse("")));
+            sb.append(String.format("'bcc':%s, ", Optional.ofNullable(bccs).map(listToStringF::apply).orElse("")));
 
-            sb.append(String.format("'subject':'%s' ", Optional.ofNullable(subject).map(f -> f.toString()).orElse("")));
+            sb.append(String.format("'subject':'%s' ", Optional.ofNullable(subject).map(String::toString).orElse("")));
 
             return sb.toString();
         }

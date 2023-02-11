@@ -51,6 +51,6 @@ replay_pid*
 **/target-eclipse/
 **/temp/
 
-/genericdata/nbproject/
+**/nbproject/
 /genericdata/jndi-1_4_2-tutorial/
-/.idea/
+**/.idea/

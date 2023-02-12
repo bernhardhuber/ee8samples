@@ -15,12 +15,14 @@
  */
 package org.huberb.ee8sample.mail.experimental;
 
+import java.io.IOException;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import org.huberb.ee8sample.mail.MimeMessageF;
 import org.huberb.ee8sample.mail.SessionF;
+import org.huberb.ee8sample.mail.experimental.StoringOnlyTransport.MessageAddresses;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -32,7 +34,8 @@ import org.junit.jupiter.api.Test;
 public class StoringOnlyTransportTest {
 
     /**
-     * Test of StoringOnlyTransport.Factory.createDefaultSession method, of class StoringOnlyTransport.
+     * Test of StoringOnlyTransport.Factory.createDefaultSession method, of
+     * class StoringOnlyTransport.
      */
     @Test
     public void testStoringOnlyTransport_is_registered() throws MessagingException {
@@ -48,7 +51,7 @@ public class StoringOnlyTransportTest {
      * Test of sendMessage method, of class StoringOnlyTransport.
      */
     @Test
-    public void testSendMessage_via_StoringOnlyTransport() throws MessagingException {
+    public void testSendMessage_via_StoringOnlyTransport() throws MessagingException, IOException {
         final Session session = StoringOnlyTransport.Factory.createDefaultSession();
 
         final MimeMessage mm = SessionF.MimeMessages.mimeMessage().apply(session);
@@ -61,8 +64,10 @@ public class StoringOnlyTransportTest {
 
         final StoringOnlyTransport storingOnlyTransport = (StoringOnlyTransport) session.getTransport(StoringOnlyTransport.Factory.protocol());
         assertEquals(1, storingOnlyTransport.sentMessages().size());
+
+        final MessageAddresses ma = storingOnlyTransport.sentMessages().get(0);
         final String expected = "'from':['me'], 'reply-to':['me'], 'to':['you'], 'cc':['you'], 'bcc':['you'], 'subject':'the-subject' ";
-        assertEquals(expected, storingOnlyTransport.sentMessages().get(0));
+        assertEquals(expected, StoringOnlyTransport.MimeMessageStringReps.createStringRepB(ma.getMessage(), ma.getAddresses()));
 
         storingOnlyTransport.clearSentMessages();
         assertEquals(0, storingOnlyTransport.sentMessages().size());

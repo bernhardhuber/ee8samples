@@ -70,24 +70,40 @@ public class StoringOnlyTransport extends Transport {
     }
 
     //-------------------------------------------------------------------------
-    private final static List<String> SENT_MESSAGES_LIST = Collections.synchronizedList(new ArrayList<>());
+    public static class MessageAddresses {
 
-    private static List<String> dataSingletonInstance() {
+        final Message message;
+        final Address[] addresses;
+
+        public MessageAddresses(Message message, Address[] addresses) {
+            this.message = message;
+            this.addresses = addresses;
+        }
+
+        public Message getMessage() {
+            return message;
+        }
+
+        public Address[] getAddresses() {
+            return addresses;
+        }
+
+    }
+    //-------------------------------------------------------------------------
+    private final static List<MessageAddresses> SENT_MESSAGES_LIST = Collections.synchronizedList(new ArrayList<>());
+
+    private static List<MessageAddresses> dataSingletonInstance() {
         return SENT_MESSAGES_LIST;
     }
 
+    //-------------------------------------------------------------------------
     public StoringOnlyTransport(Session session, URLName urlname) {
         super(session, urlname);
     }
 
     @Override
     public void sendMessage(Message msg, Address[] addresses) throws MessagingException {
-        try {
-            String result = MimeMessageStringReps.createStringRepB(msg, addresses);
-            dataSingletonInstance().add(result);
-        } catch (IOException ioex) {
-            throw new MessagingException("sendMessage", ioex);
-        }
+        dataSingletonInstance().add(new MessageAddresses(msg, addresses));
     }
 
     @Override
@@ -97,7 +113,7 @@ public class StoringOnlyTransport extends Transport {
     }
 
     //-------------------------------------------------------------------------
-    public List<String> sentMessages() {
+    public List<MessageAddresses> sentMessages() {
         return dataSingletonInstance();
     }
 

@@ -36,11 +36,17 @@ import org.huberb.ee8sample.mail.Supports.MailRuntimeException;
  */
 public class MimeMessageF {
 
+    private MimeMessageF() {
+    }
+
     /**
      * Encapsulate methods returning {@link ConsumerThrowingMessagingException}
      * accepting a {@link MimeMessage}.
      */
     public static class Consumers {
+
+        private Consumers() {
+        }
 
         public static ConsumerThrowingMessagingException<MimeMessage> from(String address) {
             return msg -> msg.setFrom(address);
@@ -140,6 +146,9 @@ public class MimeMessageF {
     }
 
     public static class Providers {
+
+        private Providers() {
+        }
 
         public static FunctionThrowingMessagingException<MimeMessage, Address[]> allRecipients() {
             return MimeMessage::getAllRecipients;

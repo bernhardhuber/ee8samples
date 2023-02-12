@@ -29,6 +29,9 @@ import org.huberb.ee8sample.mail.Supports.FunctionThrowingMessagingException;
  */
 public class SessionF {
 
+    private SessionF() {
+    }
+
     public static FunctionThrowingMessagingException<Session, Boolean> debug() {
         return Session::getDebug;
     }
@@ -38,6 +41,9 @@ public class SessionF {
     }
 
     public static class Consumers {
+
+        private Consumers() {
+        }
 
         public static Consumer<Session> debug(boolean v) {
             return session -> session.setDebug(v);
@@ -49,10 +55,13 @@ public class SessionF {
     }
 
     /**
-     * Encapsulate functions for creating a {@link Transport} instance from
-     * a {@link Session} instance.
+     * Encapsulate functions for creating a {@link Transport} instance from a
+     * {@link Session} instance.
      */
     public static class Transports {
+
+        private Transports() {
+        }
 
         public static FunctionThrowingMessagingException<Session, Transport> transport() {
             return Session::getTransport;
@@ -84,14 +93,17 @@ public class SessionF {
     }
 
     /**
-     * Encapsulate functions for creating a {@link  MimeMessage} instance
-     * from a {@link Session} instance.
+     * Encapsulate functions for creating a {@link  MimeMessage} instance from a
+     * {@link Session} instance.
      */
     public static class MimeMessages {
+
+        private MimeMessages() {
+        }
 
         public static Function<Session, MimeMessage> mimeMessage() {
             return MimeMessage::new;
         }
     }
-    
+
 }

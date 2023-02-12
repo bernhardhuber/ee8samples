@@ -33,6 +33,9 @@ import org.huberb.ee8sample.mail.Supports.MailRuntimeException;
  */
 public class BodyTextMergers {
 
+    private BodyTextMergers() {
+    }
+
     /**
      * Create a consumer for setting mime-message text.
      *

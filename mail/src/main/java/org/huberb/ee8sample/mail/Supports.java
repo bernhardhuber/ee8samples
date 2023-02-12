@@ -15,8 +15,8 @@
  */
 package org.huberb.ee8sample.mail;
 
-import javax.mail.MessagingException;
 import java.util.Objects;
+import javax.mail.MessagingException;
 
 /**
  * Classes supporting the functional style API.
@@ -24,6 +24,9 @@ import java.util.Objects;
  * @author berni3
  */
 public class Supports {
+
+    private Supports() {
+    }
 
     /**
      * Define a consumer for mail operations.

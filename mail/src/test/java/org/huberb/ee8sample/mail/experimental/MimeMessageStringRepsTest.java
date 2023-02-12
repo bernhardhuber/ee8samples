@@ -42,47 +42,47 @@ public class MimeMessageStringRepsTest {
 
     @Test
     public void helloA() throws MessagingException, IOException {
-        Session session = Session.getDefaultInstance(new Properties());
-        MimeMessage mm = SessionF.MimeMessages.mimeMessage().apply(session);
+        final Session session = Session.getDefaultInstance(new Properties());
+        final MimeMessage mm = SessionF.MimeMessages.mimeMessage().apply(session);
         MimeMessageF.Consumers.from("me")
                 .andThen(MimeMessageF.Consumers.to("you"))
                 .andThen(MimeMessageF.Consumers.subject("the-subject"))
                 .andThen(MimeMessageF.Consumers.text("the-text"))
                 .accept(mm);
-        String expected = "addresses: [you], msg: subject: 'the-subject', text: 'the-text'";
+        final String expected = "addresses: [you], msg: subject: 'the-subject', text: 'the-text'";
         assertEquals(expected, MimeMessageStringReps.createStringRepA(mm, mm.getAllRecipients()));
     }
 
     @Test
     public void helloB() throws MessagingException, IOException {
-        Session session = Session.getDefaultInstance(new Properties());
-        MimeMessage mm = SessionF.MimeMessages.mimeMessage().apply(session);
+        final Session session = Session.getDefaultInstance(new Properties());
+        final MimeMessage mm = SessionF.MimeMessages.mimeMessage().apply(session);
         MimeMessageF.Consumers.from("me")
                 .andThen(MimeMessageF.Consumers.to("you"))
                 .andThen(MimeMessageF.Consumers.subject("the-subject"))
                 .andThen(MimeMessageF.Consumers.text("the-text"))
                 .accept(mm);
-        String expected = "'from':['me'], 'reply-to':['me'], 'to':['you'], 'cc':['you'], 'bcc':['you'], 'subject':'the-subject' ";
+        final String expected = "'from':['me'], 'reply-to':['me'], 'to':['you'], 'cc':['you'], 'bcc':['you'], 'subject':'the-subject' ";
         assertEquals(expected, MimeMessageStringReps.createStringRepB(mm, mm.getAllRecipients()));
     }
 
     @Test
     public void helloC() throws MessagingException, IOException, ClassNotFoundException {
-        Session session = Session.getDefaultInstance(new Properties());
-        MimeMessage mm = SessionF.MimeMessages.mimeMessage().apply(session);
+        final Session session = Session.getDefaultInstance(new Properties());
+        final MimeMessage mm = SessionF.MimeMessages.mimeMessage().apply(session);
         MimeMessageF.Consumers.from("me")
                 .andThen(MimeMessageF.Consumers.to("you"))
                 .andThen(MimeMessageF.Consumers.subject("the-subject"))
                 .andThen(MimeMessageF.Consumers.text("the-text"))
                 .accept(mm);
-        Address[] addresses = mm.getAllRecipients();
+        final Address[] addresses = mm.getAllRecipients();
         assertAll(
                 () -> assertNotNull(addresses),
                 () -> assertEquals(1, addresses.length),
                 () -> assertEquals("you", addresses[0].toString())
         );
-        byte[] bytes = Serialization.serialize(addresses);
-        Address[] addressesUnserialized = Serialization.unserialize(bytes);
+        final byte[] bytes = Serialization.serialize(addresses);
+        final Address[] addressesUnserialized = Serialization.unserialize(bytes);
         assertAll(
                 () -> assertNotNull(addressesUnserialized),
                 () -> assertEquals(1, addressesUnserialized.length),
@@ -91,9 +91,12 @@ public class MimeMessageStringRepsTest {
 
     }
 
-    static class Serialization {
+    public static class Serialization {
 
-        static <T extends Serializable> byte[] serialize(T t) throws IOException {
+        private Serialization() {
+        }
+
+        public static <T extends Serializable> byte[] serialize(T t) throws IOException {
             byte[] mmBytes = null;
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(baos)) {
                 oos.writeObject(t);
@@ -104,7 +107,7 @@ public class MimeMessageStringRepsTest {
             return mmBytes;
         }
 
-        static <T extends Serializable> T unserialize(byte[] mmBytes) throws IOException, ClassNotFoundException {
+        public static <T extends Serializable> T unserialize(byte[] mmBytes) throws IOException, ClassNotFoundException {
             T t = null;
             try (ByteArrayInputStream bais = new ByteArrayInputStream(mmBytes); ObjectInputStream ois = new ObjectInputStream(bais)) {
                 t = (T) ois.readObject();

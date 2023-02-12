@@ -41,7 +41,7 @@ import org.huberb.ee8sample.mail.SessionF;
  */
 public class StoringOnlyTransport extends Transport {
 
-    static class Factory {
+    public static class Factory {
 
         public static String protocol() {
             return "storingOnly";
@@ -72,7 +72,7 @@ public class StoringOnlyTransport extends Transport {
     //-------------------------------------------------------------------------
     private final static List<String> SENT_MESSAGES_LIST = Collections.synchronizedList(new ArrayList<>());
 
-    private final static List<String> dataSingletonInstance() {
+    private static List<String> dataSingletonInstance() {
         return SENT_MESSAGES_LIST;
     }
 
@@ -96,6 +96,7 @@ public class StoringOnlyTransport extends Transport {
         return true;
     }
 
+    //-------------------------------------------------------------------------
     public List<String> sentMessages() {
         return dataSingletonInstance();
     }
@@ -106,7 +107,9 @@ public class StoringOnlyTransport extends Transport {
 
     static class MimeMessageStringReps {
 
-        static String createStringRepA(Message msg, Address[] addresses) throws MessagingException, IOException {
+        public static Function<Address[], List<Address>> addressesF = (addresses) -> Optional.ofNullable(addresses).map(Arrays::asList).orElse(Collections.emptyList());
+
+        public static String createStringRepA(Message msg, Address[] addresses) throws MessagingException, IOException {
             String msgAsString = String.format("subject: '%s', text: '%s'",
                     msg.getSubject(),
                     String.valueOf(msg.getContent())
@@ -116,9 +119,7 @@ public class StoringOnlyTransport extends Transport {
             return String.format("addresses: %s, msg: %s", addressesAsString, msgAsString);
         }
 
-        public static Function<Address[], List<Address>> addressesF = (addresses) -> Optional.ofNullable(addresses).map(Arrays::asList).orElse(Collections.emptyList());
-
-        static String createStringRepB(Message msg, Address[] addresses) throws MessagingException, IOException {
+        public static String createStringRepB(Message msg, Address[] addresses) throws MessagingException, IOException {
             StringBuilder sb = new StringBuilder();
 
             List<Address> froms = addressesF.apply(msg.getFrom());

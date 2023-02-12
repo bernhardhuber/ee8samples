@@ -29,9 +29,7 @@ public class ConsumerThrowingMessagingExceptionTest {
     @Test
     public void hello1() throws MessagingException {
         StringBuilder result = new StringBuilder();
-        ConsumerThrowingMessagingException<StringBuilder> ctmexA = (StringBuilder s) -> {
-            s.append("A");
-        };
+        ConsumerThrowingMessagingException<StringBuilder> ctmexA = (StringBuilder s) -> s.append("A");
         ctmexA.accept(result);
         assertEquals("A", result.toString());
     }
@@ -39,12 +37,8 @@ public class ConsumerThrowingMessagingExceptionTest {
     @Test
     public void hello2() throws MessagingException {
         StringBuilder result = new StringBuilder();
-        ConsumerThrowingMessagingException<StringBuilder> ctmexA = (StringBuilder s) -> {
-            s.append("A");
-        };
-        ConsumerThrowingMessagingException<StringBuilder> ctmexB = (StringBuilder s) -> {
-            s.append("B");
-        };
+        ConsumerThrowingMessagingException<StringBuilder> ctmexA = (StringBuilder s) -> s.append("A");
+        ConsumerThrowingMessagingException<StringBuilder> ctmexB = (StringBuilder s) -> s.append("B");
         ctmexA.andThen(ctmexB).accept(result);
         assertEquals("AB", result.toString());
     }

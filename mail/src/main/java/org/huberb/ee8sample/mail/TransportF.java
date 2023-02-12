@@ -17,6 +17,7 @@ package org.huberb.ee8sample.mail;
 
 import java.util.function.Function;
 import javax.mail.MessagingException;
+import javax.mail.Service;
 import javax.mail.Transport;
 import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
 
@@ -25,42 +26,79 @@ import org.huberb.ee8sample.mail.Supports.ConsumerThrowingMessagingException;
  */
 public class TransportF {
 
-    public Function<Transport, Boolean> connected() {
-        return transport -> transport.isConnected();
+    public static Function<Transport, Boolean> connected() {
+        return Service::isConnected;
+    }
+
+    private TransportF() {
     }
 
     /**
-     * Encapsulate {@link Consumers} accepting an connected
-     * {@link Transport} instance.
+     * Encapsulate {@link Consumers} accepting an connected {@link Transport}
+     * instance.
      */
     public static class Consumers {
 
-        public static void withConnected(Transport transport, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
-            try {
+        private Consumers() {
+        }
+
+        /**
+         * Connect transport and invoke Consumer.
+         *
+         * @param transport connect this transport
+         * @param c consumer consuming the connected transport
+         * @throws MessagingException if connecting or consumer fails
+         *
+         * @see Transport#connect()
+         */
+        public static void withConnected(Transport transport,
+                ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
+            try (transport) {
                 transport.connect();
                 c.accept(transport);
-            } finally {
-                transport.close();
             }
         }
 
-        public static void withConnect(Transport transport, String u, String p, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
-            try {
+        /**
+         * Connect transport and invoke Consumer.
+         *
+         * @param transport connect this transport
+         * @param u specified username for connecting
+         * @param p specified password for connecting
+         * @param c consumer consuming the connected transport
+         * @throws MessagingException if connecting or consumer fails
+         *
+         * @see Transport#connect(java.lang.String, java.lang.String) *
+         */
+        public static void withConnected(Transport transport, String u, String p,
+                ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
+            try (transport) {
                 transport.connect(u, p);
                 c.accept(transport);
-            } finally {
-                transport.close();
             }
         }
 
-        public static void withConnect(Transport transport, String host, int port, String u, String p, ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
-            try {
+        /**
+         * Connect transport and invoke Consumer.
+         *
+         * @param transport connect this transport
+         * @param host connect to this host:port
+         * @param port connect to this host:port
+         * @param u specified username for connecting
+         * @param p specified password for connecting
+         * @param c consumer consuming the connected transport
+         * @throws MessagingException if connecting or consumer fails
+         *
+         * @see Transport#connect(java.lang.String, int, java.lang.String,
+         * java.lang.String)
+         */
+        public static void withConnected(Transport transport, String host, int port, String u, String p,
+                ConsumerThrowingMessagingException<Transport> c) throws MessagingException {
+            try (transport) {
                 transport.connect(host, port, u, p);
                 c.accept(transport);
-            } finally {
-                transport.close();
             }
         }
     }
-    
+
 }

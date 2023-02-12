@@ -15,42 +15,48 @@
  */
 package org.huberb.ee8sample.mail;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-import javax.mail.Message.RecipientType;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import javax.mail.Message.RecipientType;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
- *
  * @author berni3
  */
 public class RecipientTest {
 
     @ParameterizedTest
     @MethodSource("emailAddresses")
-    public void hello1(String theEmailAddress) throws AddressException {
+    public void testCreatingRecipient_TO_recipientType_address(String theEmailAddress) throws AddressException {
         final Recipient recipient = new Recipient.RecipientBuilder()
                 .recipientType(RecipientType.TO)
                 .addAddress(new InternetAddress(theEmailAddress))
                 .build();
-        assertEquals(RecipientType.TO, recipient.getRecipientType());
-        assertEquals(theEmailAddress, recipient.getInternetAddress().get(0).toString());
-        assertEquals(theEmailAddress, recipient.getInternetAddressAsArray()[0].toString());
+        assertAll(
+                () -> assertEquals(RecipientType.TO, recipient.getRecipientType()),
+                () -> assertEquals(theEmailAddress, recipient.getInternetAddress().get(0).toString()),
+                () -> assertEquals(theEmailAddress, recipient.getInternetAddressAsArray()[0].toString())
+        );
     }
 
     @ParameterizedTest
     @MethodSource("emailAddresses")
-    public void hello2(String theEmailAddress) throws AddressException {
+    public void testCreatingRecipient_TO_addAddress(String theEmailAddress) throws AddressException {
         final Recipient recipient = new Recipient.RecipientBuilder()
-                .addAddress(RecipientType.TO, Arrays.asList(new InternetAddress(theEmailAddress)))
+                .addAddress(RecipientType.TO, List.of(new InternetAddress(theEmailAddress)))
                 .build();
-        assertEquals(RecipientType.TO, recipient.getRecipientType());
-        assertEquals(theEmailAddress, recipient.getInternetAddress().get(0).toString());
-        assertEquals(theEmailAddress, recipient.getInternetAddressAsArray()[0].toString());
+        assertAll(
+                () -> assertEquals(RecipientType.TO, recipient.getRecipientType()),
+                () -> assertEquals(theEmailAddress, recipient.getInternetAddress().get(0).toString()),
+                () -> assertEquals(theEmailAddress, recipient.getInternetAddressAsArray()[0].toString())
+        );
     }
 
     public static Stream<String> emailAddresses() {

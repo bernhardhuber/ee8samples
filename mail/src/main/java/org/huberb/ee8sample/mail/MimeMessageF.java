@@ -36,46 +36,40 @@ import org.huberb.ee8sample.mail.Supports.MailRuntimeException;
  */
 public class MimeMessageF {
 
+    private MimeMessageF() {
+    }
+
     /**
      * Encapsulate methods returning {@link ConsumerThrowingMessagingException}
      * accepting a {@link MimeMessage}.
      */
     public static class Consumers {
 
+        private Consumers() {
+        }
+
         public static ConsumerThrowingMessagingException<MimeMessage> from(String address) {
-            return msg -> {
-                msg.setFrom(address);
-            };
+            return msg -> msg.setFrom(address);
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> from(Address address) {
-            return msg -> {
-                msg.setFrom(address);
-            };
+            return msg -> msg.setFrom(address);
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> replyTo(String address) {
-            return msg -> {
-                msg.setReplyTo(new Address[]{new InternetAddress(address)});
-            };
+            return msg -> msg.setReplyTo(new Address[]{new InternetAddress(address)});
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> replyTo(Address address) {
-            return msg -> {
-                msg.setReplyTo(new Address[]{address});
-            };
+            return msg -> msg.setReplyTo(new Address[]{address});
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> replyTo(Address[] address) {
-            return msg -> {
-                msg.setReplyTo(Arrays.copyOf(address, address.length));
-            };
+            return msg -> msg.setReplyTo(Arrays.copyOf(address, address.length));
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> replyTo(List<Address> address) {
-            return msg -> {
-                msg.setReplyTo(address.toArray(Address[]::new));
-            };
+            return msg -> msg.setReplyTo(address.toArray(Address[]::new));
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> to(String address) {
@@ -103,9 +97,7 @@ public class MimeMessageF {
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> recipient(RecipientType rt, String address) {
-            return msg -> {
-                msg.setRecipients(rt, address);
-            };
+            return msg -> msg.setRecipients(rt, address);
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> recipients(RecipientType rt, String[] addresses) {
@@ -117,15 +109,11 @@ public class MimeMessageF {
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> recipients(RecipientType rt, Address[] addresses) {
-            return msg -> {
-                msg.setRecipients(rt, addresses);
-            };
+            return msg -> msg.setRecipients(rt, addresses);
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> recipients(RecipientType rt, List<Address> addresses) {
-            return msg -> {
-                msg.setRecipients(rt, Providers.addressesFromList().apply(addresses));
-            };
+            return msg -> msg.setRecipients(rt, Providers.addressesFromList().apply(addresses));
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> subject(String subject) {
@@ -133,21 +121,15 @@ public class MimeMessageF {
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> subject(String subject, String charset) {
-            return msg -> {
-                msg.setSubject(subject, charset);
-            };
+            return msg -> msg.setSubject(subject, charset);
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> sentDate(Date d) {
-            return msg -> {
-                msg.setSentDate(d);
-            };
+            return msg -> msg.setSentDate(d);
         }
 
         public static ConsumerThrowingMessagingException<MimeMessage> text(String text) {
-            return msg -> {
-                msg.setText(text);
-            };
+            return msg -> msg.setText(text);
         }
 
         /**
@@ -159,41 +141,34 @@ public class MimeMessageF {
          * @return consumer
          */
         public static ConsumerThrowingMessagingException<MimeMessage> send() {
-            return msg -> {
-                Transport.send(msg);
-            };
+            return Transport::send;
         }
     }
 
     public static class Providers {
 
+        private Providers() {
+        }
+
         public static FunctionThrowingMessagingException<MimeMessage, Address[]> allRecipients() {
-            return msg -> {
-                return msg.getAllRecipients();
-            };
+            return MimeMessage::getAllRecipients;
         }
 
         public static FunctionThrowingMessagingException<MimeMessage, Address[]> recipients(RecipientType rt) {
-            return msg -> {
-                return msg.getRecipients(rt);
-            };
+            return msg -> msg.getRecipients(rt);
         }
 
         public static FunctionThrowingMessagingException<MimeMessage, Address[]> from() {
-            return msg -> {
-                return msg.getFrom();
-            };
+            return MimeMessage::getFrom;
         }
 
         public static FunctionThrowingMessagingException<MimeMessage, Address[]> replyTo() {
-            return msg -> {
-                return msg.getReplyTo();
-            };
+            return MimeMessage::getReplyTo;
         }
 
         //---
         public static FunctionThrowingMessagingException<String, Address> addressFromString() {
-            return address -> new InternetAddress(address);
+            return InternetAddress::new;
         }
 
         public static Function<String, Address> addressFromStringThrowingMailRuntimeException() {
@@ -209,7 +184,7 @@ public class MimeMessageF {
         public static Function<String[], List<Address>> addressesFromStrings() {
             return address -> {
                 List<Address> addressList = new ArrayList<>();
-                Stream.of(address).map(addressFromStringThrowingMailRuntimeException()).forEach(a -> addressList.add(a));
+                Stream.of(address).map(addressFromStringThrowingMailRuntimeException()).forEach(addressList::add);
                 return addressList;
             };
         }
@@ -217,13 +192,13 @@ public class MimeMessageF {
         public static Function<List<String>, List<Address>> addressesFromStringList() {
             return address -> {
                 List<Address> addressList = new ArrayList<>();
-                address.stream().map(addressFromStringThrowingMailRuntimeException()).forEach(a -> addressList.add(a));
+                address.stream().map(addressFromStringThrowingMailRuntimeException()).forEach(addressList::add);
                 return addressList;
             };
         }
 
         public static Function<Address[], List<Address>> addressesAsList() {
-            return addresses -> Arrays.asList(addresses);
+            return Arrays::asList;
         }
 
         public static Function<List<Address>, Address[]> addressesFromList() {

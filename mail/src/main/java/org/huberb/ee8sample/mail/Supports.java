@@ -16,7 +16,6 @@
 package org.huberb.ee8sample.mail;
 
 import java.util.Objects;
-import java.util.function.Function;
 import javax.mail.MessagingException;
 
 /**
@@ -25,6 +24,9 @@ import javax.mail.MessagingException;
  * @author berni3
  */
 public class Supports {
+
+    private Supports() {
+    }
 
     /**
      * Define a consumer for mail operations.
@@ -36,7 +38,7 @@ public class Supports {
      * @author berni3
      */
     @FunctionalInterface
-    public static interface ConsumerThrowingMessagingException<T> {
+    public interface ConsumerThrowingMessagingException<T> {
 
         public static <T> ConsumerThrowingMessagingException<T> NOOP() {
             return t -> {
@@ -47,7 +49,7 @@ public class Supports {
          * Performs this operation on the given argument.
          *
          * @param t the input argument
-         * @throws MessagingException
+         * @throws MessagingException thrown if consumer fails
          */
         void accept(T t) throws MessagingException;
 
@@ -83,13 +85,13 @@ public class Supports {
      * @param <R> output type of the function
      */
     @FunctionalInterface
-    public static interface FunctionThrowingMessagingException<T, R> {
+    public interface FunctionThrowingMessagingException<T, R> {
 
         /**
          * Performs this operation on the given argument.
          *
          * @param t the input argument
-         * @throws java.sql.SQLException
+         * @throws MessagingException thrown if operation fails
          */
         R apply(T t) throws MessagingException;
 
@@ -105,7 +107,7 @@ public class Supports {
          * @return a composed function that first applies the {@code before}
          * function and then applies this function
          * @throws NullPointerException if before is null
-         * @see #andThen(Function)
+         * @see #andThen(FunctionThrowingMessagingException)
          */
         default <V> FunctionThrowingMessagingException<V, R> compose(FunctionThrowingMessagingException<? super V, ? extends T> before) {
             Objects.requireNonNull(before);
@@ -124,7 +126,7 @@ public class Supports {
          * @return a composed function that first applies this function and then
          * applies the {@code after} function
          * @throws NullPointerException if after is null
-         * @see #compose(Function)
+         * @see #compose(FunctionThrowingMessagingException)
          */
         default <V> FunctionThrowingMessagingException<T, V> andThen(FunctionThrowingMessagingException<? super R, ? extends V> after) {
             Objects.requireNonNull(after);

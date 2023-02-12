@@ -26,21 +26,27 @@ import org.huberb.ee8sample.mail.Supports.MailRuntimeException;
  */
 public class InternetAddressF {
 
-    static class Consumers {
+    private InternetAddressF() {
+    }
 
-        static Consumer<InternetAddress> addressPersonalValidate(String address, String personal) {
+    public static class Consumers {
+
+        private Consumers() {
+        }
+
+        public static Consumer<InternetAddress> addressPersonalValidate(String address, String personal) {
             return address(address).andThen(personal(personal)).andThen(validate());
         }
 
-        static Consumer<InternetAddress> address(String address) {
+        public static Consumer<InternetAddress> address(String address) {
             return ia -> ia.setAddress(address);
         }
 
-        static Consumer<InternetAddress> personal(String personal) {
+        public static Consumer<InternetAddress> personal(String personal) {
             return personal(personal, null);
         }
 
-        static Consumer<InternetAddress> personal(String personal, String charset) {
+        public static Consumer<InternetAddress> personal(String personal, String charset) {
             return ia -> {
                 try {
                     ia.setPersonal(personal, charset);
@@ -51,7 +57,7 @@ public class InternetAddressF {
             };
         }
 
-        static Consumer<InternetAddress> validate() {
+        public static Consumer<InternetAddress> validate() {
             return ia -> {
                 try {
                     ia.validate();
@@ -62,5 +68,5 @@ public class InternetAddressF {
             };
         }
     }
-    
+
 }

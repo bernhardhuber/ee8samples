@@ -61,7 +61,7 @@ public class FlatCtx implements Context {
     protected static final NameParser myParser = new FlatNameParser();
 
     private final Hashtable myEnv;
-    private Map<String, Object> bindings;
+    private final Map<String, Object> bindings;
 
     public FlatCtx(Hashtable inEnv) {
         this(inEnv, null);

@@ -42,6 +42,9 @@ class HierParser implements NameParser {
 
     private static final Properties syntax = new Properties();
 
+    /**
+     * @see CompoundName
+     */
     static {
         //syntax.put("jndi.syntax.direction", "right_to_left");
         syntax.put("jndi.syntax.direction", "left_to_right");

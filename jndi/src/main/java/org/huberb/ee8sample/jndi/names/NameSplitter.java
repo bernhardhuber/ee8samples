@@ -77,20 +77,9 @@ public class NameSplitter {
 
                 sb.delete(0, sb.length());
                 word.inc(tokenInfo.value.length());
-                while (word.beginIndexLtLength()) {
-                    TokenInfo tokenInfo2 = findAnyTokenIn(word, createTokenFor(endToken));
-                    if (tokenInfo2.token == endToken) {
-                        String comp = sb.toString();
-                        result.add(comp);
-                        sb.delete(0, sb.length());
 
-                        word.inc(tokenInfo2.value.length());
-                    } else {
-                        sb.append(word.charAtBeginIndex());
-                        word.inc();
-                    }
-                }
-                //} else if (token == Token.quote2) {
+                TokenInfo tokenInfo2 = gobbleUntil(word, createTokenFor(endToken));
+                sb.append(tokenInfo2.accumulator);
             } else {
                 sb.append(tokenInfo.accumulator.toString());
                 word.inc();
@@ -107,16 +96,16 @@ public class NameSplitter {
 
         final String value;
         final Token token;
-        final StringBuilder accumulator;
+        final String accumulator;
 
         TokenInfo(String value, Token token) {
             this(value, token, "");
         }
 
-        TokenInfo(String value, Token token, String sbInitial) {
+        TokenInfo(String value, Token token, String accumulator) {
             this.value = value;
             this.token = token;
-            this.accumulator = new StringBuilder(sbInitial);
+            this.accumulator = accumulator;
         }
     }
 
@@ -128,30 +117,34 @@ public class NameSplitter {
     TokenInfo findAnyTokenIn(Word word, Set<TokenInfo> tokenInfoSet) {
         final String underTest = word.substringFromBeginIndex();
 
-        TokenInfo foundTokenInfo = tokenInfoSet.stream().filter(ti -> underTest.startsWith(ti.value))
+        TokenInfo foundTokenInfo = tokenInfoSet.stream()
+                .filter(ti -> underTest.startsWith(ti.value))
                 .findFirst()
                 .orElse(null);
 
         if (foundTokenInfo != null) {
             return foundTokenInfo;
         } else {
-            return new TokenInfo(String.valueOf(word.charAtBeginIndex()), Token.none);
+            return new TokenInfo("", Token.none, String.valueOf(word.charAtBeginIndex()));
         }
     }
 
-    void gobbleUntil(Word word, Token stopToken, Set<TokenInfo> tokenInfoSet) {
-        // TODO return Token + matched token-String + accum
+    TokenInfo gobbleUntil(Word word, Set<TokenInfo> tokenInfoSet) {
+        TokenInfo foundToken = new TokenInfo("", Token.none, "");
         StringBuilder accum = new StringBuilder();
+        while (word.beginIndexLtLength()) {
+            foundToken = findAnyTokenIn(word, tokenInfoSet);
 
-        TokenInfo foundToken = findAnyTokenIn(word, tokenInfoSet);
-
-        if (foundToken.token == stopToken) {
-            String result = accum.toString();
-            word.inc(foundToken.value.length());
-        } else {
-            accum.append(word.charAtBeginIndex());
-            word.inc();
+            if (foundToken.token != Token.none) {
+                String result = accum.toString();
+                word.inc(foundToken.value.length());
+            } else {
+                accum.append(foundToken.accumulator);
+                word.inc();
+            }
         }
+        return new TokenInfo(foundToken.value, foundToken.token, accum.toString());
+
     }
 
     static class Word {

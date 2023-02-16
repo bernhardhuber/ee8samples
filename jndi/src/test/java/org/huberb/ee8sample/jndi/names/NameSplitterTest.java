@@ -81,6 +81,17 @@ public class NameSplitterTest {
                 () -> assertEquals("c=z", instance.split(name).get(2))
         );
     }
+    @Test
+    public void testSplit_ax_Dot_Quote_by_Quote_Dot_cz() {
+        NameSplitter instance = new NameSplitter();
+        String name = "a=x.'b=y'.c=z";
+        assertAll(
+                () -> assertEquals(3, instance.split(name).size()),
+                () -> assertEquals("a=x", instance.split(name).get(0)),
+                () -> assertEquals("b=y", instance.split(name).get(1)),
+                () -> assertEquals("c=z", instance.split(name).get(2))
+        );
+    }
 
     @Test
     public void testSplit_a_Dot_Quote_b_Dot_c_Quote() {

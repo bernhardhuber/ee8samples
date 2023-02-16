@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.huberb.ee8sample.jndi.names.NameSplitter.TokenInfo.Token;
 
 /**
  *
@@ -49,13 +50,25 @@ public class NameSplitter {
     }
 
     public NameSplitter() {
-        this.m = new HashMap<>() {
+        this(SEPARATOR, QUOTE1, QUOTE2);
+    }
+
+    public NameSplitter(String separator) {
+        this(separator, QUOTE1, QUOTE2);
+    }
+
+    public NameSplitter(String separator, String quote1, String quote2) {
+        this.separator = separator;
+        this.quote1 = quote1;
+        this.quote2 = quote2;
+        this.m = new HashMap<>(5) {
             {
-                put(Token.separator, new TokenInfo(separator, Token.separator));
-                put(Token.quote1, new TokenInfo(quote1, Token.quote1));
-                put(Token.quote2, new TokenInfo(quote2, Token.quote2));
+                put(Token.separator, new TokenInfo(NameSplitter.this.separator, Token.separator));
+                put(Token.quote1, new TokenInfo(NameSplitter.this.quote1, Token.quote1));
+                put(Token.quote2, new TokenInfo(NameSplitter.this.quote2, Token.quote2));
             }
         };
+
     }
 
     public List<String> split(String aName) {
@@ -94,6 +107,11 @@ public class NameSplitter {
 
     static class TokenInfo {
 
+        enum Token {
+            none,
+            separator, quote1, quote2;
+        }
+
         final String value;
         final Token token;
         final String accumulator;
@@ -107,11 +125,6 @@ public class NameSplitter {
             this.token = token;
             this.accumulator = accumulator;
         }
-    }
-
-    enum Token {
-        none,
-        separator, quote1, quote2;
     }
 
     TokenInfo findAnyTokenIn(Word word, Set<TokenInfo> tokenInfoSet) {
@@ -137,7 +150,7 @@ public class NameSplitter {
 
             if (foundToken.token != Token.none) {
                 String result = accum.toString();
-                word.inc(foundToken.value.length());
+                word.inc(foundToken.value.length()); break;
             } else {
                 accum.append(foundToken.accumulator);
                 word.inc();

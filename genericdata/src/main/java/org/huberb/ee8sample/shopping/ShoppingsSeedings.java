@@ -38,16 +38,15 @@ import org.huberb.ee8sample.shopping.Shoppings.StockItem;
  */
 public class ShoppingsSeedings {
 
-    public enum X {
+    public enum SeedingEntries {
         stockItemList,
         shoppingCardList,
         orderList,
         invoiceList,
         deliveryList;
-
     }
 
-    public EnumMap<X, Object> seedItems(int stockItemCount, int shoppingCardCount) {
+    public EnumMap<SeedingEntries, Object> seedItems(int stockItemCount, int shoppingCardCount) {
         final Faker faker = Faker.instance(Locale.forLanguageTag("de-AT"));
 
         final List<StockItem> stockItemList = Stream.iterate(0, i -> i < stockItemCount, i -> i + 1)
@@ -102,8 +101,16 @@ public class ShoppingsSeedings {
                 Shoppings.Invoice.builder()
                         .shoppingItemList(shoppingCardList.get(0).getShoppingItemList())
                         .orgAddress(Address.builder().build())
-                        .organisation(Organisation.builder().build())
-                        .person(Person.builder().build())
+                        .organisation(Organisation.builder()
+                                .organisationName("Organisation-A")
+                                .build())
+                        .person(Person.builder()
+                                .personName(Name.builder()
+                                        .firstName(faker.name().firstName())
+                                        .lastName(faker.name().lastName())
+                                        .middleName("")
+                                        .title("")
+                                        .build()).build())
                         .personAddress(Address.builder().build())
                         .build());
         final List<Shoppings.Order> orderList = Arrays.asList(
@@ -112,17 +119,16 @@ public class ShoppingsSeedings {
                         .orderIdentif("orderIdentif")
                         .build());
 
-        // TODO replace by ShoppingFilesystem ???
-        EnumMap<X, Object> m2 = new EnumMap<>(X.class) {
+        EnumMap<SeedingEntries, Object> result = new EnumMap<>(SeedingEntries.class) {
             {
-                put(X.stockItemList, stockItemList);
-                put(X.shoppingCardList, shoppingCardList);
-                put(X.orderList, orderList);
-                put(X.invoiceList, invoiceList);
-                put(X.deliveryList, deliveryList);
+                put(SeedingEntries.stockItemList, stockItemList);
+                put(SeedingEntries.shoppingCardList, shoppingCardList);
+                put(SeedingEntries.orderList, orderList);
+                put(SeedingEntries.invoiceList, invoiceList);
+                put(SeedingEntries.deliveryList, deliveryList);
             }
         };
-        return m2;
+        return result;
 
     }
 

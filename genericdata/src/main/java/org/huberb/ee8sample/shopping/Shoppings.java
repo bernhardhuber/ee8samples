@@ -16,6 +16,7 @@
 package org.huberb.ee8sample.shopping;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -34,6 +35,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -60,12 +63,17 @@ import static org.huberb.ee8sample.shopping.Shoppings.StockItem.FIND_STOCK_ITEMS
  *
  * @author berni3
  */
-public class Shoppings implements Serializable {
+public class Shoppings {
+
+    private Shoppings() {
+    }
 
     @Data
     @NoArgsConstructor
     @MappedSuperclass
-    public static class AbstractEntityIdVersion {
+    public static class AbstractEntityIdVersion implements Serializable {
+
+        public static final long serialVersionUID = 20230221L;
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
@@ -74,6 +82,23 @@ public class Shoppings implements Serializable {
         @Version
         @Column(name = "VERSION", updatable = false, nullable = false)
         private Integer version;
+
+        @Column(name = "CREATED_WHEN", columnDefinition = "TIMESTAMP")
+        private java.time.LocalDateTime createdWhen;
+        @Column(name = "UPDATED_WHEN", columnDefinition = "TIMESTAMP")
+        private java.time.LocalDateTime updatedWhen;
+
+        @PrePersist
+        void onPrePersist() {
+            if (this.createdWhen == null) {
+                this.createdWhen = LocalDateTime.now();
+            }
+        }
+
+        @PreUpdate()
+        void onPreUpdate() {
+            this.updatedWhen = LocalDateTime.now();
+        }
     }
 
     @Data

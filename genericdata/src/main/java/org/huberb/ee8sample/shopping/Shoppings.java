@@ -32,6 +32,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -45,12 +47,20 @@ import org.huberb.ee8sample.genericdata.Basics.Item;
 import org.huberb.ee8sample.genericdata.Basics.LoginUser;
 import org.huberb.ee8sample.genericdata.Basics.Organisation;
 import org.huberb.ee8sample.genericdata.Basics.Person;
+import static org.huberb.ee8sample.shopping.Shoppings.Delivery.COUNT_OF_DELIVERIES_QUERY;
+import static org.huberb.ee8sample.shopping.Shoppings.Invoice.COUNT_OF_INVOICES_QUERY;
+import static org.huberb.ee8sample.shopping.Shoppings.Order.COUNT_OF_ORDERS_QUERY;
+import static org.huberb.ee8sample.shopping.Shoppings.ShoppingCard.COUNT_OF_SHOPPING_CARDS_QUERY;
+import static org.huberb.ee8sample.shopping.Shoppings.ShoppingCard.FIND_SHOPPING_CARD_BY_USER;
+import static org.huberb.ee8sample.shopping.Shoppings.StockItem.COUNT_OF_STOCK_ITEMS_QUERY;
+import static org.huberb.ee8sample.shopping.Shoppings.StockItem.FIND_STOCK_ITEMS_BY_CODE_QUERY;
+import static org.huberb.ee8sample.shopping.Shoppings.StockItem.FIND_STOCK_ITEMS_BY_NAME_QUERY;
 
 /**
  *
  * @author berni3
  */
-public class Shoppings {
+public class Shoppings implements Serializable {
 
     @Data
     @NoArgsConstructor
@@ -74,7 +84,15 @@ public class Shoppings {
     @AllArgsConstructor
     @Entity
     @Table(name = "STOCK_ITEM")
+    @NamedQueries({
+        @NamedQuery(name = COUNT_OF_STOCK_ITEMS_QUERY, query = "select count(e) from Shoppings$StockItem as e"),
+        @NamedQuery(name = FIND_STOCK_ITEMS_BY_NAME_QUERY, query = "select e from Shoppings$StockItem as e where e.item.itemName = :itemName"),
+        @NamedQuery(name = FIND_STOCK_ITEMS_BY_CODE_QUERY, query = "select e from Shoppings$StockItem as e where e.item.itemCode = :itemCode"),})
     public static class StockItem extends AbstractEntityIdVersion implements Serializable {
+
+        public static final String COUNT_OF_STOCK_ITEMS_QUERY = "COUNT_OF_STOCK_ITEMS_QUERY";
+        public static final String FIND_STOCK_ITEMS_BY_NAME_QUERY = "FIND_STOCK_ITEMS_BY_NAME_QUERY";
+        public static final String FIND_STOCK_ITEMS_BY_CODE_QUERY = "FIND_STOCK_ITEMS_BY_CODE_QUERY";
 
         public static final long serialVersionUID = 20230115L;
 
@@ -112,8 +130,14 @@ public class Shoppings {
     @AllArgsConstructor
     @Entity
     @Table(name = "SHOPPING_CARD")
+    @NamedQueries({
+        @NamedQuery(name = COUNT_OF_SHOPPING_CARDS_QUERY, query = "select count(e) from Shoppings$ShoppingCard as e"),
+        @NamedQuery(name = FIND_SHOPPING_CARD_BY_USER, query = "select e from Shoppings$ShoppingCard as e where e.loginUser.userName = :userName")
+    })
     public static class ShoppingCard extends AbstractEntityIdVersion implements Serializable {
 
+        public final static String COUNT_OF_SHOPPING_CARDS_QUERY = "COUNT_OF_SHOPPING_CARDS_QUERY";
+        public final static String FIND_SHOPPING_CARD_BY_USER = "FIND_SHOPPING_CARD_BY_USER";
         @ElementCollection
         @CollectionTable(
                 name = "SHOPPING_CARD_ITEM",
@@ -134,8 +158,12 @@ public class Shoppings {
     @AllArgsConstructor
     @Entity
     @Table(name = "INVOICE")
+    @NamedQueries({
+        @NamedQuery(name = COUNT_OF_INVOICES_QUERY, query = "select count(e) from Shoppings$Invoice as e")
+    })
     public static class Invoice extends AbstractEntityIdVersion implements Serializable {
 
+        public static final String COUNT_OF_INVOICES_QUERY = "COUNT_OF_INVOICES_QUERY";
         public static final long serialVersionUID = 20230115L;
 
         //---
@@ -179,8 +207,12 @@ public class Shoppings {
     @AllArgsConstructor
     @Entity
     @Table(name = "SHOPPING_ORDER")
+    @NamedQueries({
+        @NamedQuery(name = COUNT_OF_ORDERS_QUERY, query = "select count(e) from Shoppings$Order as e")
+    })
     public static class Order extends AbstractEntityIdVersion implements Serializable {
 
+        public static final String COUNT_OF_ORDERS_QUERY = "COUNT_OF_ORDERS_QUERY";
         public static final long serialVersionUID = 20230115L;
 
         @Column(name = "ORDER_IDENTIF", unique = true)
@@ -204,8 +236,12 @@ public class Shoppings {
     @AllArgsConstructor
     @Entity
     @Table(name = "SHOPPING_DELIVERY")
+    @NamedQueries({
+        @NamedQuery(name = COUNT_OF_DELIVERIES_QUERY, query = "select count(e) from Shoppings$Delivery as e")
+    })
     public static class Delivery extends AbstractEntityIdVersion implements Serializable {
 
+        public static final String COUNT_OF_DELIVERIES_QUERY = "COUNT_OF_DELIVERIES_QUERY";
         public static final long serialVersionUID = 20230115L;
 
         @Column(name = "DELIVERY_IDENTIF", unique = true)

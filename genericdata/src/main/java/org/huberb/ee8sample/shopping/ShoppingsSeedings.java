@@ -17,10 +17,9 @@ package org.huberb.ee8sample.shopping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
@@ -39,7 +38,16 @@ import org.huberb.ee8sample.shopping.Shoppings.StockItem;
  */
 public class ShoppingsSeedings {
 
-    public Map<String, Object> seedItems(int stockItemCount, int shoppingCardCount) {
+    public enum X {
+        stockItemList,
+        shoppingCardList,
+        orderList,
+        invoiceList,
+        deliveryList;
+
+    }
+
+    public EnumMap<X, Object> seedItems(int stockItemCount, int shoppingCardCount) {
         final Faker faker = Faker.instance(Locale.forLanguageTag("de-AT"));
 
         final List<StockItem> stockItemList = Stream.iterate(0, i -> i < stockItemCount, i -> i + 1)
@@ -105,15 +113,17 @@ public class ShoppingsSeedings {
                         .build());
 
         // TODO replace by ShoppingFilesystem ???
-        final Map<String, Object> m = new HashMap<>() {
+        EnumMap<X, Object> m2 = new EnumMap<>(X.class) {
             {
-                put("stockItemList", stockItemList);
-                put("shoppingCardList", shoppingCardList);
-                put("orderList", orderList);
-                put("invoiceList", invoiceList);
-                put("deliveryList", deliveryList);
+                put(X.stockItemList, stockItemList);
+                put(X.shoppingCardList, shoppingCardList);
+                put(X.orderList, orderList);
+                put(X.invoiceList, invoiceList);
+                put(X.deliveryList, deliveryList);
             }
         };
-        return m;
+        return m2;
+
     }
+
 }

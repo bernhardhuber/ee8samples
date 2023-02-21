@@ -15,9 +15,9 @@
  */
 package org.huberb.ee8sample.shopping;
 
-import org.huberb.ee8sample.shopping.ShoppingsSeedings;
 import java.util.List;
 import java.util.Map;
+import org.huberb.ee8sample.shopping.ShoppingsSeedings.X;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,7 +42,7 @@ public class ShoppingsSeedingsTest {
      */
     @Test
     public void testSeedItems() {
-        final Map<String, Object> map = instance.seedItems(20, 5);
+        final Map<X, Object> map = instance.seedItems(20, 5);
         //System.out.printf("seedItems: %s%n", map);
 
         assertNotNull(map);

@@ -270,7 +270,7 @@ public class Shoppings {
         public static final long serialVersionUID = 20230115L;
 
         @Column(name = "DELIVERY_IDENTIF", unique = true)
-        private String deliverIdentif;
+        private String deliveryIdentif;
         @Column(name = "ORDER_IDENTIF")
         private String orderIdentif;
 

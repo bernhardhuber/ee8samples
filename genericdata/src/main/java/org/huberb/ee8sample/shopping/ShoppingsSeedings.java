@@ -93,7 +93,7 @@ public class ShoppingsSeedings {
         }
         final List<Shoppings.Delivery> deliveryList = Arrays.asList(
                 Shoppings.Delivery.builder()
-                        .deliverIdentif("deliverIdentif")
+                        .deliveryIdentif("deliveryIdentif")
                         .orderIdentif("orderIdentif")
                         .status(Status.preparing)
                         .build());

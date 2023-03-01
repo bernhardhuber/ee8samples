@@ -193,7 +193,13 @@ public class Names {
 
     static class Value<T> {
 
-        private static final Value EMPTY = new Value();
+        private final T t;
+
+        public Value(T t) {
+            this.t = t;
+        }
+
+        private static final Value<String> EMPTY = new Value<String>("");
 
         static final Value empty() {
             return EMPTY;
@@ -201,7 +207,7 @@ public class Names {
 
         @Override
         public String toString() {
-            return "value=''";
+            return t != null ? t.toString() : "<null>";
         }
     }
 

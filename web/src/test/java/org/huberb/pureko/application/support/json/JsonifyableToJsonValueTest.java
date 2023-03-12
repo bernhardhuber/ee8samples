@@ -25,15 +25,19 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.stream.Stream;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 import org.huberb.pureko.application.support.json.JsonValues.JsonifyableToJsonValue;
+import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,6 +47,24 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @author berni3
  */
 public class JsonifyableToJsonValueTest {
+
+    private Locale wasLocaleSet;
+    private TimeZone wasTimeZoneSet;
+
+    @BeforeEach
+    public void setUp() {
+        wasLocaleSet = Locale.getDefault();
+        wasTimeZoneSet = TimeZone.getDefault();
+
+        Locale.setDefault(Locale.UK);
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/London"));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Locale.setDefault(wasLocaleSet);
+        TimeZone.setDefault(wasTimeZoneSet);
+    }
 
     @ParameterizedTest
     @MethodSource(value = "streamOfL")
@@ -172,7 +194,10 @@ but was : <{"o":[null,"string1",1,2,3.299999952316284,4.4,5,6.6,{"k0String":null
     public void testDate() {
         JsonifyableToJsonValue instance = new JsonifyableToJsonValue();
 
-        Calendar cal = new Calendar.Builder().setDate(2022, Calendar.DECEMBER, 8).build();
+        Calendar cal = new Calendar.Builder()
+                .setTimeZone(TimeZone.getTimeZone("Europe/Vienna"))
+                .setDate(2022, Calendar.DECEMBER, 8)
+                .build();
         JsonValue s = instance.jvDate(cal.getTime());
         assertEquals(Json.createValue("2022-12-07T23:00:00Z"), s);
     }
@@ -181,7 +206,10 @@ but was : <{"o":[null,"string1",1,2,3.299999952316284,4.4,5,6.6,{"k0String":null
     public void testCalendar() {
         JsonifyableToJsonValue instance = new JsonifyableToJsonValue();
 
-        Calendar cal = new Calendar.Builder().setDate(2022, Calendar.DECEMBER, 8).build();
+        Calendar cal = new Calendar.Builder()
+                .setTimeZone(TimeZone.getTimeZone("Europe/Vienna"))
+                .setDate(2022, Calendar.DECEMBER, 8)
+                .build();
         JsonValue s = instance.jvCalendar(cal);
         assertEquals(Json.createValue("2022-12-07T23:00:00Z"), s);
     }

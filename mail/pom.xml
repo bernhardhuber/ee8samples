@@ -10,12 +10,7 @@
     <artifactId>mail</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-
         <mockito.version>3.12.4</mockito.version>
-
         <asciidoclet.version>1.5.6</asciidoclet.version>
     </properties>
     <dependencies>

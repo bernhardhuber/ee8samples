@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.shopping;
+package org.huberb.ee8sample.genericdata.shopping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,8 +29,8 @@ import org.huberb.ee8sample.genericdata.Basics.LoginUser;
 import org.huberb.ee8sample.genericdata.Basics.Name;
 import org.huberb.ee8sample.genericdata.Basics.Organisation;
 import org.huberb.ee8sample.genericdata.Basics.Person;
-import org.huberb.ee8sample.shopping.Shoppings.Delivery.Status;
-import org.huberb.ee8sample.shopping.Shoppings.StockItem;
+import org.huberb.ee8sample.genericdata.shopping.Shoppings.Delivery.Status;
+import org.huberb.ee8sample.genericdata.shopping.Shoppings.StockItem;
 
 /**
  *
@@ -93,7 +93,7 @@ public class ShoppingsSeedings {
         }
         final List<Shoppings.Delivery> deliveryList = Arrays.asList(
                 Shoppings.Delivery.builder()
-                        .deliveryIdentif("deliveryIdentif")
+                        .deliverIdentif("deliverIdentif")
                         .orderIdentif("orderIdentif")
                         .status(Status.preparing)
                         .build());

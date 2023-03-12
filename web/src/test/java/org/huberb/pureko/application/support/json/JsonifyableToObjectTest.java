@@ -25,14 +25,18 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.stream.Stream;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import org.huberb.pureko.application.support.json.JsonValues.JsonifyableToObject;
+import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -42,6 +46,24 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @author berni3
  */
 public class JsonifyableToObjectTest {
+
+    private Locale wasLocaleSet;
+    private TimeZone wasTimeZoneSet;
+
+    @BeforeEach
+    public void setUp() {
+        wasLocaleSet = Locale.getDefault();
+        wasTimeZoneSet = TimeZone.getDefault();
+
+        Locale.setDefault(Locale.UK);
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/London"));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Locale.setDefault(wasLocaleSet);
+        TimeZone.setDefault(wasTimeZoneSet);
+    }
 
     @ParameterizedTest
     @MethodSource(value = "streamOfL")
@@ -165,7 +187,9 @@ public class JsonifyableToObjectTest {
     public void testDate() {
         JsonifyableToObject instance = new JsonifyableToObject();
 
-        Calendar cal = new Calendar.Builder().setDate(2022, Calendar.DECEMBER, 8).build();
+        Calendar cal = new Calendar.Builder()
+                .setTimeZone(TimeZone.getTimeZone("Europe/Vienna")).setDate(2022, Calendar.DECEMBER, 8)
+                .build();
         String s = instance.jvDate(cal.getTime());
         assertEquals("2022-12-07T23:00:00Z", s);
     }
@@ -174,7 +198,10 @@ public class JsonifyableToObjectTest {
     public void testCalendar() {
         JsonifyableToObject instance = new JsonifyableToObject();
 
-        Calendar cal = new Calendar.Builder().setDate(2022, Calendar.DECEMBER, 8).build();
+        Calendar cal = new Calendar.Builder()
+                .setTimeZone(TimeZone.getTimeZone("Europe/Vienna"))
+                .setDate(2022, Calendar.DECEMBER, 8)
+                .build();
         String s = instance.jvCalendar(cal);
         assertEquals("2022-12-07T23:00:00Z", s);
     }

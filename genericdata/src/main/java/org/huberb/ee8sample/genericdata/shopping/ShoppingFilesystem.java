@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.shopping;
+package org.huberb.ee8sample.genericdata.shopping;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -25,8 +25,8 @@ import org.huberb.ee8sample.fs.Filesystem.Files.Directory;
 import org.huberb.ee8sample.fs.Filesystem.Files.RegularPayload;
 import org.huberb.ee8sample.genericdata.Basics.LoginUser;
 import org.huberb.ee8sample.genericdata.Basics.Person;
-import org.huberb.ee8sample.shopping.Shoppings.ShoppingItem;
-import org.huberb.ee8sample.shopping.Shoppings.StockItem;
+import org.huberb.ee8sample.genericdata.shopping.Shoppings.ShoppingItem;
+import org.huberb.ee8sample.genericdata.shopping.Shoppings.StockItem;
 
 /**
  *

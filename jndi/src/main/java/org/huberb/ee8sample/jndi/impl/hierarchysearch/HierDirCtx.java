@@ -211,8 +211,14 @@ public class HierDirCtx extends HierCtx implements DirContext {
      * If obj is a byte array, encode each item as \xx, where xx is hex encoding
      * of the byte value. Else, if obj is not a String, use its string
      * representation (toString()). Special characters in obj (or its string
-     * representation) are then encoded appropriately according to RFC 2254. *
-     * \2a (	\28 )	\29 \	\5c NUL	\00
+     * representation) are then encoded appropriately according to RFC 2254.
+     * <pre><code>
+     * * -> \2a
+     * ( -> \28
+     * ) -> \29
+     * \ -> \5c
+     * NUL -> \00
+     * </code></pre>
      */
     private static String getEncodedStringRep(Object obj) throws NamingException {
         String str;
@@ -754,7 +760,7 @@ public class HierDirCtx extends HierCtx implements DirContext {
         return search(name, filter, cons);
     }
 
-    private Attributes deepClone(Attributes orig) throws NamingException {
+    private static  Attributes deepClone(Attributes orig) throws NamingException {
         if (orig.size() == 0) {
             return (Attributes) orig.clone();
         }
@@ -769,8 +775,8 @@ public class HierDirCtx extends HierCtx implements DirContext {
         return copy;
     }
 
-    private Hashtable deepClone(Hashtable orig) throws NamingException {
-        if (orig.size() == 0) {
+    private static Hashtable deepClone(Hashtable orig) throws NamingException {
+        if (orig.isEmpty()) {
             return (Hashtable) orig.clone();
         }
 

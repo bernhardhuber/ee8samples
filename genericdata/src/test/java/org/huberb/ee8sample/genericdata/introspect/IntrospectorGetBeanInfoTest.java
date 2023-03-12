@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.genericdata;
+package org.huberb.ee8sample.genericdata.introspect;
 
 import java.beans.BeanDescriptor;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import org.huberb.ee8sample.shopping.Shoppings;
+import org.huberb.ee8sample.genericdata.Basics;
+import org.huberb.ee8sample.genericdata.shopping.Shoppings;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -217,175 +218,31 @@ PropertyDescriptor: [java.beans.PropertyDescriptor[name=class; values={expert=fa
 
 
          */
-        {
-            BeanInfoContext bic = new BeanInfoContext(Shoppings.Invoice.class);
-            bic.introspect();
-            Map<String, BeanInfo> m = bic.getM();
-            System.out.format("flattenM Shopping$Invoice {%n%s%n}%n",
-                    bic.flattenM(0, "", Shoppings.Invoice.class).stream().collect(Collectors.joining("\n"))
-            );
-        }
-
-        {
-            BeanInfoContext bic = new BeanInfoContext(Shoppings.Order.class);
-            bic.introspect();
-            Map<String, BeanInfo> m = bic.getM();
-            System.out.format("flattenM Shoppings$Order {%n%s%n}%n",
-                    bic.flattenM(0, "").stream().collect(Collectors.joining("\n"))
-            );
-        }
-    }
-
-    static class BeanInfoContext {
-
-        Map<String, BeanInfo> m = new HashMap<>();
-        final Class rootClass;
-
-        public BeanInfoContext(Class rootClass) {
-            this.rootClass = rootClass;
-        }
-
-        void introspect() throws IntrospectionException {
-            _introspect(0, rootClass);
-        }
-
-        void _introspect(int level, Class theClassToIntrospect) throws IntrospectionException {
-            final String n = theClassToIntrospect.getName();
-            if (m.containsKey(n)) {
-                return;
+        Function<Class, String> f = (clazz) -> {
+            try {
+                BeanInfoContext bic = new BeanInfoContext(clazz);
+                bic.introspect();
+                return bic.flattenM(0, "", clazz).stream()
+                        .collect(Collectors.joining("\n"));
+            } catch (IntrospectionException ex) {
+                throw new RuntimeException("introspect", ex);
             }
-            if (level >= 100) {
-                return;
-            }
-
-            final BeanInfo bi = Introspector.getBeanInfo(theClassToIntrospect);
-            m.put(n, bi);
-            for (int i = 0; i < bi.getPropertyDescriptors().length; i++) {
-                PropertyDescriptor pd = bi.getPropertyDescriptors()[i];
-                if (pd.isHidden() || pd.getName().equals("class")) {
-                    continue;
-                }
-                String pdT = pd.getPropertyType().getName();
-                if (pdT.startsWith("org.huber")) {
-                    _introspect(level + 1, pd.getPropertyType());
-                }
-            }
-        }
-
-        Map<String, BeanInfo> getM() {
-            return this.m;
-        }
-
-        List<String> flattenM(int level, String prefix) {
-            return flattenM(level, prefix, this.rootClass);
-        }
-
-        List<String> flattenM(int level, String prefix, Class baseClass) {
-            List<String> result = new ArrayList<>();
-            String n = baseClass.getName();
-            BeanInfo bi = this.m.get(n);
-            return flattenM(level, "", bi.getPropertyDescriptors());
-        }
-
-        List<String> flattenM(int level, String prefix, PropertyDescriptor[] pds) {
-            List<String> result = new ArrayList<>();
-            if (level >= 100) {
-                return result;
-            }
-
-            BiFunction<String, String, String> fqnFunction = (_prefix, _name) -> {
-                return _prefix.isEmpty() ? _name : _prefix + "$" + _name;
-            };
-
-            List<PropertyDescriptor> pd1 = findBy(pds, PRED_RW.and(PRED_NOT_CLASS).and(BASETYPES_CLASS));
-            pd1.forEach(pd -> {
-                String s = String.format("%s %s;", pd.getPropertyType().getName(), fqnFunction.apply(prefix, pd.getName()));
-                result.add(s);
-            });
-            Predicate<PropertyDescriptor> recursivePred = pd -> {
-                return pd.getPropertyType().getPackage().getName().startsWith("org.huber");
-            };
-            List<PropertyDescriptor> pd2 = findBy(pds, PRED_RW
-                    .and(PRED_NOT_CLASS)
-                    .and(BASETYPES_CLASS.negate())
-                    .and(recursivePred)
-            );
-            pd2.forEach(pd -> {
-                String newPrefix = fqnFunction.apply(prefix, pd.getName());
-                String className = pd.getPropertyType().getName();
-                BeanInfo bi = this.m.get(className);
-                if (bi != null) {
-                    List<String> recursiveResult = flattenM(level + 1, newPrefix, bi.getPropertyDescriptors());
-                    result.addAll(recursiveResult);
-                }
-            });
-
-            return result;
-        }
-
-        static Predicate<PropertyDescriptor> PRED_ALWAYS_TRUE = (PropertyDescriptor pd) -> true;
-        static Predicate<PropertyDescriptor> PRED_R = (PropertyDescriptor pd) -> pd.getReadMethod() != null;
-        static Predicate<PropertyDescriptor> PRED_RW = (PropertyDescriptor pd) -> pd.getReadMethod() != null && pd.getWriteMethod() != null;
-        static Predicate<PropertyDescriptor> PRED_NOT_CLASS = (PropertyDescriptor pd) -> !"class".equals(pd.getName());
-        static Predicate<PropertyDescriptor> BASETYPES_CLASS = (PropertyDescriptor pd) -> {
-            boolean result = false;
-            result = result || pd.getPropertyType().isEnum();
-            result = result || pd.getPropertyType().isPrimitive();
-            result = result || pd.getPropertyType().isArray();
-            //---
-            result = result || Number.class.isAssignableFrom(pd.getPropertyType());
-            result = result || pd.getPropertyType().isAssignableFrom(java.lang.Boolean.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.lang.String.class);
-            //---
-            result = result || pd.getPropertyType().isAssignableFrom(java.util.Date.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.util.Calendar.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.util.TimeZone.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.util.Currency.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.util.Locale.class);
-            //---
-            result = result || List.class.isAssignableFrom(pd.getPropertyType());
-            result = result || Set.class.isAssignableFrom(pd.getPropertyType());
-            result = result || HashSet.class.isAssignableFrom(pd.getPropertyType());
-
-            //---
-            result = result || pd.getPropertyType().isAssignableFrom(java.sql.Date.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.sql.Time.class);
-            //---
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.LocalDate.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.LocalDateTime.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.LocalTime.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.Clock.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.DayOfWeek.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.Duration.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.Instant.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.Month.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.MonthDay.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.Period.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.Year.class);
-            result = result || pd.getPropertyType().isAssignableFrom(java.time.YearMonth.class);
-            return result;
         };
+        Consumer<Class> c = (clazz) -> {
+            System.out.format("flattenM %s {%n%s%n}%n",
+                    clazz.getName(),
+                    f.apply(clazz));
 
-        static List<PropertyDescriptor> findBy(BeanInfo bi, Predicate<PropertyDescriptor> pred) {
-            if (pred == null) {
-                pred = PRED_ALWAYS_TRUE;
-            }
-            List<PropertyDescriptor> result = Arrays.asList(bi.getPropertyDescriptors()).stream()
-                    .filter(pred)
-                    .collect(Collectors.toList());
-            return result;
-        }
-
-        static List<PropertyDescriptor> findBy(PropertyDescriptor[] pds, Predicate<PropertyDescriptor> pred) {
-            if (pred == null) {
-                pred = PRED_ALWAYS_TRUE;
-            }
-            List<PropertyDescriptor> result = Arrays.asList(pds).stream()
-                    .filter(pred)
-                    .collect(Collectors.toList());
-            return result;
+        };
+        {
+            c.accept(Shoppings.Invoice.class);
+            c.accept(Shoppings.Order.class);
+            c.accept(Shoppings.Delivery.class);
+            c.accept(Shoppings.ShoppingCard.class);
+            c.accept(Shoppings.ShoppingItem.class);
         }
 
     }
+
 
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.shopping;
+package org.huberb.ee8sample.genericdata.shopping;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -50,14 +50,14 @@ import org.huberb.ee8sample.genericdata.Basics.Item;
 import org.huberb.ee8sample.genericdata.Basics.LoginUser;
 import org.huberb.ee8sample.genericdata.Basics.Organisation;
 import org.huberb.ee8sample.genericdata.Basics.Person;
-import static org.huberb.ee8sample.shopping.Shoppings.Delivery.COUNT_OF_DELIVERIES_QUERY;
-import static org.huberb.ee8sample.shopping.Shoppings.Invoice.COUNT_OF_INVOICES_QUERY;
-import static org.huberb.ee8sample.shopping.Shoppings.Order.COUNT_OF_ORDERS_QUERY;
-import static org.huberb.ee8sample.shopping.Shoppings.ShoppingCard.COUNT_OF_SHOPPING_CARDS_QUERY;
-import static org.huberb.ee8sample.shopping.Shoppings.ShoppingCard.FIND_SHOPPING_CARD_BY_USER;
-import static org.huberb.ee8sample.shopping.Shoppings.StockItem.COUNT_OF_STOCK_ITEMS_QUERY;
-import static org.huberb.ee8sample.shopping.Shoppings.StockItem.FIND_STOCK_ITEMS_BY_CODE_QUERY;
-import static org.huberb.ee8sample.shopping.Shoppings.StockItem.FIND_STOCK_ITEMS_BY_NAME_QUERY;
+import static org.huberb.ee8sample.genericdata.shopping.Shoppings.Delivery.COUNT_OF_DELIVERIES_QUERY;
+import static org.huberb.ee8sample.genericdata.shopping.Shoppings.Invoice.COUNT_OF_INVOICES_QUERY;
+import static org.huberb.ee8sample.genericdata.shopping.Shoppings.Order.COUNT_OF_ORDERS_QUERY;
+import static org.huberb.ee8sample.genericdata.shopping.Shoppings.ShoppingCard.COUNT_OF_SHOPPING_CARDS_QUERY;
+import static org.huberb.ee8sample.genericdata.shopping.Shoppings.ShoppingCard.FIND_SHOPPING_CARD_BY_USER;
+import static org.huberb.ee8sample.genericdata.shopping.Shoppings.StockItem.COUNT_OF_STOCK_ITEMS_QUERY;
+import static org.huberb.ee8sample.genericdata.shopping.Shoppings.StockItem.FIND_STOCK_ITEMS_BY_CODE_QUERY;
+import static org.huberb.ee8sample.genericdata.shopping.Shoppings.StockItem.FIND_STOCK_ITEMS_BY_NAME_QUERY;
 
 /**
  *

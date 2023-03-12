@@ -32,9 +32,13 @@
  */
 package org.huberb.ee8sample.jndi.impl.hierarchy;
 
-import java.util.Enumeration;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import javax.naming.Binding;
 import javax.naming.CompositeName;
 import javax.naming.Context;
@@ -59,7 +63,8 @@ public class HierCtx implements Context {
     protected final static NameParser myParser = new HierParser();
 
     private final Hashtable myEnv;
-    private final Hashtable bindings;
+    private final Map<String, Object> bindings;
+
     private final HierCtx parent;
     private final String myAtomicName;
 
@@ -69,15 +74,20 @@ public class HierCtx implements Context {
 
     private HierCtx(HierCtx parent, String name,
             Hashtable inEnv,
-            Hashtable inBindings) {
+            Map<String, Object> inBindings) {
         this.myEnv = (inEnv != null)
                 ? (Hashtable) (inEnv.clone())
                 : new Hashtable(5);
         this.parent = parent;
         this.myAtomicName = name;
-        this.bindings = (inBindings != null)
-                ? (Hashtable) inBindings.clone()
-                : new Hashtable(11);
+
+        if (inBindings != null) {
+            final Map<String, Object> clonedBinding = new HashMap<String, Object>();
+            clonedBinding.putAll(inBindings);
+            this.bindings = clonedBinding;
+        } else {
+            this.bindings = Collections.synchronizedMap(new HashMap<String, Object>());
+        }
     }
 
     private Context createCtx(HierCtx parent, String name, Hashtable inEnv) {
@@ -317,7 +327,7 @@ public class HierCtx implements Context {
     public NamingEnumeration<NameClassPair> list(Name name) throws NamingException {
         if (name.isEmpty()) {
             // listing this context
-            return new ListOfNames(bindings.keys());
+            return new ListOfNames(bindings.keySet());
         }
 
         // Perhaps 'name' names a context
@@ -337,7 +347,7 @@ public class HierCtx implements Context {
     public NamingEnumeration<Binding> listBindings(Name name) throws NamingException {
         if (name.isEmpty()) {
             // listing this context
-            return new ListOfBindings(bindings.keys());
+            return new ListOfBindings(bindings.keySet());
         }
 
         // Perhaps 'name' names a context
@@ -505,10 +515,10 @@ public class HierCtx implements Context {
     // Class for enumerating name/class pairs
     class ListOfNames implements NamingEnumeration<NameClassPair> {
 
-        protected Enumeration names;
+        protected Iterator<String> names;
 
-        ListOfNames(Enumeration names) {
-            this.names = names;
+        ListOfNames(Set<String> names) {
+            this.names = names.iterator();
         }
 
         @Override
@@ -522,7 +532,7 @@ public class HierCtx implements Context {
 
         @Override
         public boolean hasMore() throws NamingException {
-            return names.hasMoreElements();
+            return names.hasNext();
         }
 
         @Override
@@ -536,7 +546,7 @@ public class HierCtx implements Context {
 
         @Override
         public NameClassPair next() throws NamingException {
-            String name = (String) names.nextElement();
+            String name = (String) names.next();
             String className = bindings.get(name).getClass().getName();
             return new NameClassPair(name, className);
         }
@@ -549,10 +559,10 @@ public class HierCtx implements Context {
     // Class for enumerating bindings
     class ListOfBindings implements NamingEnumeration<Binding> {
 
-        protected Enumeration names;
+        protected Iterator<String> names;
 
-        ListOfBindings(Enumeration names) {
-            this.names = names;
+        ListOfBindings(Set<String> names) {
+            this.names = names.iterator();
         }
 
         @Override
@@ -566,7 +576,7 @@ public class HierCtx implements Context {
 
         @Override
         public boolean hasMore() throws NamingException {
-            return names.hasMoreElements();
+            return names.hasNext();
         }
 
         @Override
@@ -580,7 +590,7 @@ public class HierCtx implements Context {
 
         @Override
         public Binding next() throws NamingException {
-            String name = (String) names.nextElement();
+            String name = (String) names.next();
             Object obj = bindings.get(name);
 
             try {

@@ -19,9 +19,15 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import org.huberb.ee8sample.shopping.Shoppings.ShoppingCard;
-import org.huberb.ee8sample.shopping.Shoppings.StockItem;
-import org.huberb.ee8sample.shopping.ShoppingsSeedings;
+import org.huberb.ee8sample.genericdata.shopping.Shoppings.Delivery;
+import static org.huberb.ee8sample.genericdata.shopping.Shoppings.Delivery.COUNT_OF_DELIVERIES_QUERY;
+import org.huberb.ee8sample.genericdata.shopping.Shoppings.Invoice;
+import org.huberb.ee8sample.genericdata.shopping.Shoppings.ShoppingCard;
+import static org.huberb.ee8sample.genericdata.shopping.Shoppings.ShoppingCard.COUNT_OF_SHOPPING_CARDS_QUERY;
+import org.huberb.ee8sample.genericdata.shopping.Shoppings.StockItem;
+import static org.huberb.ee8sample.genericdata.shopping.Shoppings.StockItem.COUNT_OF_STOCK_ITEMS_QUERY;
+import org.huberb.ee8sample.genericdata.shopping.ShoppingsSeedings;
+import org.huberb.ee8sample.genericdata.shopping.ShoppingsSeedings.SeedingEntries;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,7 +48,7 @@ public class EntityManagerTest {
 
     @BeforeAll
     public static void setUpAll() {
-        String h2JdbcUrl = "jdbc:h2:mem:testCreateEntityManagerUsingCustomizableEntityManagerFactory";
+        String h2JdbcUrl = "jdbc:h2:mem:testEntityManagerTest";
         entityManagerFactory = CustomizableEntityManagerFactory.createH2EntityManagerFactory(h2JdbcUrl);
     }
 
@@ -77,7 +83,7 @@ public class EntityManagerTest {
     }
 
     @Test
-    public void testShoppingSeedings() {
+    public void testShoppingSeedings_StockItems() {
         assertNotNull(this.entityManager);
         assertTrue(this.entityManager.isOpen());
         assertEquals(5, this.entityManager.getMetamodel().getEntities().size());
@@ -85,31 +91,87 @@ public class EntityManagerTest {
         this.entityManager.getTransaction().begin();
         //---
         final ShoppingsSeedings shoppingsSeedings = new ShoppingsSeedings();
-        final Map<String, Object> map = shoppingsSeedings.seedItems(20, 5);
+        final Map<SeedingEntries, Object> map = shoppingsSeedings.seedItems(20, 5);
         {
-            final List<StockItem> stockItemList = (List<StockItem>) map.get("stockItemList");
+            final List<StockItem> stockItemList = (List<StockItem>) map.get(SeedingEntries.stockItemList);
             assertEquals(20, stockItemList.size());
-            for (int i = 0; i < stockItemList.size(); i += 1) {
-                StockItem stockItem = stockItemList.get(i);
-                this.entityManager.persist(stockItem);
-            }
-            final Number count = this.entityManager.createQuery("select count(e) from Shoppings$StockItem as e", Number.class)
+            stockItemList.forEach(si -> {
+                this.entityManager.persist(si);
+            });
+            final Number count = this.entityManager
+                    .createNamedQuery(COUNT_OF_STOCK_ITEMS_QUERY, Number.class)
                     .getSingleResult();
             assertEquals(stockItemList.size(), count.intValue());
         }
+    }
+
+    @Test
+    public void testShoppingSeedings_ShoppingCards() {
+        assertNotNull(this.entityManager);
+        assertTrue(this.entityManager.isOpen());
+        assertEquals(5, this.entityManager.getMetamodel().getEntities().size());
+
+        this.entityManager.getTransaction().begin();
+        //---
+        final ShoppingsSeedings shoppingsSeedings = new ShoppingsSeedings();
+        final Map<SeedingEntries, Object> map = shoppingsSeedings.seedItems(20, 5);
         {
-            final List<ShoppingCard> shoppingCardList = (List<ShoppingCard>) map.get("shoppingCardList");
+            final List<ShoppingCard> shoppingCardList = (List<ShoppingCard>) map.get(SeedingEntries.shoppingCardList);
             assertEquals(5, shoppingCardList.size());
-            for (int i = 0; i < shoppingCardList.size(); i += 1) {
-                ShoppingCard shoppingCard = shoppingCardList.get(i);
-                this.entityManager.persist(shoppingCard);
-            }
-            final Number count = this.entityManager.createQuery("select count(e) from Shoppings$ShoppingCard as e", Number.class)
+            shoppingCardList.forEach(sc -> {
+                this.entityManager.persist(sc);
+            });
+            final Number count = this.entityManager
+                    .createNamedQuery(COUNT_OF_SHOPPING_CARDS_QUERY, Number.class)
                     .getSingleResult();
             assertEquals(shoppingCardList.size(), count.intValue());
         }
+    }
+
+    @Test
+    public void testShoppingSeedings_Deliveries() {
+        assertNotNull(this.entityManager);
+        assertTrue(this.entityManager.isOpen());
+        assertEquals(5, this.entityManager.getMetamodel().getEntities().size());
+
+        this.entityManager.getTransaction().begin();
         //---
-        this.entityManager.getTransaction().rollback();
+        final ShoppingsSeedings shoppingsSeedings = new ShoppingsSeedings();
+        final Map<SeedingEntries, Object> map = shoppingsSeedings.seedItems(20, 5);
+        {
+            final List<Delivery> deliveryList = (List<Delivery>) map.get(SeedingEntries.deliveryList);
+            assertEquals(1, deliveryList.size());
+            deliveryList.forEach(sc -> {
+                this.entityManager.persist(sc);
+            });
+            final Number count = this.entityManager
+                    .createNamedQuery(COUNT_OF_DELIVERIES_QUERY, Number.class)
+                    .getSingleResult();
+            assertEquals(deliveryList.size(), count.intValue());
+        }
+    }
+
+    @Test
+    public void testShoppingSeedings_Invoices() {
+        assertNotNull(this.entityManager);
+        assertTrue(this.entityManager.isOpen());
+        assertEquals(5, this.entityManager.getMetamodel().getEntities().size());
+
+        this.entityManager.getTransaction().begin();
+        //---
+        final ShoppingsSeedings shoppingsSeedings = new ShoppingsSeedings();
+        final Map<SeedingEntries, Object> map = shoppingsSeedings.seedItems(20, 5);
+        {
+            final List<Invoice> invoiceList = (List<Invoice>) map.get(SeedingEntries.invoiceList);
+            assertEquals(1, invoiceList.size());
+            invoiceList.forEach(sc -> {
+                this.entityManager.persist(sc);
+            });
+            final Number count = this.entityManager
+                    .createNamedQuery(Invoice.COUNT_OF_INVOICES_QUERY, Number.class)
+                    .getSingleResult();
+            assertEquals(invoiceList.size(), count.intValue());
+        }
     }
 
 }

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.shopping;
+package org.huberb.ee8sample.genericdata.shopping;
 
-import org.huberb.ee8sample.shopping.ShoppingsSeedings;
+import org.huberb.ee8sample.genericdata.shopping.ShoppingsSeedings;
 import java.util.List;
 import java.util.Map;
+import org.huberb.ee8sample.genericdata.shopping.ShoppingsSeedings.SeedingEntries;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,7 +43,7 @@ public class ShoppingsSeedingsTest {
      */
     @Test
     public void testSeedItems() {
-        final Map<String, Object> map = instance.seedItems(20, 5);
+        final Map<SeedingEntries, Object> map = instance.seedItems(20, 5);
         //System.out.printf("seedItems: %s%n", map);
 
         assertNotNull(map);

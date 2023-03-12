@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.huberb.ee8sample.shopping;
+package org.huberb.ee8sample.genericdata.shopping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
@@ -30,8 +29,8 @@ import org.huberb.ee8sample.genericdata.Basics.LoginUser;
 import org.huberb.ee8sample.genericdata.Basics.Name;
 import org.huberb.ee8sample.genericdata.Basics.Organisation;
 import org.huberb.ee8sample.genericdata.Basics.Person;
-import org.huberb.ee8sample.shopping.Shoppings.Delivery.Status;
-import org.huberb.ee8sample.shopping.Shoppings.StockItem;
+import org.huberb.ee8sample.genericdata.shopping.Shoppings.Delivery.Status;
+import org.huberb.ee8sample.genericdata.shopping.Shoppings.StockItem;
 
 /**
  *
@@ -39,7 +38,15 @@ import org.huberb.ee8sample.shopping.Shoppings.StockItem;
  */
 public class ShoppingsSeedings {
 
-    public Map<String, Object> seedItems(int stockItemCount, int shoppingCardCount) {
+    public enum SeedingEntries {
+        stockItemList,
+        shoppingCardList,
+        orderList,
+        invoiceList,
+        deliveryList;
+    }
+
+    public EnumMap<SeedingEntries, Object> seedItems(int stockItemCount, int shoppingCardCount) {
         final Faker faker = Faker.instance(Locale.forLanguageTag("de-AT"));
 
         final List<StockItem> stockItemList = Stream.iterate(0, i -> i < stockItemCount, i -> i + 1)
@@ -94,8 +101,16 @@ public class ShoppingsSeedings {
                 Shoppings.Invoice.builder()
                         .shoppingItemList(shoppingCardList.get(0).getShoppingItemList())
                         .orgAddress(Address.builder().build())
-                        .organisation(Organisation.builder().build())
-                        .person(Person.builder().build())
+                        .organisation(Organisation.builder()
+                                .organisationName("Organisation-A")
+                                .build())
+                        .person(Person.builder()
+                                .personName(Name.builder()
+                                        .firstName(faker.name().firstName())
+                                        .lastName(faker.name().lastName())
+                                        .middleName("")
+                                        .title("")
+                                        .build()).build())
                         .personAddress(Address.builder().build())
                         .build());
         final List<Shoppings.Order> orderList = Arrays.asList(
@@ -104,16 +119,17 @@ public class ShoppingsSeedings {
                         .orderIdentif("orderIdentif")
                         .build());
 
-        // TODO replace by ShoppingFilesystem ???
-        final Map<String, Object> m = new HashMap<>() {
+        EnumMap<SeedingEntries, Object> result = new EnumMap<>(SeedingEntries.class) {
             {
-                put("stockItemList", stockItemList);
-                put("shoppingCardList", shoppingCardList);
-                put("orderList", orderList);
-                put("invoiceList", invoiceList);
-                put("deliveryList", deliveryList);
+                put(SeedingEntries.stockItemList, stockItemList);
+                put(SeedingEntries.shoppingCardList, shoppingCardList);
+                put(SeedingEntries.orderList, orderList);
+                put(SeedingEntries.invoiceList, invoiceList);
+                put(SeedingEntries.deliveryList, deliveryList);
             }
         };
-        return m;
+        return result;
+
     }
+
 }

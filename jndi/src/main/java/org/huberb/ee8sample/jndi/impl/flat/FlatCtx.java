@@ -61,7 +61,7 @@ public class FlatCtx implements Context {
     protected static final NameParser myParser = new FlatNameParser();
 
     private final Hashtable myEnv;
-    private Map<String, Object> bindings;
+    private final Map<String, Object> bindings;
 
     public FlatCtx(Hashtable inEnv) {
         this(inEnv, null);
@@ -337,21 +337,12 @@ public class FlatCtx implements Context {
     @Override
     public Object removeFromEnvironment(String propName)
             throws NamingException {
-//        if (myEnv == null) {
-//            return null;
-//        }
-
         return myEnv.remove(propName);
     }
 
     @Override
     public Hashtable getEnvironment() throws NamingException {
-//        if (myEnv == null) {
-//            // Must return non-null
-//            return new Hashtable(3, 0.75f);
-//        } else {
         return (Hashtable) myEnv.clone();
-//        }
     }
 
     @Override

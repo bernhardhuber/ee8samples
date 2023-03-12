@@ -42,6 +42,9 @@ class FlatNameParser implements NameParser {
 
     private static final Properties syntax = new Properties();
 
+    /**
+     * @see CompoundName
+     */
     static {
         syntax.put("jndi.syntax.direction", "flat");
         syntax.put("jndi.syntax.ignorecase", "false");

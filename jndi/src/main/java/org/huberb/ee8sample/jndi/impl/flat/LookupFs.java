@@ -24,6 +24,9 @@ import javax.naming.NamingException;
  */
 public class LookupFs {
 
+    private LookupFs() {
+    }
+
     public static <T> T lookup(Context ctx, String name, Class<T> clazz) throws NamingException {
         Object obj = ctx.lookup(name);
         return (T) obj;

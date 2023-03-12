@@ -15,7 +15,6 @@
  */
 package org.huberb.ee8sample.jndi.impl.hierarchy;
 
-import org.huberb.ee8sample.jndi.impl.hierarchy.HierCtx;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
